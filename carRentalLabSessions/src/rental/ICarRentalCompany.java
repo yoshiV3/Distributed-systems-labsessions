@@ -1,0 +1,58 @@
+package rental;
+
+import java.rmi.Remote;
+import java.rmi.RemoteException;
+import java.util.Date;
+import java.util.Set;
+
+public interface ICarRentalCompany extends Remote {
+	
+	/**
+	 * @return Returns the name of this Car rental company
+	 * @throws RemoteException
+	 */
+	public String getName() throws RemoteException;
+	
+	
+	/**
+	 * Get the list of all available car types in a given period. 
+	 * @param start: The start date of the period
+	 * @param end:   The end date of the period
+	 * @return       The list of all available car types in the gicen period
+	 * @throws RemoteException
+	 */
+	public Set<CarType> getAvailableCarTypes(Date start, Date end) throws RemoteException;
+	
+	
+	/**
+	 * Check if a car of given car type is available in the given period
+	 * @param carTypeName  The car type
+	 * @param start        The start data of the period
+	 * @param end          The end data of the period
+	 * @return             True if a car of given type is available during the given period
+	 *                     False, otherwise 
+	 * @throws             RemoteException
+	 * 
+	 * @throws             IllegalArgumentException 
+	 *                     Given car type does not exist
+	 */
+	public boolean isAvailable(String carTypeName, Date start, Date end) throws RemoteException;
+	
+	/**
+	 *  create a quote for a given client based on given reservation constraints
+	 * @param constraints the reservation constraints
+	 * @param client      the client 
+	 * @return            A quote for the given client based on the given constraints 
+	 * @throws RemoteException
+	 */
+	public Quote createQuote(ReservationConstraints constraints, String client) throws RemoteException:
+		
+	/**
+	 * 	
+	 * @param quote
+	 * @return
+	 * @throws RemoteException
+	 */
+	public Reservation confirmQuote(Quote quote) throws RemoteException; 
+
+}
