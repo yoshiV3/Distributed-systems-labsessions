@@ -3,6 +3,7 @@ package rental;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -75,4 +76,14 @@ public class Car {
         // equals-method for Reservation is required!
         reservations.remove(reservation);
     }
+
+	public List<Reservation> getReservations() {
+		 List<Reservation> reservationsReturn =  new ArrayList<Reservation>();
+		 Iterator<Reservation> iterator = this.reservations.iterator();
+		 while (iterator.hasNext())
+		 {
+			 reservationsReturn.add((Reservation) iterator.next());  
+		 }  
+		 return reservationsReturn;
+	}
 }

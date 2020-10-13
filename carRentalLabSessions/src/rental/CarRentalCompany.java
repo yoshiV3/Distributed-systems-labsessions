@@ -175,6 +175,23 @@ public class CarRentalCompany implements ICarRentalCompany{
 		}
 		return reservations;
 	}
+	
+	public Set<Reservation> getReservationsForCarType(CarType type)
+	{
+		Set<Reservation> reservations = new HashSet<Reservation>();
+		for (Car car : this.cars)
+		{
+			if (car.getType().equals(type))
+			{
+				for (Reservation reservation : car.getReservations())
+				{
+					reservations.add(reservation);
+				}
+			}
+		}
+		return reservations;
+		
+	}
 
 	public void cancelReservation(Reservation res) {
 		logger.log(Level.INFO, "<{0}> Cancelling reservation {1}", new Object[]{name, res.toString()});
