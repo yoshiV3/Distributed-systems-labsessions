@@ -2,7 +2,9 @@ package rental;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class Car {
 
@@ -50,6 +52,19 @@ public class Car {
             return false;
         }
         return true;
+    }
+    
+    public Set<Reservation> getReservationsFromClient(String client)
+    { 
+    	Set<Reservation> reservationsClient = new HashSet<Reservation>();
+		for( Reservation reservation: this.reservations)
+		{
+			if( reservation.getCarRenter().equals(client))
+			{
+				reservationsClient.add(reservation);
+			}
+		}    	
+		return reservationsClient;
     }
     
     public void addReservation(Reservation res) {

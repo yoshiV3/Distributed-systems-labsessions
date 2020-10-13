@@ -45,14 +45,31 @@ public interface ICarRentalCompany extends Remote {
 	 * @return            A quote for the given client based on the given constraints 
 	 * @throws RemoteException
 	 */
-	public Quote createQuote(ReservationConstraints constraints, String client) throws RemoteException:
+	public Quote createQuote(ReservationConstraints constraints, String client) throws RemoteException;
 		
 	/**
-	 * 	
-	 * @param quote
-	 * @return
+	 * Confirm a quote	
+	 * @param quote the quote to confirm
+	 * @return   the reservation based on the quote
 	 * @throws RemoteException
 	 */
 	public Reservation confirmQuote(Quote quote) throws RemoteException; 
+	
+	
+	/**
+	 * A method to retrieve all the reservations from a certain client
+	 * @param client the relevant client
+	 * @return The requested reservations
+	 * @throws RemoteException
+	 */
+	public Set<Reservation> getReservationsFromClien(String client) throws RemoteException;
+	
+	/**
+	 * Retrieve all the reservations for a certain  car type 
+	 * @param type the relevant car type
+	 * @return all the relevant reservations
+	 * @throws RemoteException
+	 */
+	public Set<Reservation> getReservationsForCarType(CarType type) throws RemoteException; 
 
 }

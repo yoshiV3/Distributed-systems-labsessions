@@ -161,6 +161,20 @@ public class CarRentalCompany implements ICarRentalCompany{
 		car.addReservation(res);
 		return res;
 	}
+	
+	@Override
+	public Set<Reservation> getReservationsFromClien(String client)
+	{
+		Set<Reservation> reservations = new HashSet<Reservation>();
+		for (Car car : this.cars)
+		{
+			for( Reservation reservation: car.getReservationsFromClient(client))
+			{
+				reservations.add(reservation);
+			}
+		}
+		return reservations;
+	}
 
 	public void cancelReservation(Reservation res) {
 		logger.log(Level.INFO, "<{0}> Cancelling reservation {1}", new Object[]{name, res.toString()});
