@@ -21,6 +21,9 @@ public class RentalServer {
 
 	public static void main(String[] args) throws ReservationException,
 			NumberFormatException, IOException {
+
+		System.out.println("\n=============== Starting Rental Server Process ===============\n");
+
 		if (System.getSecurityManager() != null)
 		{
 			System.setSecurityManager(null);
@@ -30,25 +33,24 @@ public class RentalServer {
 		int localOrRemote = (args.length == 1 && args[0].equals("REMOTE")) ? REMOTE : LOCAL;
 
 		CrcData data  = loadData("hertz.csv");
+
 		ICarRentalCompany company = new CarRentalCompany(data.name, data.regions, data.cars);
+		
 		Registry registry = null;
-		try 
-		{
+		try {
 			registry = LocateRegistry.getRegistry(); 
-		}
-		catch(RemoteException e)
+		}catch(RemoteException e)
 		{
 			System.exit(-1);
 		}
 		
+		System.out.println("Registering the Client name now");
 		//convert to stub
 		ICarRentalCompany stub;
-		try 
-		{
+		try{
 			stub = (ICarRentalCompany ) UnicastRemoteObject.exportObject(company, 0); 
 			registry.rebind(data.name, stub);
-		}
-		catch (RemoteException e)
+		}catch (RemoteException e)
 		{
 			e.printStackTrace();
 		}

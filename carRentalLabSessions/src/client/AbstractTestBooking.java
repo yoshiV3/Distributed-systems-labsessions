@@ -4,6 +4,7 @@ import java.text.ParseException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 import java.util.Map;
 import java.util.StringTokenizer;
 
@@ -58,7 +59,7 @@ public abstract class AbstractTestBooking extends AbstractTesting {
 	 * 
 	 * @throws Exception if things go wrong, throw exception
 	 */
-	protected abstract List<Reservation> getReservationsByRenter(String renter) throws Exception;
+	protected abstract Set<Reservation> getReservationsByRenter(String renter) throws Exception;
 
 	/**
 	 * Get the number of reservations for a particular car type.
@@ -109,6 +110,7 @@ public abstract class AbstractTestBooking extends AbstractTesting {
 			}
 		}
 
+		System.out.println("");
 		if (cmd.equals("BA")) {
 			try {
 				checkForAvailableCarTypes(startDate, endDate);
@@ -153,9 +155,9 @@ public abstract class AbstractTestBooking extends AbstractTesting {
 
 			int nr = getReservationsByRenter(name).size();
 			if (Integer.parseInt(pars) == nr) {
-				System.out.println(name + " has correct totals " + pars + " " + nr);
+				System.out.println(name + " has correct totals " + pars + " " + nr+ "\n");
 			} else {
-				System.err.println(name + " has wrong totals " + pars + " " + nr);
+				System.err.println(name + " has wrong totals " + pars + " " + nr + "\n");
 			}
 		}
 	}
@@ -166,9 +168,9 @@ public abstract class AbstractTestBooking extends AbstractTesting {
 			String[] pair = pars.split(":");
 			int nr = getNumberOfReservationsForCarType(pair[0]);
 			if (Integer.parseInt(pair[1]) == nr) {
-				System.out.println(name + " has correct totals " + pars + " " + nr);
+				System.out.println(name + " has correct totals " + pars + " " + nr+ "\n");
 			} else {
-				System.err.println(name + " has wrong totals " + pars + " " + nr);
+				System.err.println(name + " has wrong totals " + pars + " " + nr+ "\n");
 			}
 		}
 	}

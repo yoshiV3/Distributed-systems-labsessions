@@ -26,7 +26,7 @@ public class CarRentalCompany implements ICarRentalCompany{
 	 ***************/
 
 	public CarRentalCompany(String name, List<String> regions, List<Car> cars) {
-		logger.log(Level.INFO, "<{0}> Car Rental Company {0} starting up...", name);
+		logger.log(Level.INFO, "Car Rental Company <{0}> starting up...", name);
 		setName(name);
 		this.cars = cars;
 		setRegions(regions);
@@ -127,7 +127,7 @@ public class CarRentalCompany implements ICarRentalCompany{
 
 	public Quote createQuote(ReservationConstraints constraints, String client)
 			throws ReservationException {
-		logger.log(Level.INFO, "<{0}> Creating tentative reservation for {1} with constraints {2}", 
+		logger.log(Level.INFO, "<{0}> Creating tentative reservation for {1} with constraints {2}\n", 
                         new Object[]{name, client, constraints.toString()});
 		
 				
@@ -150,7 +150,7 @@ public class CarRentalCompany implements ICarRentalCompany{
 
 	@Override
 	public Reservation confirmQuote(Quote quote) throws ReservationException {
-		logger.log(Level.INFO, "<{0}> Reservation of {1}", new Object[]{name, quote.toString()});
+		logger.log(Level.INFO, "<{0}> Reservation of {1}\n", new Object[]{name, quote.toString()});
 		List<Car> availableCars = getAvailableCars(quote.getCarType(), quote.getStartDate(), quote.getEndDate());
 		if(availableCars.isEmpty())
 			throw new ReservationException("Reservation failed, all cars of type " + quote.getCarType()
@@ -162,8 +162,8 @@ public class CarRentalCompany implements ICarRentalCompany{
 		return res;
 	}
 	
-	@Override
-	public Set<Reservation> getReservationsFromClien(String client)
+	
+	public Set<Reservation> getReservationsFromRenter(String client)
 	{
 		Set<Reservation> reservations = new HashSet<Reservation>();
 		for (Car car : this.cars)
@@ -176,12 +176,12 @@ public class CarRentalCompany implements ICarRentalCompany{
 		return reservations;
 	}
 	
-	public Set<Reservation> getReservationsForCarType(CarType type)
+	public Set<Reservation> getReservationsForCarType(String type)
 	{
 		Set<Reservation> reservations = new HashSet<Reservation>();
 		for (Car car : this.cars)
 		{
-			if (car.getType().equals(type))
+			if (car.getType().getName().equals(type))
 			{
 				for (Reservation reservation : car.getReservations())
 				{
@@ -194,13 +194,13 @@ public class CarRentalCompany implements ICarRentalCompany{
 	}
 
 	public void cancelReservation(Reservation res) {
-		logger.log(Level.INFO, "<{0}> Cancelling reservation {1}", new Object[]{name, res.toString()});
+		logger.log(Level.INFO, "<{0}> Cancelling reservation {1}\n", new Object[]{name, res.toString()});
 		getCar(res.getCarId()).removeReservation(res);
 	}
 	
 	@Override
 	public String toString() {
-		return String.format("<%s> CRC is active in regions %s and serving with %d car types", name, listToString(regions), carTypes.size());
+		return String.format("<%s> CRC is active in regions %s and serving with %d car types\n", name, listToString(regions), carTypes.size());
 	}
 	
 	private static String listToString(List<? extends Object> input) {
