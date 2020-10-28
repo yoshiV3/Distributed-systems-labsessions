@@ -15,6 +15,12 @@ public interface ICarRentalCompany extends Remote {
 	public String getName() throws RemoteException;
 	
 	
+	
+	
+	
+	public  boolean canReserve(ReservationConstraints constraints) throws RemoteException;
+	public  void    cancelReservation(Reservation reservation) throws RemoteException;
+	public  double  getRentalPricePerDay(String typeName) throws RemoteException;
 	/**
 	 * Get the list of all available car types in a given period. 
 	 * @param start: The start date of the period
@@ -65,6 +71,8 @@ public interface ICarRentalCompany extends Remote {
 	 */
 	public Set<Reservation> getReservationsFromRenter(String client) throws RemoteException;
 	
+	public int getNumberOfReservationsFromRenter(String client) throws RemoteException;
+	
 	/**
 	 * Retrieve all the reservations for a certain  car type 
 	 * @param type the relevant car type
@@ -76,5 +84,8 @@ public interface ICarRentalCompany extends Remote {
 	
 	public CarType getCarType(String carTypeName) throws RemoteException;
 	public Collection<CarType> getAllCarTypes() throws RemoteException;
+	public CarType getCheapestCarType(Date start, Date end) throws RemoteException;
+	public int     getNumberOfReservationsFOrType(String type) throws  RemoteException; 
+	public boolean operatesInRegion(String region) throws RemoteException;
 
 }
