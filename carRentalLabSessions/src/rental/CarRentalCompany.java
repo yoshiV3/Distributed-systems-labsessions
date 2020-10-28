@@ -11,6 +11,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.io.*; 
+import java.util.*; 
 
 public class CarRentalCompany implements ICarRentalCompany{
 
@@ -59,6 +61,7 @@ public class CarRentalCompany implements ICarRentalCompany{
         return this.regions;
     }
     
+    @Override
     public boolean operatesInRegion(String region) {
         return this.regions.contains(region);
     }
@@ -87,6 +90,33 @@ public class CarRentalCompany implements ICarRentalCompany{
 			throw new IllegalArgumentException("<" + carTypeName + "> No car type of name " + carTypeName);
 		}
 	}
+	@Override
+	public CarType getCheapestCarType(Date start, Date end)
+	{
+		double price = 10000;
+		CarType type = null;
+		for (CarType type: this.getAvailableCarTypes(start, end))
+		{
+			if (price > type.getRentalPricePerDay())
+			{
+				cheapest = type;
+			}
+		}
+		return cheapest;
+	}
+	
+	 public int getNumberOfReservationsFOrType(String type)
+	 {
+		 int result =  0;
+		 for (Car car: this.cars)
+		 {
+			 if (car.getType().getName().equals(type))
+			 {
+				 result = result + car.getReservations().size();
+			 }
+		 }
+		 return result;
+	 }
 	
 	@Override
 	public Set<CarType> getAvailableCarTypes(Date start, Date end) {
@@ -124,6 +154,39 @@ public class CarRentalCompany implements ICarRentalCompany{
 	/****************
 	 * RESERVATIONS *
 	 ****************/
+	
+	public  boolean canReserve(ReservationConstraints constraints)
+	{
+		result  = operatesInRegion(constraints.getRegion()); 
+		result  = result && isAvailable(constraints.getCarType(), constraints.getStartDate(), constraints.getEndDate());
+		return result;
+	}
+	
+	
+	public  double  getRentalPricePerDay(String typeName)
+	{
+		if(this.carTypes.containsKey(typeName))
+		{
+			return this.carTypes.get(typeName).getRentalPricePerDay()
+		}
+		return 0;
+	}
+	
+	
+	@Override
+	public void cancelReservation(Reservation reservation) {
+		int carID = reservation.getCarId();
+		for (Car car : this.cars)
+		{
+			if (car.getId()==carID)
+			{
+				synchronized(car)
+				{
+					car.removeReservation(reservation);
+				}
+			}
+		}
+	}
 
 	public Quote createQuote(ReservationConstraints constraints, String client)
 			throws ReservationException {
@@ -156,9 +219,12 @@ public class CarRentalCompany implements ICarRentalCompany{
 			throw new ReservationException("Reservation failed, all cars of type " + quote.getCarType()
 	                + " are unavailable from " + quote.getStartDate() + " to " + quote.getEndDate());
 		Car car = availableCars.get((int)(Math.random()*availableCars.size()));
-		
-		Reservation res = new Reservation(quote, car.getId());
-		car.addReservation(res);
+		synchronized(car)
+		{
+			Reservation res = new Reservation(quote, car.getId());
+			car.addReservation(res);
+			
+		}
 		return res;
 	}
 	
@@ -174,6 +240,12 @@ public class CarRentalCompany implements ICarRentalCompany{
 			}
 		}
 		return reservations;
+	}
+	
+	
+	public int getNumberOfReservationsFromRenter(String client) 
+	{
+		return this.getReservationsFromRenter(client).size();
 	}
 	
 	public Set<Reservation> getReservationsForCarType(String type)
