@@ -1,0 +1,207 @@
+ions/carRentalLabSessions_v2$ 
+sajetan@sajetan:~/Documents/kul/3sem/distributed_systems/exercise/github/Distributed-systems-labsessions/carRentalLabSessions_v2$ ant run.local 
+Buildfile: /home/sajetan/Documents/kul/3sem/distributed_systems/exercise/github/Distributed-systems-labsessions/carRentalLabSessions_v2/build.xml
+
+init:
+   [delete] Deleting directory /home/sajetan/Documents/kul/3sem/distributed_systems/exercise/github/Distributed-systems-labsessions/carRentalLabSessions_v2/bin
+    [mkdir] Created dir: /home/sajetan/Documents/kul/3sem/distributed_systems/exercise/github/Distributed-systems-labsessions/carRentalLabSessions_v2/bin
+
+compile:
+    [javac] Compiling 28 source files to /home/sajetan/Documents/kul/3sem/distributed_systems/exercise/github/Distributed-systems-labsessions/carRentalLabSessions_v2/bin
+    [javac] /home/sajetan/Documents/kul/3sem/distributed_systems/exercise/github/Distributed-systems-labsessions/carRentalLabSessions_v2/src/rental/CarRentalCompany.java:244: error: method cancelReservation(Reservation) is already defined in class CarRentalCompany
+    [javac] 	public void cancelReservation(Reservation res) {
+    [javac] 	            ^
+    [javac] /home/sajetan/Documents/kul/3sem/distributed_systems/exercise/github/Distributed-systems-labsessions/carRentalLabSessions_v2/src/agency/AgencyReservation.java:15: error: incompatible types: Quote cannot be converted to Reservation
+    [javac] 		return super.getQuote();
+    [javac] 		                     ^
+    [javac] /home/sajetan/Documents/kul/3sem/distributed_systems/exercise/github/Distributed-systems-labsessions/carRentalLabSessions_v2/src/agency/CarRentalAgency.java:39: error: CarRentalAgency is not abstract and does not override abstract method closeManagerSession(IManagerSession) in ICarRentalAgency
+    [javac] public class CarRentalAgency implements ICarRentalAgency {
+    [javac]        ^
+    [javac] /home/sajetan/Documents/kul/3sem/distributed_systems/exercise/github/Distributed-systems-labsessions/carRentalLabSessions_v2/src/agency/CarRentalAgency.java:48: error: cannot find symbol
+    [javac] 		this.reservationSessions = new ArrayList<>();
+    [javac] 		    ^
+    [javac]   symbol: variable reservationSessions
+    [javac] /home/sajetan/Documents/kul/3sem/distributed_systems/exercise/github/Distributed-systems-labsessions/carRentalLabSessions_v2/src/agency/CarRentalAgency.java:49: error: cannot find symbol
+    [javac] 		this.managerSessions = new ArrayList<>();
+    [javac] 		    ^
+    [javac]   symbol: variable managerSessions
+    [javac] /home/sajetan/Documents/kul/3sem/distributed_systems/exercise/github/Distributed-systems-labsessions/carRentalLabSessions_v2/src/agency/CarRentalAgency.java:58: error: incompatible types: ReservationSession cannot be converted to IReservationSession
+    [javac] 		IReservationSession ses = new ReservationSession(client, this);
+    [javac] 		                          ^
+    [javac] /home/sajetan/Documents/kul/3sem/distributed_systems/exercise/github/Distributed-systems-labsessions/carRentalLabSessions_v2/src/agency/CarRentalAgency.java:59: error: cannot find symbol
+    [javac] 		this.namingService.addNewClient(client);
+    [javac] 		                  ^
+    [javac]   symbol:   method addNewClient(String)
+    [javac]   location: variable namingService of type INameService
+    [javac] /home/sajetan/Documents/kul/3sem/distributed_systems/exercise/github/Distributed-systems-labsessions/carRentalLabSessions_v2/src/agency/CarRentalAgency.java:61: error: no suitable method found for exportObject(IReservationSession,int)
+    [javac] 		stub = (IReservationSession) UnicastRemoteObject.exportObject(ses, 0);
+    [javac] 		                                                ^
+    [javac]     method UnicastRemoteObject.exportObject(Remote,int) is not applicable
+    [javac]       (argument mismatch; IReservationSession cannot be converted to Remote)
+    [javac]     method UnicastRemoteObject.exportObject(Remote,UnicastServerRef) is not applicable
+    [javac]       (argument mismatch; IReservationSession cannot be converted to Remote)
+    [javac] /home/sajetan/Documents/kul/3sem/distributed_systems/exercise/github/Distributed-systems-labsessions/carRentalLabSessions_v2/src/agency/CarRentalAgency.java:62: error: incompatible types: IReservationSession cannot be converted to Remote
+    [javac] 		this.registry.rebind(client, stub);
+    [javac] 		                             ^
+    [javac] /home/sajetan/Documents/kul/3sem/distributed_systems/exercise/github/Distributed-systems-labsessions/carRentalLabSessions_v2/src/agency/CarRentalAgency.java:66: error: incompatible types: ManagerSession cannot be converted to IManagerSession
+    [javac] 		IManagerSession ses = new ManagerSession(manager, this);
+    [javac] 		                      ^
+    [javac] /home/sajetan/Documents/kul/3sem/distributed_systems/exercise/github/Distributed-systems-labsessions/carRentalLabSessions_v2/src/agency/CarRentalAgency.java:68: error: incompatible types: IReservationSession cannot be converted to IManagerSession
+    [javac] 		stub = (IReservationSession) UnicastRemoteObject.exportObject(ses, 0);
+    [javac] 		       ^
+    [javac] /home/sajetan/Documents/kul/3sem/distributed_systems/exercise/github/Distributed-systems-labsessions/carRentalLabSessions_v2/src/agency/CarRentalAgency.java:69: error: cannot find symbol
+    [javac] 		this.registry.rebind(client, stub);
+    [javac] 		                     ^
+    [javac]   symbol:   variable client
+    [javac]   location: class CarRentalAgency
+    [javac] /home/sajetan/Documents/kul/3sem/distributed_systems/exercise/github/Distributed-systems-labsessions/carRentalLabSessions_v2/src/agency/CarRentalAgency.java:83: error: cannot find symbol
+    [javac] 				if (price > stub.getRentalPricePerDay(constaints.getCarType())) {
+    [javac] 				                                      ^
+    [javac]   symbol:   variable constaints
+    [javac]   location: class CarRentalAgency
+    [javac] /home/sajetan/Documents/kul/3sem/distributed_systems/exercise/github/Distributed-systems-labsessions/carRentalLabSessions_v2/src/agency/CarRentalAgency.java:89: error: cannot find symbol
+    [javac] 			throw new ReservationException("<" + name + "> No cars available to satisfy the given constraints.");
+    [javac] 			                                     ^
+    [javac]   symbol:   variable name
+    [javac]   location: class CarRentalAgency
+    [javac] /home/sajetan/Documents/kul/3sem/distributed_systems/exercise/github/Distributed-systems-labsessions/carRentalLabSessions_v2/src/agency/CarRentalAgency.java:91: error: method createQuote in interface ICarRentalCompany cannot be applied to given types;
+    [javac] 		Quote quote = company.createQuote(createQuote(constraints, client));
+    [javac] 		                     ^
+    [javac]   required: ReservationConstraints,String
+    [javac]   found: AgencyQuote
+    [javac]   reason: actual and formal argument lists differ in length
+    [javac] /home/sajetan/Documents/kul/3sem/distributed_systems/exercise/github/Distributed-systems-labsessions/carRentalLabSessions_v2/src/agency/CarRentalAgency.java:104: error: cannot find symbol
+    [javac] 				for (AgencyReservation res : reservation) {
+    [javac] 				                             ^
+    [javac]   symbol:   variable reservation
+    [javac]   location: class CarRentalAgency
+    [javac] /home/sajetan/Documents/kul/3sem/distributed_systems/exercise/github/Distributed-systems-labsessions/carRentalLabSessions_v2/src/agency/CarRentalAgency.java:105: error: incompatible types: AgencyReservation cannot be converted to Reservation
+    [javac] 					res.getCompany().cancelReservation(res);
+    [javac] 					                                   ^
+    [javac] /home/sajetan/Documents/kul/3sem/distributed_systems/exercise/github/Distributed-systems-labsessions/carRentalLabSessions_v2/src/agency/CarRentalAgency.java:118: error: no suitable method found for add(Set<CarType>)
+    [javac] 			result.add(stub.getAvailableCarTypes(start, end));
+    [javac] 			      ^
+    [javac]     method Collection.add(CarType) is not applicable
+    [javac]       (argument mismatch; Set<CarType> cannot be converted to CarType)
+    [javac]     method Set.add(CarType) is not applicable
+    [javac]       (argument mismatch; Set<CarType> cannot be converted to CarType)
+    [javac] /home/sajetan/Documents/kul/3sem/distributed_systems/exercise/github/Distributed-systems-labsessions/carRentalLabSessions_v2/src/agency/CarRentalAgency.java:140: error: cannot find symbol
+    [javac] 		ICarRentalCompany stub = this.namingService.getCRegisteredCRCStub(type);
+    [javac] 		                                           ^
+    [javac]   symbol:   method getCRegisteredCRCStub(String)
+    [javac]   location: variable namingService of type INameService
+    [javac] /home/sajetan/Documents/kul/3sem/distributed_systems/exercise/github/Distributed-systems-labsessions/carRentalLabSessions_v2/src/agency/CarRentalAgency.java:155: error: cannot find symbol
+    [javac] 		for (String client : this.namingService.getAllClients()) {
+    [javac] 		                                       ^
+    [javac]   symbol:   method getAllClients()
+    [javac]   location: variable namingService of type INameService
+    [javac] /home/sajetan/Documents/kul/3sem/distributed_systems/exercise/github/Distributed-systems-labsessions/carRentalLabSessions_v2/src/agency/CarRentalAgencyServer.java:47: error: cannot find symbol
+    [javac] 		int localOrRemote = (args.length == 1 && args[0].equals("REMOTE")) ? REMOTE : LOCAL;
+    [javac] 		                                                                     ^
+    [javac]   symbol:   variable REMOTE
+    [javac]   location: class CarRentalAgencyServer
+    [javac] /home/sajetan/Documents/kul/3sem/distributed_systems/exercise/github/Distributed-systems-labsessions/carRentalLabSessions_v2/src/agency/CarRentalAgencyServer.java:47: error: cannot find symbol
+    [javac] 		int localOrRemote = (args.length == 1 && args[0].equals("REMOTE")) ? REMOTE : LOCAL;
+    [javac] 		                                                                              ^
+    [javac]   symbol:   variable LOCAL
+    [javac]   location: class CarRentalAgencyServer
+    [javac] /home/sajetan/Documents/kul/3sem/distributed_systems/exercise/github/Distributed-systems-labsessions/carRentalLabSessions_v2/src/agency/ManagerSession.java:26: error: cannot find symbol
+    [javac] 		this.agency.getNameService().register(company);
+    [javac] 		           ^
+    [javac]   symbol:   method getNameService()
+    [javac]   location: variable agency of type ICarRentalAgency
+    [javac] /home/sajetan/Documents/kul/3sem/distributed_systems/exercise/github/Distributed-systems-labsessions/carRentalLabSessions_v2/src/agency/ManagerSession.java:31: error: cannot find symbol
+    [javac] 		this.agency.getNameService().unregister(company);
+    [javac] 		           ^
+    [javac]   symbol:   method getNameService()
+    [javac]   location: variable agency of type ICarRentalAgency
+    [javac] /home/sajetan/Documents/kul/3sem/distributed_systems/exercise/github/Distributed-systems-labsessions/carRentalLabSessions_v2/src/agency/ManagerSession.java:36: error: cannot find symbol
+    [javac] 		return new HashSet<String>(this.agency.getNameService().getCompantList());
+    [javac] 		                                      ^
+    [javac]   symbol:   method getNameService()
+    [javac]   location: variable agency of type ICarRentalAgency
+    [javac] /home/sajetan/Documents/kul/3sem/distributed_systems/exercise/github/Distributed-systems-labsessions/carRentalLabSessions_v2/src/agency/ManagerSession.java:42: error: cannot find symbol
+    [javac] 		return this.agency.getNumberOfReservations(company, type);
+    [javac] 		                  ^
+    [javac]   symbol:   method getNumberOfReservations(String,String)
+    [javac]   location: variable agency of type ICarRentalAgency
+    [javac] /home/sajetan/Documents/kul/3sem/distributed_systems/exercise/github/Distributed-systems-labsessions/carRentalLabSessions_v2/src/agency/ManagerSession.java:47: error: cannot find symbol
+    [javac] 		this.agency.getNumberOfReservationsBy(client);
+    [javac] 		           ^
+    [javac]   symbol:   method getNumberOfReservationsBy(String)
+    [javac]   location: variable agency of type ICarRentalAgency
+    [javac] /home/sajetan/Documents/kul/3sem/distributed_systems/exercise/github/Distributed-systems-labsessions/carRentalLabSessions_v2/src/agency/ManagerSession.java:52: error: cannot find symbol
+    [javac] 		return this.agency.getBestCustomers();
+    [javac] 		                  ^
+    [javac]   symbol:   method getBestCustomers()
+    [javac]   location: variable agency of type ICarRentalAgency
+    [javac] /home/sajetan/Documents/kul/3sem/distributed_systems/exercise/github/Distributed-systems-labsessions/carRentalLabSessions_v2/src/agency/ReservationSession.java:32: error: method does not override or implement a method from a supertype
+    [javac] 	@Override
+    [javac] 	^
+    [javac] /home/sajetan/Documents/kul/3sem/distributed_systems/exercise/github/Distributed-systems-labsessions/carRentalLabSessions_v2/src/agency/ReservationSession.java:39: error: method does not override or implement a method from a supertype
+    [javac] 	@Override
+    [javac] 	^
+    [javac] /home/sajetan/Documents/kul/3sem/distributed_systems/exercise/github/Distributed-systems-labsessions/carRentalLabSessions_v2/src/agency/ReservationSession.java:44: error: method does not override or implement a method from a supertype
+    [javac] 	@Override
+    [javac] 	^
+    [javac] /home/sajetan/Documents/kul/3sem/distributed_systems/exercise/github/Distributed-systems-labsessions/carRentalLabSessions_v2/src/agency/ReservationSession.java:49: error: method does not override or implement a method from a supertype
+    [javac] 	@Override
+    [javac] 	^
+    [javac] /home/sajetan/Documents/kul/3sem/distributed_systems/exercise/github/Distributed-systems-labsessions/carRentalLabSessions_v2/src/agency/ReservationSession.java:51: error: cannot find symbol
+    [javac] 		return this.agency.getAvailbaleCarTyeps(start, end);
+    [javac] 		                  ^
+    [javac]   symbol:   method getAvailbaleCarTyeps(Date,Date)
+    [javac]   location: variable agency of type CarRentalAgency
+    [javac] /home/sajetan/Documents/kul/3sem/distributed_systems/exercise/github/Distributed-systems-labsessions/carRentalLabSessions_v2/src/agency/ReservationSession.java:54: error: method does not override or implement a method from a supertype
+    [javac] 	@Override
+    [javac] 	^
+    [javac] /home/sajetan/Documents/kul/3sem/distributed_systems/exercise/github/Distributed-systems-labsessions/carRentalLabSessions_v2/src/agency/ReservationSession.java:61: error: cannot find symbol
+    [javac] 		UnicastRemoteObject.unexportObject(this, true);
+    [javac] 		^
+    [javac]   symbol:   variable UnicastRemoteObject
+    [javac]   location: class ReservationSession
+    [javac] /home/sajetan/Documents/kul/3sem/distributed_systems/exercise/github/Distributed-systems-labsessions/carRentalLabSessions_v2/src/client/Client.java:23: error: Client is not abstract and does not override abstract method getNumberOfReservationsForCarType(Object,String,String) in AbstractTestBooking
+    [javac] public class Client extends AbstractTestBooking {
+    [javac]        ^
+    [javac] /home/sajetan/Documents/kul/3sem/distributed_systems/exercise/github/Distributed-systems-labsessions/carRentalLabSessions_v2/src/client/Client.java:78: error: incompatible types: ICarRentalAgency cannot be converted to ICarRentalCompany
+    [javac] 			company = (ICarRentalAgency) registry.lookup(carRentalAgency);
+    [javac] 			          ^
+    [javac] /home/sajetan/Documents/kul/3sem/distributed_systems/exercise/github/Distributed-systems-labsessions/carRentalLabSessions_v2/src/nameservice/NameService.java:39: error: cannot find symbol
+    [javac] 		return this.clientList.copy();
+    [javac] 		                      ^
+    [javac]   symbol:   method copy()
+    [javac]   location: class NameService
+    [javac] /home/sajetan/Documents/kul/3sem/distributed_systems/exercise/github/Distributed-systems-labsessions/carRentalLabSessions_v2/src/rental/CarRentalCompany.java:99: error: variable type is already defined in method getCheapestCarType(Date,Date)
+    [javac] 		for (CarType type : this.getAvailableCarTypes(start, end)) {
+    [javac] 		             ^
+    [javac] /home/sajetan/Documents/kul/3sem/distributed_systems/exercise/github/Distributed-systems-labsessions/carRentalLabSessions_v2/src/rental/RentalServer.java:50: error: no suitable method found for println(String,String)
+    [javac] 		System.out.println("Registering the Car Rental Compnay {0} now", input.name);
+    [javac] 		          ^
+    [javac]     method PrintStream.println() is not applicable
+    [javac]       (actual and formal argument lists differ in length)
+    [javac]     method PrintStream.println(boolean) is not applicable
+    [javac]       (actual and formal argument lists differ in length)
+    [javac]     method PrintStream.println(char) is not applicable
+    [javac]       (actual and formal argument lists differ in length)
+    [javac]     method PrintStream.println(int) is not applicable
+    [javac]       (actual and formal argument lists differ in length)
+    [javac]     method PrintStream.println(long) is not applicable
+    [javac]       (actual and formal argument lists differ in length)
+    [javac]     method PrintStream.println(float) is not applicable
+    [javac]       (actual and formal argument lists differ in length)
+    [javac]     method PrintStream.println(double) is not applicable
+    [javac]       (actual and formal argument lists differ in length)
+    [javac]     method PrintStream.println(char[]) is not applicable
+    [javac]       (actual and formal argument lists differ in length)
+    [javac]     method PrintStream.println(String) is not applicable
+    [javac]       (actual and formal argument lists differ in length)
+    [javac]     method PrintStream.println(Object) is not applicable
+    [javac]       (actual and formal argument lists differ in length)
+    [javac] Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output
+    [javac] 41 errors
+
+BUILD FAILED
+/home/sajetan/Documents/kul/3sem/distributed_systems/exercise/github/Distributed-systems-labsessions/carRentalLabSessions_v2/build.xml:78: Compile failed; see the compiler error output for details.
+
+Total time: 1 second
+

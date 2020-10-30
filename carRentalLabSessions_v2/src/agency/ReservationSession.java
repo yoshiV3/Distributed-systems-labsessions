@@ -1,14 +1,19 @@
 package agency;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+import java.util.HashSet;
+import java.util.Date;
+import java.rmi.NotBoundException;
+import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 import rental.CarType;
 import rental.Quote;
 import rental.Reservation;
 import rental.ReservationConstraints;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-import java.utim.HashSet;
-import java.util.Date;
+import agency.AgencyQuote;
 
 public class ReservationSession {
 
@@ -21,7 +26,7 @@ public class ReservationSession {
 	public ReservationSession(String client, CarRentalAgency agency) {
 		this.client = client;
 		this.agency = agency;
-		this.quotes = new ArrayList<AgencyQuotes>();
+		this.quotes = new ArrayList<AgencyQuote>();
 	}
 
 	@Override
@@ -37,13 +42,13 @@ public class ReservationSession {
 	}
 
 	@Override
-	public set<AgencyQuotes> getCurrentQuotes() {
-		return new HashSet<AgencyQuotes>(this.quotes);
+	public Set<AgencyQuote> getCurrentQuotes() {
+		return new HashSet<AgencyQuote>(this.quotes);
 	}
 
 	@Override
-	public Set<CarType> getAvailableCarTypes(Date start, Date end){
-		return this.agency.getAvailbaleCarTyeps(Data start, Date end);
+	public Set<CarType> getAvailableCarTypes(Date start, Date end) {
+		return this.agency.getAvailbaleCarTyeps(start, end);
 	}
 
 	@Override

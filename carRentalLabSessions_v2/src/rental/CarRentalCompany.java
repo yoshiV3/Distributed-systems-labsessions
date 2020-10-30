@@ -95,6 +95,7 @@ public class CarRentalCompany implements ICarRentalCompany {
 	public CarType getCheapestCarType(Date start, Date end) {
 		double price = 10000;
 		CarType type = null;
+		CarType cheapest = null;
 		for (CarType type : this.getAvailableCarTypes(start, end)) {
 			if (price > type.getRentalPricePerDay()) {
 				cheapest = type;
@@ -151,16 +152,14 @@ public class CarRentalCompany implements ICarRentalCompany {
 	 ****************/
 
 	public boolean canReserve(ReservationConstraints constraints) {
-		result = operatesInRegion(constraints.getRegion());
+		boolean result = operatesInRegion(constraints.getRegion());
 		result = result && isAvailable(constraints.getCarType(), constraints.getStartDate(), constraints.getEndDate());
 		return result;
 	}
 
-	public  double  getRentalPricePerDay(String typeName)
-	{
-		if(this.carTypes.containsKey(typeName))
-		{
-			return this.carTypes.get(typeName).getRentalPricePerDay()
+	public double getRentalPricePerDay(String typeName) {
+		if (this.carTypes.containsKey(typeName)) {
+			return this.carTypes.get(typeName).getRentalPricePerDay();
 		}
 		return 0;
 	}
@@ -210,9 +209,9 @@ public class CarRentalCompany implements ICarRentalCompany {
 		synchronized (car) {
 			Reservation res = new Reservation(quote, car.getId());
 			car.addReservation(res);
-
+			return res;
 		}
-		return res;
+		
 	}
 
 	public Set<Reservation> getReservationsFromRenter(String client) {

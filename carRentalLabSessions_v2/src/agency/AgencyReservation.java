@@ -4,12 +4,14 @@ import rental.ICarRentalCompany;
 import rental.Reservation;
 
 public class AgencyReservation extends AgencyQuote {
-
-	public AgencyReservation(Reservation reservation, ICarRentalCompany company) {
+	
+	public AgencyReservation(Reservation reservation, ICarRentalCompany company )
+	{
 		super(reservation, company);
 	}
-
-	public Reservation getReservation() {
+	
+	public Reservation getReservation()
+	{
 		return super.getQuote();
 	}
 
