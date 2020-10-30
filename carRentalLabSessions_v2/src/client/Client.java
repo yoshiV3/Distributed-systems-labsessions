@@ -8,6 +8,8 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
+import java.util.Map;
+import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -19,6 +21,9 @@ import rental.Reservation;
 import rental.ReservationConstraints;
 import agency.ICarRentalAgency;
 import agency.CarRentalAgency;
+import agency.IManagerSession;
+import agency.IReservationSession;
+
 
 public class Client extends AbstractTestBooking {
 
@@ -82,16 +87,28 @@ public class Client extends AbstractTestBooking {
 
 	}
 
+    @Override
+    protected IReservationSession getNewReservationSession(String client)
+                    throws Exception {
+            return this.rentalAgency.openReservationSession(client);
+    }
+
+    @Override
+    protected IManagerSession getNewManagerSession(String manager)
+                    throws Exception {
+            return this.rentalAgency.openManagerSession(manager);
+    }
+
 	
-//	
-//	/**
-//	 * Check which car types are available in the given period (across all companies
-//	 * and regions) and print this list of car types.
-//	 *
-//	 * @param start start time of the period
-//	 * @param end   end time of the period
-//	 * @throws Exception if things go wrong, throw exception
-//	 */
+	
+	/**
+	 * Check which car types are available in the given period (across all companies
+	 * and regions) and print this list of car types.
+	 *
+	 * @param start start time of the period
+	 * @param end   end time of the period
+	 * @throws Exception if things go wrong, throw exception
+	 */
 //	@Override
 //	protected void checkForAvailableCarTypes(Date start, Date end) throws Exception {
 //		// TODO Auto-generated method stub
@@ -103,7 +120,20 @@ public class Client extends AbstractTestBooking {
 //		}
 //		// throw new UnsupportedOperationException("TODO");
 //	}
-//
+
+	@Override
+	protected void checkForAvailableCarTypes(ReservationSession session, Date start, Date end) {
+		Map<String, Set<CarType>> cartypes = session.getAvailableCarTypes(start, end);
+		System.out.println("Checking for available car types...");
+		for (String company : cartypes.keySet()) {
+			System.out.println("company: " + company);
+			for (CarType carType : cartypes.get(company)) {
+				System.out.println("- type: " + carType.getName());
+			}
+		}
+
+	}
+	
 //	/**
 //	 * Retrieve a quote for a given car type (tentative reservation).
 //	 * 

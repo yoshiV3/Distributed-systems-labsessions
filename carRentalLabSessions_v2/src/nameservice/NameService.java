@@ -35,19 +35,19 @@ public class NameService implements INameService{
 		}
 	}
 
-	public List<String> getAllClients() {
-		return this.clientList.copy();
-	}
-
-	public boolean isNewClient(String client) {
-		return this.clientList.contains(client);
-	}
-
-	public void addNewClient(String client) {
-		if (this.isNewClient(client)) {
-			this.clientList.add(client);
-		}
-	}
+//	public List<String> getAllClients() {
+//		return this.clientList.copy();
+//	}
+//
+//	public boolean isNewClient(String client) {
+//		return this.clientList.contains(client);
+//	}
+//
+//	public void addNewClient(String client) {
+//		if (!this.isNewClient(client)) {
+//			this.clientList.add(client);			
+//		}
+//	}
 
 	@Override
 	public void registerCRC(String company) {

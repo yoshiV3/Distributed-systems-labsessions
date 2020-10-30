@@ -28,11 +28,7 @@ import agency.CarRentalAgency;
 
 public class CarRentalAgencyServer {
 
-//	private final static int LOCAL = 0;
-//	private final static int REMOTE = 1;
 	private static Registry registry = null;
-//	private static INameService namingService = null;
-//	private static ICarRentalAgency rentalAgency = null;
 
 	public static void main(String[] args) throws RemoteException {
 
@@ -42,12 +38,7 @@ public class CarRentalAgencyServer {
 			System.setSecurityManager(null);
 		}
 
-		// The first argument passed to the `main` method (if present)
-		// indicates whether the application is run on the remote setup or not.
-		int localOrRemote = (args.length == 1 && args[0].equals("REMOTE")) ? REMOTE : LOCAL;
-
 		INameService namingService = getNameService("testnameservice");
-
 		ICarRentalAgency rentalAgency = new CarRentalAgency(namingService);
 
 		try {
@@ -73,7 +64,7 @@ public class CarRentalAgencyServer {
 		if (System.getSecurityManager() != null)
 			System.setSecurityManager(null);
 
-		INameService nameService=null;
+		INameService nameService = null;
 		try {
 			registry = LocateRegistry.getRegistry();
 		} catch (RemoteException e) {
@@ -81,7 +72,7 @@ public class CarRentalAgencyServer {
 		}
 
 		try {
-			nameService= (INameService) registry.lookup(nameservice);
+			nameService = (INameService) registry.lookup(nameservice);
 		} catch (RemoteException e) {
 			e.printStackTrace();
 		}

@@ -58,7 +58,7 @@ public interface IReservationSession {
 	 * @throws RemoteException
 	 */
 	public CarType getCheapestCarType(Date start, Date end, String region) throws RemoteException;
-
-	public void closeReservationSession();
+	public CarType getMostPopularCarTypeInCRC(String carRentalCompanyName, int year) throws RemoteException;
+//	public void closeReservationSession();
 
 }
