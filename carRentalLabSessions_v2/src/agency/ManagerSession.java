@@ -1,12 +1,36 @@
 package agency;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 import java.util.HashSet;
-import java.util.StringTokenizer;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.Date;
+import java.rmi.NotBoundException;
+import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
+
+import rental.ICarRentalCompany;
+import rental.CarType;
+import rental.Quote;
+import rental.Reservation;
+import rental.ReservationConstraints;
+import rental.ICarRentalCompany;
+import rental.CarRentalCompany;
+import agency.ICarRentalAgency;
+import agency.CarRentalAgency;
+import agency.AgencyQuote;
+import nameservice.INameService;
+import nameservice.NameService;
 
 import agency.ICarRentalAgency;
 import agency.CarRentalAgency;
 import nameservice.INameService;
+import rental.ICarRentalCompany;
+import rental.CarRentalCompany;
+
 
 public class ManagerSession implements IManagerSession {
 
@@ -21,15 +45,15 @@ public class ManagerSession implements IManagerSession {
 	}
 
 	public void registerCompany(String company) {
-		this.agency.getNameService().register(company);
+		this.namingService.registerCRC(company);
 	}
 
 	public void unregisterCompany(String company) {
-		this.agency.getNameService().unregister(company);
+		this.namingService.unregisterCRC(company);
 	}
 
 	public Set<String> getRegisteredCompanies() {
-		return new HashSet<String>(this.agency.getNameService().getCompantList());
+		return new HashSet<String>(this.namingService.getRegisteredCRCList());
 	}
 
 	public int getNumberOfReservations(String company, String type) {

@@ -122,7 +122,7 @@ public class Client extends AbstractTestBooking {
 //	}
 
 	@Override
-	protected void checkForAvailableCarTypes(ReservationSession session, Date start, Date end) {
+	protected void checkForAvailableCarTypes(IReservationSession session, Date start, Date end) {
 		Map<String, Set<CarType>> cartypes = session.getAvailableCarTypes(start, end);
 		System.out.println("Checking for available car types...");
 		for (String company : cartypes.keySet()) {
@@ -133,6 +133,12 @@ public class Client extends AbstractTestBooking {
 		}
 
 	}
+	
+	@Override
+	protected CarType getMostPopularCarTypeInCRC(IManagerSession session, String carRentalCompanyName, int year) {
+		
+	}
+	
 	
 //	/**
 //	 * Retrieve a quote for a given car type (tentative reservation).

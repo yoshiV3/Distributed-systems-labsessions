@@ -9,12 +9,16 @@ import java.util.StringTokenizer;
 
 import rental.Reservation;
 
+import agency.ICarRentalAgency;
+import agency.IManagerSession;
+import agency.IReservationSession;
+
 /*
  * This class contains the abstract methods that a client should implement
  * for client bookings,
  * and code to process and run a test script.
  */
-public abstract class AbstractTestBooking<ReservationSession, ManagerSession> extends AbstractTesting {
+public abstract class AbstractTestBooking<IReservationSession, IManagerSession> extends AbstractTesting {
 
 	/**
 	 * Create a new reservation session for the user with the given name.
@@ -46,7 +50,7 @@ public abstract class AbstractTestBooking<ReservationSession, ManagerSession> ex
 	 *
 	 * @throws Exception if things go wrong, throw exception
 	 */
-	protected abstract void checkForAvailableCarTypes(ReservationSession session, Date start, Date end)
+	protected abstract void checkForAvailableCarTypes(IReservationSession session, Date start, Date end)
 			throws Exception;
 
 	/**
@@ -61,7 +65,7 @@ public abstract class AbstractTestBooking<ReservationSession, ManagerSession> ex
 	 *
 	 * @throws Exception if things go wrong, throw exception
 	 */
-	protected abstract void addQuoteToSession(ReservationSession session, String name, Date start, Date end,
+	protected abstract void addQuoteToSession(IReservationSession session, String name, Date start, Date end,
 			String carType, String region) throws Exception;
 
 	/**
@@ -72,7 +76,7 @@ public abstract class AbstractTestBooking<ReservationSession, ManagerSession> ex
 	 *
 	 * @throws Exception if things go wrong, throw exception
 	 */
-	protected abstract List<Reservation> confirmQuotes(ReservationSession session, String name) throws Exception;
+	protected abstract List<Reservation> confirmQuotes(IReservationSession session, String name) throws Exception;
 
 	/**
 	 * Get the number of reservations made by the given renter (across whole rental
@@ -85,7 +89,7 @@ public abstract class AbstractTestBooking<ReservationSession, ManagerSession> ex
 	 *
 	 * @throws Exception if things go wrong, throw exception
 	 */
-	protected abstract int getNumberOfReservationsByRenter(ManagerSession ms, String clientName) throws Exception;
+	protected abstract int getNumberOfReservationsByRenter(IManagerSession ms, String clientName) throws Exception;
 
 	/**
 	 * Get the number of reservations for a particular car type.
@@ -97,7 +101,7 @@ public abstract class AbstractTestBooking<ReservationSession, ManagerSession> ex
 	 *
 	 * @throws Exception if things go wrong, throw exception
 	 */
-	protected abstract int getNumberOfReservationsForCarType(ManagerSession ms, String carRentalName, String carType)
+	protected abstract int getNumberOfReservationsForCarType(IManagerSession ms, String carRentalName, String carType)
 			throws Exception;
 
 	public AbstractTestBooking(String scriptFile) {

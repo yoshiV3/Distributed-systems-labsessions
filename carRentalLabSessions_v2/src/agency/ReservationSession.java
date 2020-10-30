@@ -16,9 +16,14 @@ import rental.CarType;
 import rental.Quote;
 import rental.Reservation;
 import rental.ReservationConstraints;
+import rental.ICarRentalCompany;
+import rental.CarRentalCompany;
+import agency.ICarRentalAgency;
+import agency.CarRentalAgency;
 import agency.AgencyQuote;
 import nameservice.INameService;
 import nameservice.NameService;
+
 
 public class ReservationSession implements IReservationSession {
 

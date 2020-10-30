@@ -42,8 +42,8 @@ public class CarRentalAgency implements ICarRentalAgency {
 	private List<String> carRentalCompanyList = new ArrayList<String>();
 	private List<String> clientList = new ArrayList<String>();
 
-	private HashMap<String, ReservationSession> reservationSessions = new HashMap<String, ReservationSession>();
-	private HashMap<String, ReservationSession> managerSessions = new HashMap<String, ReservationSession>();
+	private HashMap<String, IReservationSession> reservationSessions = new HashMap<String, IReservationSession>();
+	private HashMap<String, IManagerSession> managerSessions = new HashMap<String, IManagerSession>();
 //	private reservationSessions=new ArrayList<>();
 //	private managerSessions =new ArrayList<>();
 
@@ -143,7 +143,7 @@ public class CarRentalAgency implements ICarRentalAgency {
 //		}
 //	}
 
-	public NameService getNameService() {
+	public INameService getNameService() {
 		return this.namingService;
 	}
 
