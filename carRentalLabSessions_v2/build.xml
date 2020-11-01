@@ -22,7 +22,10 @@
 	<property name="agency.package" value="agency" />  <!-- agency package --> 
 	<property name="agency.mainClass" value="CarRentalAgencyServer" />  <!-- Main class of car rental agency package (contains agency `main` method) -->
 	
-	
+	<property name="nameservice.package" value="nameservice" />  <!-- nameservice package --> 
+	<property name="nameservice.mainClass" value="NameServer" />  <!-- Main class of nameservice package (contains agency `main` method) -->
+
+
 	<property name="zip.filename" value="rmi2.ADDFIRSTNAME.ADDLASTNAME" />  <!-- Name of zip file -->
 
 	<!--
@@ -111,7 +114,16 @@
 	</target>
 
 	<target name="run.local.both">
+		<sequential>
 		<java classname="${server.package}.${server.mainClass}">
+			<classpath refid="cp" />
+			<arg value="LOCAL" />
+		</java>
+		<java classname="${nameservice.package}.${nameservice.mainClass}">
+			<classpath refid="cp" />
+			<arg value="LOCAL" />
+		</java>
+		<java classname="${agency.package}.${agency.mainClass}">
 			<classpath refid="cp" />
 			<arg value="LOCAL" />
 		</java>
@@ -119,6 +131,7 @@
 			<classpath refid="cp" />
 			<arg value="LOCAL" />
 		</java>
+		</sequential>
 	</target>
 
 	<target name="run.local" depends="compile,registry.start,run.local.both,registry.stop" />
