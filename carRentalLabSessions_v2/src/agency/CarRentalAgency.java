@@ -27,12 +27,12 @@ import rental.Reservation;
 import rental.ReservationConstraints;
 import rental.ReservationException;
 
-import client.Client;
-import agency.ManagerSession;
-import agency.ReservationSession;
+//import client.Client;
+//import agency.ManagerSession;
+//import agency.ReservationSession;
 import agency.IManagerSession;
 import agency.IReservationSession;
-import nameservice.NameService;
+//import nameservice.NameService;
 import nameservice.INameService;
 
 public class CarRentalAgency implements ICarRentalAgency {
@@ -58,32 +58,44 @@ public class CarRentalAgency implements ICarRentalAgency {
 		}
 	}
 
-	public IReservationSession openReservationSession(String client) {
+	public IReservationSession openReservationSession(String client) throws RemoteException{
 		IReservationSession session = this.reservationSessions.get(client);
 		if (session != null)
 			return session;
 		else {
-			IReservationSession createsession = new ReservationSession(client, this);
+			try {
+			ReservationSession createsession = new ReservationSession(client, this, this.namingService);
 			this.reservationSessions.put(client, createsession);
 			this.addNewClient(client);
 			IReservationSession stub;
 			stub = (IReservationSession) UnicastRemoteObject.exportObject(createsession, 0);
-			this.registry.rebind(client, stub);
+			//this.registry.rebind(client,stub);
 			return stub;
+		} catch(RemoteException e) {
+			e.printStackTrace();
+			return null;
+		}
+
 		}
 	}
 
-	public IManagerSession openManagerSession(String manager) {
+	public IManagerSession openManagerSession(String manager) throws RemoteException{
 		IManagerSession session = this.managerSessions.get(manager);
 		if (session != null)
 			return session;
 		else {
-			IManagerSession createsession = new ManagerSession(manager, this);
+			
+			try {
+			ManagerSession createsession = new ManagerSession(manager, this);
 			this.managerSessions.put(manager, createsession);
 			IManagerSession stub;
 			stub = (IManagerSession) UnicastRemoteObject.exportObject(createsession, 0);
-			this.registry.rebind(manager, stub);
+			//this.registry.rebind(manager, stub);
 			return stub;
+			} catch(RemoteException e) {
+				e.printStackTrace();
+				return null;
+			}	
 		}
 //		IManagerSession session = new ManagerSession(manager, this);
 //		IManagerSession stub;
@@ -91,28 +103,28 @@ public class CarRentalAgency implements ICarRentalAgency {
 //		this.registry.rebind(client, stub);
 	}
 
-	public void closeReservationSession(String client) {
-		IReservationSession session = this.reservationSessions.get(client);
-		if (session != null) {
-			this.registry.unbind(client);
-			UnicastRemoteObject.unexportObject(session, true);
-			this.reservationSessions.remove(client);
-		}
-	}
+//	public void closeReservationSession(String client) {
+//		IReservationSession session = this.reservationSessions.get(client);
+//		if (session != null) {
+//			this.registry.unbind(client);
+//			UnicastRemoteObject.unexportObject(session, true);
+//			this.reservationSessions.remove(client);
+//		}
+//	}
+//
+//	public void closeManagerSession(String manager) {
+//		IManagerSession session = this.managerSessions.get(manager);
+//		if (session != null) {
+//			this.registry.unbind(manager);
+//			UnicastRemoteObject.unexportObject(session, true);
+//			this.managerSessions.remove(manager);
+//		}
+//	}
 
-	public void closeManagerSession(String manager) {
-		IManagerSession session = this.managerSessions.get(manager);
-		if (session != null) {
-			this.registry.unbind(manager);
-			UnicastRemoteObject.unexportObject(session, true);
-			this.managerSessions.remove(manager);
-		}
-	}
-
-	public List<String> getAllClients() {
-		return this.clientList.copy();
-	}
-
+//	public List<String> getAllClients() {
+//		return this.clientList.copy();
+//	}
+//
 	public boolean isNewClient(String client) {
 		return this.clientList.contains(client);
 	}
@@ -124,11 +136,11 @@ public class CarRentalAgency implements ICarRentalAgency {
 	}
 
 //	public Map<String, Set<CarType>> getAvailableCarTypes(Date start, Date end) {
-//	Map<String, Set<CarType>> cartypes=new HashMap<CarType>();
+//	Map<String, Set<CarType>> cartypes=new HashMap<String, Set<CarType>>();
 //	List<ICarRentalCompany> stubs = this.namingService.getAllRegisteredCRCStubs();
 //	//Set<CarType> result = new HashSet<CarType>();
 //	for (ICarRentalCompany stub : stubs) {
-//		cartypes.put(stub, stub.getAvailableCarTypes(start, end)); 
+//		cartypes.put(stub.getName(), stub.getAvailableCarTypes(start, end)); 
 //		//result.add(stub.getAvailableCarTypes(start, end));
 //	}
 //	return cartypes;
@@ -143,26 +155,33 @@ public class CarRentalAgency implements ICarRentalAgency {
 //		}
 //	}
 
-	public INameService getNameService() {
+	public INameService getNameService() throws RemoteException{
 		return this.namingService;
+//		try {
+//			return this.namingService;
+//		} catch (RemoteException e) {
+//			System.exit(-1);
+//			return null;
+//		}
+//
 	}
 
-//	public AgencyQuote createQuote(ReservationConstraints constraints, String client) {
+//	public AgencyQuote createQuote(ReservationConstraints constraints, String client) throws RemoteException {
 //		List<ICarRentalCompany> stubs = this.namingService.getAllRegisteredCRCStubs();
 //		double price = 90000;
 //		
 //		ICarRentalCompany company = null;
 //		for (ICarRentalCompany stub : stubs) {
 //			if (stub.canReserve(constraints)) {
-//				if (price > stub.getRentalPricePerDay(constaints.getCarType())) {
+//				if (price > stub.getRentalPricePerDay(constraints.getCarType())) {
 //					company = stub;
 //				}
 //			}
 //		}
 //		if (company == null) {
-//			throw new ReservationException("<" + name + "> No cars available to satisfy the given constraints.");
+//			throw new ReservationException("<" + client + "> No cars available to satisfy the given constraints.");
 //		}
-//		Quote quote = company.createQuote(createQuote(constraints, client));
+//		Quote quote = company.createQuote(constraints, client);
 //		return new AgencyQuote(quote, company);
 //	}
 //

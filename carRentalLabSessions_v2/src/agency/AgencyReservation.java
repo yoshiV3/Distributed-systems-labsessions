@@ -12,7 +12,7 @@ public class AgencyReservation extends AgencyQuote {
 	
 	public Reservation getReservation()
 	{
-		return super.getQuote();
+		return null; //super.getQuote();
 	}
 
 }

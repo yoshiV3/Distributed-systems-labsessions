@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.invoke.MethodHandles;
+import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
@@ -21,16 +22,16 @@ import java.util.Date;
 import java.util.StringTokenizer;
 
 import nameservice.INameService;
-import nameservice.NameService;
-import client.Client;
+//import nameservice.NameService;
+//import client.Client;
 import agency.ICarRentalAgency;
-import agency.CarRentalAgency;
+//import agency.CarRentalAgency;
 
 public class CarRentalAgencyServer {
 
 	private static Registry registry = null;
 
-	public static void main(String[] args) throws RemoteException {
+	public static void main(String[] args) throws RemoteException, NotBoundException {
 
 		System.out.println("\n=============== Starting Car Rental Agency Server Process ===============\n");
 
@@ -47,7 +48,7 @@ public class CarRentalAgencyServer {
 			System.exit(-1);
 		}
 
-		System.out.println("Registering the Client name now");
+		System.out.println("Registering the Agency now");
 		// convert to stub
 		ICarRentalAgency stub;
 		try {
@@ -59,7 +60,7 @@ public class CarRentalAgencyServer {
 
 	}
 
-	public static INameService getNameService(String nameservice) throws RemoteException {
+	public static INameService getNameService(String nameservice) throws RemoteException, NotBoundException {
 
 		if (System.getSecurityManager() != null)
 			System.setSecurityManager(null);
@@ -73,8 +74,10 @@ public class CarRentalAgencyServer {
 
 		try {
 			nameService = (INameService) registry.lookup(nameservice);
+			System.out.println("Nameservice lookup success");
 		} catch (RemoteException e) {
 			e.printStackTrace();
+			System.out.println("Nameservice lookup failed");
 		}
 		return nameService;
 	}
