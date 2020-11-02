@@ -5,12 +5,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.invoke.MethodHandles;
+import java.rmi.AccessException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 
@@ -18,22 +20,24 @@ import rental.ICarRentalCompany;
 //import rental.CarRentalCompany;
 import agency.ICarRentalAgency;
 //import agency.CarRentalAgency;
+import agency.IReservationSession;
 
 
 public class NameService implements INameService{
 	
-	private List<String> carRentalCompanyList;
+	private HashMap<String, ICarRentalCompany> carRentalCompanyList = new HashMap<String, ICarRentalCompany>();
+	//private List<String> carRentalCompanyList;
 	private Registry registry = null;
 	private List<String> clientList;
 
 	public NameService() {
 //		this.carRentalCompanyList = new ArrayList<String>();
 //		this.clientList = new ArrayList<String>();
-//		try {
-//			this.registry = LocateRegistry.getRegistry();
-//		} catch (RemoteException e) {
-//			System.exit(-1);
-//		}
+		try {
+			this.registry = LocateRegistry.getRegistry();
+		} catch (RemoteException e) {
+			System.exit(-1);
+		}
 	}
 
 //	public List<String> getAllClients() {
@@ -51,9 +55,10 @@ public class NameService implements INameService{
 //	}
 
 	@Override
-	public void registerCRC(String company) {
-		if (!this.carRentalCompanyList.contains(company)) {
-			this.carRentalCompanyList.add(company);
+	public void registerCRC(String crcname) throws RemoteException, NotBoundException {
+		if (!this.carRentalCompanyList.containsKey(crcname)) {
+			ICarRentalCompany crc=(ICarRentalCompany) this.registry.lookup(crcname);
+			this.carRentalCompanyList.put(crcname, crc);
 		}
 	}
 
@@ -63,13 +68,13 @@ public class NameService implements INameService{
 	}
 
 	@Override
-	public List<String> getRegisteredCRCList() {
+	public HashMap<String, ICarRentalCompany> getRegisteredCRCList() {
 		return this.carRentalCompanyList;
 	}
 
 	@Override
 	public ICarRentalCompany getRegisteredCRCStub(String company) {
-		if (this.carRentalCompanyList.contains(company)) {
+		if (this.carRentalCompanyList.containsKey(company)) {
 			try {
 				ICarRentalCompany companyStub = (ICarRentalCompany) this.registry.lookup(company);
 				return companyStub;
@@ -81,14 +86,14 @@ public class NameService implements INameService{
 	}
 
 	@Override
-	public List<String> getAllRegisteredCRCNames() {
-		return new ArrayList<>(this.carRentalCompanyList);
+	public HashMap<String, ICarRentalCompany> getAllRegisteredCRCNames() {
+		return (this.carRentalCompanyList);
 	}
 	
 	@Override
 	public List<ICarRentalCompany> getAllRegisteredCRCStubs() {
 		List<ICarRentalCompany> result = new ArrayList<ICarRentalCompany>();
-		for (String name : this.carRentalCompanyList) {
+		for (String name : this.carRentalCompanyList.keySet()) {
 			result.add(this.getRegisteredCRCStub(name));
 		}
 		return result;

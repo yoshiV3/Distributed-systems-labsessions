@@ -59,6 +59,7 @@ public class CarRentalAgency implements ICarRentalAgency {
 	}
 
 	public IReservationSession openReservationSession(String client) throws RemoteException{
+		System.out.println("\n=============== Starting openReservationSession ===============\n");
 		IReservationSession session = this.reservationSessions.get(client);
 		if (session != null)
 			return session;
@@ -70,6 +71,7 @@ public class CarRentalAgency implements ICarRentalAgency {
 			IReservationSession stub;
 			stub = (IReservationSession) UnicastRemoteObject.exportObject(createsession, 0);
 			//this.registry.rebind(client,stub);
+			
 			return stub;
 		} catch(RemoteException e) {
 			e.printStackTrace();
@@ -83,8 +85,7 @@ public class CarRentalAgency implements ICarRentalAgency {
 		IManagerSession session = this.managerSessions.get(manager);
 		if (session != null)
 			return session;
-		else {
-			
+		else {			
 			try {
 			ManagerSession createsession = new ManagerSession(manager, this);
 			this.managerSessions.put(manager, createsession);

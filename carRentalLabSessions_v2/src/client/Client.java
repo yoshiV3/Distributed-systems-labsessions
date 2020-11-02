@@ -31,7 +31,7 @@ public class Client extends AbstractTestBooking<IReservationSession, IManagerSes
 	 ********/
 	
 	private static Logger logger = Logger.getLogger(Client.class.getName());
-	//private static Registry registry = null;
+	private Registry registry = null;
 	private ICarRentalAgency rentalAgency = null;
 	private static ICarRentalCompany company = null;
 	private final static int LOCAL = 0;
@@ -58,6 +58,7 @@ public class Client extends AbstractTestBooking<IReservationSession, IManagerSes
 //		String carRentalCompanyName = "Hertz";
 
 		Client client = new Client("trips", carRentalAgency, localOrRemote);
+		client.setupManager();	
 		client.run();
 
 		
@@ -79,15 +80,15 @@ public class Client extends AbstractTestBooking<IReservationSession, IManagerSes
 		
 		
 		logger.log(Level.INFO, "Connecting with <{0}> ", carRentalAgency);
-		Registry registry = null;
+		
 		try {
-			registry = LocateRegistry.getRegistry();
+			this.registry = LocateRegistry.getRegistry();
 		} catch (RemoteException e) {
 			System.exit(-1);
 		}
 
 		try {
-			this.rentalAgency = (ICarRentalAgency) registry.lookup(carRentalAgency);
+			this.rentalAgency = (ICarRentalAgency) this.registry.lookup(carRentalAgency);
 //			ICarRentalCompany  test= (ICarRentalCompany) registry.lookup("Dockx");
 			logger.log(Level.INFO, "Connecting success");
 		} catch (RemoteException e) {
@@ -104,12 +105,14 @@ public class Client extends AbstractTestBooking<IReservationSession, IManagerSes
 	
 	//@Override
     protected IReservationSession getNewReservationSession(String client) throws Exception{
+    	logger.log(Level.INFO, "Inside getNewReservationSession");
     	return this.rentalAgency.openReservationSession(client);
     }
 
 	
 	//@Override
     protected IManagerSession getNewManagerSession(String manager) throws Exception{
+    	logger.log(Level.INFO, "Inside getNewManagerSession");
     	return this.rentalAgency.openManagerSession(manager);
     }
 
@@ -117,36 +120,44 @@ public class Client extends AbstractTestBooking<IReservationSession, IManagerSes
 	//@Override
 	protected void checkForAvailableCarTypes(IReservationSession session, Date start, Date end) throws Exception {
 		System.out.println("************Available cars ***********");
-		Map<String, Set<CarType>> cartypes = session.getAvailableCarTypes(start, end);		
+		Map<String, Set<CarType>> cartypes = session.getAvailableCarTypes(start, end);
+		System.out.println("		CRC     -   CarType");
 		for (String company : cartypes.keySet()) {			
 			for (CarType carType : cartypes.get(company)) {
-				System.out.println("CRC " + company +" Car type: " + carType.getName());
+				System.out.println("		"+company +"   -   " + carType.getName());
 			}
 		}
 
 		
-		
-		
+				
 		
 		// TODO Auto-generated method stub
 		
-		Set<CarType> availablecartypesdata= company.getAvailableCarTypes(start,end);
-		System.out.println("************Available cars ***********");
-		for (CarType value : availablecartypesdata) { 
-            System.out.println(value); 
-        }		
+//		Set<CarType> availablecartypesdata= company.getAvailableCarTypes(start,end);
+//		System.out.println("************Available cars 2***********");
+//		for (CarType value : availablecartypesdata) { 
+//            System.out.println(value); 
+//        }		
 		//throw new UnsupportedOperationException("TODO");
 	}
         
     
+	private void setupManager() throws Exception {
+		System.out.println("Setting up manager");
+		IManagerSession session = getNewManagerSession("manager");
+		session.registerCompany("Hertz");
+        session.registerCompany("Dockx");
+	}
+	
     //@Override
-	protected void addQuoteToSession(IReservationSession session, String name, Date start, Date end, String carType, String region) throws Exception{
-		
+	protected void addQuoteToSession(IReservationSession session, String client, Date start, Date end, String carType, String region) throws Exception{
+		ReservationConstraints rconstraints = new ReservationConstraints(start, end, carType, region);
+		session.createQuote(rconstraints, client);	
 	}
 	
 	//@Override
-	protected List<Reservation> confirmQuotes(IReservationSession session, String name) throws Exception{
-		return null;
+	protected List<Reservation> confirmQuotes(IReservationSession session, String client) throws Exception{
+		return session.confirmQuotes();
 	}
 	
 	//@Override

@@ -87,14 +87,14 @@ public class CarRentalCompany implements ICarRentalCompany {
 		if (carTypes.containsKey(carTypeName)) {
 			return getAvailableCarTypes(start, end).contains(carTypes.get(carTypeName));
 		} else {
-			throw new IllegalArgumentException("<" + carTypeName + "> No car type of name " + carTypeName);
+			return false;
 		}
 	}
 
 	@Override
 	public CarType getCheapestCarType(Date start, Date end) {
 		double price = 10000;
-		CarType type = null;
+		//CarType type = null;
 		CarType cheapest = null;
 		for (CarType type : this.getAvailableCarTypes(start, end)) {
 			if (price > type.getRentalPricePerDay()) {
@@ -164,7 +164,7 @@ public class CarRentalCompany implements ICarRentalCompany {
 		return 0;
 	}
 
-	@Override
+	
 	public void cancelReservation(Reservation reservation) {
 		int carID = reservation.getCarId();
 		for (Car car : this.cars) {
@@ -241,11 +241,11 @@ public class CarRentalCompany implements ICarRentalCompany {
 
 	}
 
-	public void cancelReservation(Reservation res) {
-		logger.log(Level.INFO, "<{0}> Cancelling reservation {1}\n", new Object[] { name, res.toString() });
-		getCar(res.getCarId()).removeReservation(res);
-	}
-
+//	public void cancelReservation(Reservation res) {
+//		logger.log(Level.INFO, "<{0}> Cancelling reservation {1}\n", new Object[]{name, res.toString()});
+//		getCar(res.getCarId()).removeReservation(res);
+//	}
+	
 	@Override
 	public String toString() {
 		return String.format("<%s> CRC is active in regions %s and serving with %d car types\n", name,

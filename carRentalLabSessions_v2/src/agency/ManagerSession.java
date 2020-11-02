@@ -27,7 +27,7 @@ import agency.ICarRentalAgency;
 //
 //import agency.ICarRentalAgency;
 //import agency.CarRentalAgency;
-//import nameservice.INameService;
+import nameservice.INameService;
 //import rental.ICarRentalCompany;
 //import rental.CarRentalCompany;
 
@@ -35,20 +35,20 @@ import agency.ICarRentalAgency;
 public class ManagerSession implements IManagerSession {
 
 //	private String manager;
-//	private ICarRentalAgency agency;
-//	private INameService namingService = null;
+	private ICarRentalAgency agency;
+	private INameService namingService = null;
 
-	public ManagerSession(String manager, ICarRentalAgency agency) {
+	public ManagerSession(String manager, ICarRentalAgency agency) throws RemoteException {
 //		this.manager = manager;
-//		this.agency = agency;
-//		this.namingService = agency.getNameService();
+		this.agency = agency;
+		this.namingService = agency.getNameService();
 	}
 
 	
 	
-//	public void registerCompany(String company) {
-////		this.namingService.registerCRC(company);
-//	}
+	public void registerCompany(String company) throws RemoteException, NotBoundException {		
+		this.namingService.registerCRC(company);
+	}
 //
 //	public void unregisterCompany(String company) {
 ////		this.namingService.unregisterCRC(company);
