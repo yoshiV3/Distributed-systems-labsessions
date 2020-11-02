@@ -12,6 +12,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.invoke.MethodHandles;
+import java.rmi.AccessException;
+import java.rmi.NoSuchObjectException;
+import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
@@ -44,13 +47,9 @@ public class CarRentalAgency implements ICarRentalAgency {
 
 	private HashMap<String, IReservationSession> reservationSessions = new HashMap<String, IReservationSession>();
 	private HashMap<String, IManagerSession> managerSessions = new HashMap<String, IManagerSession>();
-//	private reservationSessions=new ArrayList<>();
-//	private managerSessions =new ArrayList<>();
 
 	public CarRentalAgency(INameService namingService) {
 		this.namingService = namingService;
-//		this.reservationSessions = new ArrayList<>();
-//		this.managerSessions = new ArrayList<>();
 		try {
 			this.registry = LocateRegistry.getRegistry();
 		} catch (RemoteException e) {
@@ -59,7 +58,6 @@ public class CarRentalAgency implements ICarRentalAgency {
 	}
 
 	public IReservationSession openReservationSession(String client) throws RemoteException {
-		System.out.println("\n=============== Starting openReservationSession ===============\n");
 		IReservationSession session = this.reservationSessions.get(client);
 		if (session != null)
 			return session;
@@ -71,7 +69,6 @@ public class CarRentalAgency implements ICarRentalAgency {
 				IReservationSession stub;
 				stub = (IReservationSession) UnicastRemoteObject.exportObject(createsession, 0);
 				// this.registry.rebind(client,stub);
-
 				return stub;
 			} catch (RemoteException e) {
 				e.printStackTrace();
@@ -91,37 +88,32 @@ public class CarRentalAgency implements ICarRentalAgency {
 				this.managerSessions.put(manager, createsession);
 				IManagerSession stub;
 				stub = (IManagerSession) UnicastRemoteObject.exportObject(createsession, 0);
-				this.registry.rebind(manager, stub);
-				System.out.println("managersession created for <" + manager + ">");
+				// this.registry.rebind(manager, stub);
 				return stub;
 			} catch (RemoteException e) {
 				e.printStackTrace();
 				return null;
 			}
 		}
-//		IManagerSession session = new ManagerSession(manager, this);
-//		IManagerSession stub;
-//		stub = (IReservationSession) UnicastRemoteObject.exportObject(session, 0);
-//		this.registry.rebind(client, stub);
 	}
 
-//	public void closeReservationSession(String client) {
-//		IReservationSession session = this.reservationSessions.get(client);
-//		if (session != null) {
-//			this.registry.unbind(client);
-//			UnicastRemoteObject.unexportObject(session, true);
-//			this.reservationSessions.remove(client);
-//		}
-//	}
-//
-//	public void closeManagerSession(String manager) {
-//		IManagerSession session = this.managerSessions.get(manager);
-//		if (session != null) {
-//			this.registry.unbind(manager);
-//			UnicastRemoteObject.unexportObject(session, true);
-//			this.managerSessions.remove(manager);
-//		}
-//	}
+	public void closeReservationSession(String client) throws RemoteException, NotBoundException {
+		IReservationSession session = this.reservationSessions.get(client);
+		if (session != null) {
+			this.registry.unbind(client);
+			UnicastRemoteObject.unexportObject(session, true);
+			this.reservationSessions.remove(client);
+		}
+	}
+
+	public void closeManagerSession(String manager) throws RemoteException, NotBoundException {
+		IManagerSession session = this.managerSessions.get(manager);
+		if (session != null) {
+			this.registry.unbind(manager);
+			UnicastRemoteObject.unexportObject(session, true);
+			this.managerSessions.remove(manager);
+		}
+	}
 
 	public List<String> getAllClients() throws RemoteException {
 		return this.clientList;
@@ -137,98 +129,10 @@ public class CarRentalAgency implements ICarRentalAgency {
 		}
 	}
 
-//	public Map<String, Set<CarType>> getAvailableCarTypes(Date start, Date end) {
-//	Map<String, Set<CarType>> cartypes=new HashMap<String, Set<CarType>>();
-//	List<ICarRentalCompany> stubs = this.namingService.getAllRegisteredCRCStubs();
-//	//Set<CarType> result = new HashSet<CarType>();
-//	for (ICarRentalCompany stub : stubs) {
-//		cartypes.put(stub.getName(), stub.getAvailableCarTypes(start, end)); 
-//		//result.add(stub.getAvailableCarTypes(start, end));
-//	}
-//	return cartypes;
-//}
-
-//	public IReservationSession openReservationSession(String client) {
-//		IReservationSession session = new ReservationSession(client, this);
-//		if (this.namingService.addNewClient(client)) {
-//			IReservationSession stub;
-//			stub = (IReservationSession) UnicastRemoteObject.exportObject(session, 0);
-//			this.registry.rebind(client, stub);
-//		}
-//	}
-
 	public INameService getNameService() throws RemoteException {
 		return this.namingService;
-//		try {
-//			return this.namingService;
-//		} catch (RemoteException e) {
-//			System.exit(-1);
-//			return null;
-//		}
-//
 	}
 
-//	public AgencyQuote createQuote(ReservationConstraints constraints, String client) throws RemoteException {
-//		List<ICarRentalCompany> stubs = this.namingService.getAllRegisteredCRCStubs();
-//		double price = 90000;
-//		
-//		ICarRentalCompany company = null;
-//		for (ICarRentalCompany stub : stubs) {
-//			if (stub.canReserve(constraints)) {
-//				if (price > stub.getRentalPricePerDay(constraints.getCarType())) {
-//					company = stub;
-//				}
-//			}
-//		}
-//		if (company == null) {
-//			throw new ReservationException("<" + client + "> No cars available to satisfy the given constraints.");
-//		}
-//		Quote quote = company.createQuote(constraints, client);
-//		return new AgencyQuote(quote, company);
-//	}
-//
-//	public Set<AgencyReservation> confirmQuotes(List<AgencyQuote> quotes) {
-//		Set<AgencyReservation> reservations = new HashSet<AgencyReservation>();
-//		for (AgencyQuote quote : quotes) {
-//			ICarRentalCompany stub = quote.getCompany();
-//			try {
-//				Reservation res = stub.confirmQuote(quote.getQuote());
-//				reservations.add(new AgencyReservation(res, stub));
-//
-//			} catch (ReservationException e) {
-//				for (AgencyReservation res : reservation) {
-//					res.getCompany().cancelReservation(res);
-//				}
-//				return null;
-//			}
-//
-//		}
-//		return reservations;
-//	}
-//
-
-//
-//	public CarType getCheapestCarType(Date start, Date end, String region) {
-//		List<ICarRentalCompany> stubs = this.namingService.getAllRegisteredCRCStubs();
-//		CarType minType;
-//		double currentMinPrice = 8000;
-//		for (ICarRentalCompany stub : stubs) {
-//			if (stub.operatesInRegion(region)) {
-//				CarType type = stub.getCheapestCarType(start, end);
-//				if (type.getRentalPricePerDay() < currentMinPrice) {
-//					minType = type;
-//				}
-//			}
-//		}
-//		return minType;
-//
-//	}
-//
-//	public int getNumberOfReservations(String company, String type) {
-//		ICarRentalCompany stub = this.namingService.getRegisteredCRCStub(type);
-//		return stub.getNumberOfReservationsFOrType(type);
-//	}
-//
 	public int getNumberOfReservationsBy(String client) throws RemoteException {
 		int total = 0;
 		List<ICarRentalCompany> stubs = this.namingService.getAllRegisteredCRCStubs();
@@ -238,20 +142,4 @@ public class CarRentalAgency implements ICarRentalAgency {
 
 		return total;
 	}
-//
-//	public Set<String> getBestClients() {
-//		Set<String> result = new HashSet<String>();
-//		int number = 0;
-//		for (String client : this.namingService.getAllClients()) {
-//			int nb = this.getNumberOfReservationsBy(client);
-//			if (number < nb) {
-//				result = new HashSet<String>();
-//				result.add(client);
-//			} else if (nb == number) {
-//				result.add(client);
-//			}
-//		}
-//		return result;
-//	}
-//
 }

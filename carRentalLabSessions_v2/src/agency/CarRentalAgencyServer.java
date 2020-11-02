@@ -32,7 +32,6 @@ public class CarRentalAgencyServer {
 	private static Registry registry = null;
 
 	public static void main(String[] args) throws RemoteException, NotBoundException {
-
 		System.out.println("\n=============== Starting Car Rental Agency Server Process ===============\n");
 
 		if (System.getSecurityManager() != null) {
@@ -61,7 +60,6 @@ public class CarRentalAgencyServer {
 	}
 
 	public static INameService getNameService(String nameservice) throws RemoteException, NotBoundException {
-
 		if (System.getSecurityManager() != null)
 			System.setSecurityManager(null);
 

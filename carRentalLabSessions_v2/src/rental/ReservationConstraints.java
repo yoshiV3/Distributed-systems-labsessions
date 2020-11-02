@@ -30,7 +30,7 @@ public class ReservationConstraints implements Serializable {
 	}
 
 	private void setEndDate(Date endDate) {
-		this.endDate = endDate;
+		this.endDate = endDate;		
 	}
 
 	public String getCarType() {

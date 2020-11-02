@@ -218,6 +218,7 @@ public class CarRentalCompany implements ICarRentalCompany {
 		Set<Reservation> reservations = new HashSet<Reservation>();
 		for (Car car : this.cars) {
 			for (Reservation reservation : car.getReservationsFromClient(client)) {
+				System.out.println("reservation " + client + "  " + reservation.getCarType());
 				reservations.add(reservation);
 			}
 		}
@@ -238,13 +239,31 @@ public class CarRentalCompany implements ICarRentalCompany {
 			}
 		}
 		return reservations;
-
 	}
 
-//	public void cancelReservation(Reservation res) {
-//		logger.log(Level.INFO, "<{0}> Cancelling reservation {1}\n", new Object[]{name, res.toString()});
-//		getCar(res.getCarId()).removeReservation(res);
-//	}
+	public int getNumberOfReservationsForType(String client) {
+		return this.getReservationsForCarType(client).size();
+	}
+
+	// @SuppressWarnings("deprecation")
+	public CarType getMostPopularCarTypeInYear(int year) throws RemoteException {
+		int number = 0;
+		CarType cartype = null;
+
+		for (CarType car : getAllCarTypes()) {
+			Set<Reservation> reservations = getReservationsForCarType(car.getName());
+			for (Reservation res : reservations) {
+				if (res.getEndDate().getYear() + 1900 != year) {
+					reservations.remove(res);
+				}
+			}
+			if (number < reservations.size()) {
+				number = reservations.size();
+				cartype = car;
+			}
+		}
+		return cartype;
+	}
 
 	@Override
 	public String toString() {

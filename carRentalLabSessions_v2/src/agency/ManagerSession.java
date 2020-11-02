@@ -28,17 +28,13 @@ import agency.ICarRentalAgency;
 //import agency.ICarRentalAgency;
 //import agency.CarRentalAgency;
 import nameservice.INameService;
-//import rental.ICarRentalCompany;
-//import rental.CarRentalCompany;
 
 public class ManagerSession implements IManagerSession {
 
-//	private String manager;
 	private ICarRentalAgency agency;
 	private INameService namingService = null;
 
 	public ManagerSession(String manager, ICarRentalAgency agency) throws RemoteException {
-//		this.manager = manager;
 		this.agency = agency;
 		this.namingService = agency.getNameService();
 	}
@@ -46,31 +42,27 @@ public class ManagerSession implements IManagerSession {
 	public void registerCompany(String company) throws RemoteException, NotBoundException {
 		this.namingService.registerCRC(company);
 	}
-//
-//	public void unregisterCompany(String company) {
-////		this.namingService.unregisterCRC(company);
-//	}
-//
-//
+
+	public void unregisterCompany(String company) throws RemoteException {
+		this.namingService.unregisterCRC(company);
+	}
 //	public Set<String> getRegisteredCompanies() {
-////		return new HashSet<String>(this.namingService.getRegisteredCRCList());
+//		return new HashSet<String>(this.namingService.getRegisteredCRCList());
 //	}
-//
-//
-//	public int getNumberOfReservations(String company, String type) {
-////		ICarRentalCompany stub = this.namingService.getRegisteredCRCStub(type);
-////		return stub.getNumberOfReservationsFOrType(type);
-//	}
-//
-//
-//	public int getNumberOfReservationsBy(String client) {
-////		int total = 0;
-////		List<ICarRentalCompany> stubs = this.namingService.getAllRegisteredCRCStubs();
-////		for (ICarRentalCompany stub : stubs) {
-////			total = total + stub.getNumberOfReservationsFromRenter(client);
-////		}
-//	}
-//
+
+	public int getNumberOfReservationsForCarType(String company, String type) throws RemoteException {
+		ICarRentalCompany stub = this.namingService.getRegisteredCRCStub(company);
+		return stub.getNumberOfReservationsForType(type);
+	}
+
+	public int getNumberOfReservationsByRenter(String client) throws RemoteException {
+		int total = 0;
+		List<ICarRentalCompany> stubs = this.namingService.getAllRegisteredCRCStubs();
+		for (ICarRentalCompany stub : stubs) {
+			total = total + stub.getNumberOfReservationsFromRenter(client);
+		}
+		return total;
+	}
 
 	public Set<String> getBestClients() throws RemoteException {
 		Set<String> result = new HashSet<String>();
@@ -88,14 +80,9 @@ public class ManagerSession implements IManagerSession {
 		return result;
 	}
 
-////	public Set<String> getBestClients()
-////	{
-////		return this.agency.getBestClients();
-////	}
-//
-//
-//	public CarType getMostPopularCarTypeInCRC(String carRentalCompanyName, int year) {
-//		
-//	}
+	public CarType getMostPopularCarTypeInCRC(String company, int year) throws RemoteException {
+		ICarRentalCompany stub = this.namingService.getRegisteredCRCStub(company);
+		return stub.getMostPopularCarTypeInYear(year);
+	}
 
 }

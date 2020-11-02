@@ -15,24 +15,19 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-
 import rental.ICarRentalCompany;
 //import rental.CarRentalCompany;
 import agency.ICarRentalAgency;
 //import agency.CarRentalAgency;
 import agency.IReservationSession;
 
+public class NameService implements INameService {
 
-public class NameService implements INameService{
-	
 	private HashMap<String, ICarRentalCompany> carRentalCompanyList = new HashMap<String, ICarRentalCompany>();
-	//private List<String> carRentalCompanyList;
 	private Registry registry = null;
 	private List<String> clientList;
 
 	public NameService() {
-//		this.carRentalCompanyList = new ArrayList<String>();
-//		this.clientList = new ArrayList<String>();
 		try {
 			this.registry = LocateRegistry.getRegistry();
 		} catch (RemoteException e) {
@@ -40,63 +35,36 @@ public class NameService implements INameService{
 		}
 	}
 
-//	public List<String> getAllClients() {
-//		return this.clientList.copy();
-//	}
-//
-//	public boolean isNewClient(String client) {
-//		return this.clientList.contains(client);
-//	}
-//
-//	public void addNewClient(String client) {
-//		if (!this.isNewClient(client)) {
-//			this.clientList.add(client);			
-//		}
-//	}
-
-	// @Override
-	public void registerCRC(String crcname) throws RemoteException, NotBoundException {
+	public synchronized void registerCRC(String crcname) throws RemoteException, NotBoundException {
 		if (!this.carRentalCompanyList.containsKey(crcname)) {
 			ICarRentalCompany crc = (ICarRentalCompany) this.registry.lookup(crcname);
 			this.carRentalCompanyList.put(crcname, crc);
 		}
 	}
 
-	// @Override
-	public void unregisterCRC(String company) {
+	public synchronized void unregisterCRC(String company) {
 		this.carRentalCompanyList.remove(company);
 	}
 
-	@Override
 	public HashMap<String, ICarRentalCompany> getRegisteredCRCList() {
 		return this.carRentalCompanyList;
 	}
 
-	// @Override
 	public ICarRentalCompany getRegisteredCRCStub(String company) throws RemoteException {
+		ICarRentalCompany companyStub = null;
 		if (this.carRentalCompanyList.containsKey(company)) {
-			try {
-
-				ICarRentalCompany companyStub = (ICarRentalCompany) this.registry.lookup(company);
-
-				return companyStub;
-			} catch (RemoteException | NotBoundException e) {
-				e.printStackTrace();
-			}
+			companyStub = (ICarRentalCompany) this.carRentalCompanyList.get(company);
 		}
-		return null;
+		return companyStub;
 	}
 
-	// @Override
 	public HashMap<String, ICarRentalCompany> getAllRegisteredCRCNames() {
 		return (this.carRentalCompanyList);
 	}
 
-	// @Override
 	public List<ICarRentalCompany> getAllRegisteredCRCStubs() throws RemoteException {
 		List<ICarRentalCompany> result = new ArrayList<ICarRentalCompany>();
 		for (String name : this.carRentalCompanyList.keySet()) {
-//			result.add(this.getRegisteredCRCStub(name));
 			result.add(this.carRentalCompanyList.get(name));
 		}
 		return result;

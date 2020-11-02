@@ -82,6 +82,9 @@ public interface ICarRentalCompany extends Remote {
 	 * @throws RemoteException
 	 */
 	public Set<Reservation> getReservationsForCarType(String type) throws RemoteException;
+	
+	public CarType getMostPopularCarTypeInYear(int year) throws RemoteException;
+	
 
 	public CarType getCarType(String carTypeName) throws RemoteException;
 
@@ -89,7 +92,7 @@ public interface ICarRentalCompany extends Remote {
 
 	public CarType getCheapestCarType(Date start, Date end) throws RemoteException;
 
-	public int getNumberOfReservationsFOrType(String type) throws RemoteException;
+	public int getNumberOfReservationsForType(String type) throws RemoteException;
 
 	public boolean operatesInRegion(String region) throws RemoteException;
 

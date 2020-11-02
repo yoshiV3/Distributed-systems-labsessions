@@ -86,12 +86,16 @@ public abstract class AbstractTestManagement<IReservationSession, IManagerSessio
 	 */
 	protected void processLine(String name, String cmd, List<Character> flags, StringTokenizer scriptLineTokens)
 			throws ApplicationException {
+		System.out.println("\n=============== Script ===<" + name + "> - <" + cmd+ "> flag:"+flags);
+
+		if (flags.contains('c')) {
+			return;			
+		}
+		
 		if (cmd.startsWith("B")) {
 			super.processLine(name, cmd, flags, scriptLineTokens);
 			return;
 		}
-		System.out.println("\n=============== Processing the management script ===name: " + name + " cmd " + cmd
-				+ " ===========\n");
 		if (cmd.equals("MB")) {
 			Set<String> bestClientsShouldBe = new HashSet<String>(
 					Arrays.asList(scriptLineTokens.nextToken().split("/")));
