@@ -5,29 +5,29 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.invoke.MethodHandles;
+import java.rmi.AccessException;
+import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
-
 import rental.ICarRentalCompany;
-import rental.CarRentalCompany;
+//import rental.CarRentalCompany;
 import agency.ICarRentalAgency;
-import agency.CarRentalAgency;
+//import agency.CarRentalAgency;
+import agency.IReservationSession;
 
+public class NameService implements INameService {
 
-public class NameService implements INameService{
-	
-	private List<String> carRentalCompanyList;
+	private HashMap<String, ICarRentalCompany> carRentalCompanyList = new HashMap<String, ICarRentalCompany>();
 	private Registry registry = null;
 	private List<String> clientList;
 
 	public NameService() {
-		this.carRentalCompanyList = new ArrayList<String>();
-		this.clientList = new ArrayList<String>();
 		try {
 			this.registry = LocateRegistry.getRegistry();
 		} catch (RemoteException e) {
@@ -35,60 +35,37 @@ public class NameService implements INameService{
 		}
 	}
 
-//	public List<String> getAllClients() {
-//		return this.clientList.copy();
-//	}
-//
-//	public boolean isNewClient(String client) {
-//		return this.clientList.contains(client);
-//	}
-//
-//	public void addNewClient(String client) {
-//		if (!this.isNewClient(client)) {
-//			this.clientList.add(client);			
-//		}
-//	}
-
-	@Override
-	public void registerCRC(String company) {
-		if (!this.carRentalCompanyList.contains(company)) {
-			this.carRentalCompanyList.add(company);
+	public synchronized void registerCRC(String crcname) throws RemoteException, NotBoundException {
+		if (!this.carRentalCompanyList.containsKey(crcname)) {
+			ICarRentalCompany crc = (ICarRentalCompany) this.registry.lookup(crcname);
+			this.carRentalCompanyList.put(crcname, crc);
 		}
 	}
 
-	@Override
-	public void unregisterCRC(String company) {
+	public synchronized void unregisterCRC(String company) {
 		this.carRentalCompanyList.remove(company);
 	}
 
-	@Override
-	public List<String> getRegisteredCRCList() {
+	public HashMap<String, ICarRentalCompany> getRegisteredCRCList() {
 		return this.carRentalCompanyList;
 	}
 
-	@Override
-	public ICarRentalCompany getRegisteredCRCStub(String company) {
-		if (this.carRentalCompanyList.contains(company)) {
-			try {
-				ICarRentalCompany companyStub = (ICarRentalCompany) this.registry.lookup(company);
-				return companyStub;
-			} catch (RemoteException e) {
-				e.printStackTrace();
-			}
+	public ICarRentalCompany getRegisteredCRCStub(String company) throws RemoteException {
+		ICarRentalCompany companyStub = null;
+		if (this.carRentalCompanyList.containsKey(company)) {
+			companyStub = (ICarRentalCompany) this.carRentalCompanyList.get(company);
 		}
-		return null;
+		return companyStub;
 	}
 
-	@Override
-	public List<String> getAllRegisteredCRCNames() {
-		return new ArrayList<>(this.carRentalCompanyList);
+	public HashMap<String, ICarRentalCompany> getAllRegisteredCRCNames() {
+		return (this.carRentalCompanyList);
 	}
-	
-	@Override
-	public List<ICarRentalCompany> getAllRegisteredCRCStubs() {
+
+	public List<ICarRentalCompany> getAllRegisteredCRCStubs() throws RemoteException {
 		List<ICarRentalCompany> result = new ArrayList<ICarRentalCompany>();
-		for (String name : this.carRentalCompanyList) {
-			result.add(this.getRegisteredCRCStub(name));
+		for (String name : this.carRentalCompanyList.keySet()) {
+			result.add(this.carRentalCompanyList.get(name));
 		}
 		return result;
 	}

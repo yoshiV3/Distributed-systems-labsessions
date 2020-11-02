@@ -1,18 +1,24 @@
 package agency;
 
 import rental.ICarRentalCompany;
+import rental.Quote;
 import rental.Reservation;
 
-public class AgencyReservation extends AgencyQuote {
-	
-	public AgencyReservation(Reservation reservation, ICarRentalCompany company )
-	{
-		super(reservation, company);
+public class AgencyReservation {
+	private Reservation reservation;
+	private ICarRentalCompany company;
+
+	public AgencyReservation(Reservation reservation, ICarRentalCompany company) {
+		this.reservation = reservation;
+		this.company = company;
 	}
-	
-	public Reservation getReservation()
-	{
-		return super.getQuote();
+
+	public Reservation getReservation() {
+		return this.reservation;
+	}
+
+	public ICarRentalCompany getCompany() {
+		return this.company;
 	}
 
 }

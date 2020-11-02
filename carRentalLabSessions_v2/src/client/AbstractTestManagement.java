@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.StringTokenizer;
 
+import agency.IManagerSession;
+import agency.IReservationSession;
 import rental.CarType;
 
 /*
@@ -15,8 +17,8 @@ import rental.CarType;
  * for manager functions,
  * and code to process and run a test script.
  */
-public abstract class AbstractTestManagement<ReservationSession, ManagerSession>
-		extends AbstractTestBooking<ReservationSession, ManagerSession> {
+public abstract class AbstractTestManagement<IReservationSession, IManagerSession>
+		extends AbstractTestBooking<IReservationSession, IManagerSession> {
 
 	/**
 	 * Get the (list of) best clients, i.e. clients that have highest number of
@@ -26,7 +28,7 @@ public abstract class AbstractTestManagement<ReservationSession, ManagerSession>
 	 * @return set of best clients
 	 * @throws Exception if things go wrong, throw exception
 	 */
-	protected abstract Set<String> getBestClients(ManagerSession ms) throws Exception;
+	protected abstract Set<String> getBestClients(IManagerSession ms) throws Exception;
 
 	/**
 	 * Find a cheapest car type that is available in the given period and region.
@@ -40,7 +42,7 @@ public abstract class AbstractTestManagement<ReservationSession, ManagerSession>
 	 *
 	 * @throws Exception if things go wrong, throw exception
 	 */
-	protected abstract String getCheapestCarType(ReservationSession session, Date start, Date end, String region)
+	protected abstract String getCheapestCarType(IReservationSession session, Date start, Date end, String region)
 			throws Exception;
 
 	/**
@@ -53,7 +55,7 @@ public abstract class AbstractTestManagement<ReservationSession, ManagerSession>
 	 *
 	 * @throws Exception if things go wrong, throw exception
 	 */
-	protected abstract CarType getMostPopularCarTypeInCRC(ManagerSession ms, String carRentalCompanyName, int year)
+	protected abstract CarType getMostPopularCarTypeInCRC(IManagerSession ms, String carRentalCompanyName, int year)
 			throws Exception;
 
 	// protected abstract String getMostPopularCarRentalCompany(ManagerSession ms)
@@ -63,7 +65,7 @@ public abstract class AbstractTestManagement<ReservationSession, ManagerSession>
 		super(scriptFile);
 	}
 
-	ReservationSession managerResSession = null;
+	IReservationSession managerResSession = null;
 
 	/**
 	 * This class forwards all commands starting with B to AbstractTestAgency and
@@ -84,22 +86,28 @@ public abstract class AbstractTestManagement<ReservationSession, ManagerSession>
 	 */
 	protected void processLine(String name, String cmd, List<Character> flags, StringTokenizer scriptLineTokens)
 			throws ApplicationException {
+		System.out.println("\n=============== Script ===<" + name + "> - <" + cmd+ "> flag:"+flags);
+
+		if (flags.contains('c')) {
+			return;			
+		}
+		
 		if (cmd.startsWith("B")) {
 			super.processLine(name, cmd, flags, scriptLineTokens);
 			return;
 		}
-
 		if (cmd.equals("MB")) {
 			Set<String> bestClientsShouldBe = new HashSet<String>(
 					Arrays.asList(scriptLineTokens.nextToken().split("/")));
 			Set<String> bestClientsAre = null;
 			try {
-				ManagerSession aMgmtSession = getNewManagerSession("CarRent");
+				IManagerSession aMgmtSession = (IManagerSession) getNewManagerSession("CarRent");
 				bestClientsAre = new HashSet<>(getBestClients(aMgmtSession));
 			} catch (Exception e) {
 				throw new ApplicationException(e);
 			}
-
+			System.err.println("best clients expected: " + bestClientsShouldBe);
+			System.err.println("best clients checeked: " + bestClientsAre);
 			if (bestClientsShouldBe.equals(bestClientsAre)) {
 				System.out.println("Correct list of best clients: " + joinToString(bestClientsAre, ','));
 			} else {
@@ -122,7 +130,7 @@ public abstract class AbstractTestManagement<ReservationSession, ManagerSession>
 
 			if (managerResSession == null) {
 				try {
-					managerResSession = getNewReservationSession("Manager");
+					managerResSession = (IReservationSession) getNewReservationSession("Manager");
 				} catch (Exception e1) {
 					throw new ApplicationException(e1);
 				}
@@ -154,7 +162,7 @@ public abstract class AbstractTestManagement<ReservationSession, ManagerSession>
 	}
 
 	private void checkPopularCarType(String name, StringTokenizer scriptReader) throws Exception {
-		ManagerSession rental = getNewManagerSession(name);
+		IManagerSession rental = (IManagerSession) getNewManagerSession(name);
 		while (scriptReader.hasMoreTokens()) {
 			String pars = scriptReader.nextToken();
 			int year = Integer.valueOf(scriptReader.nextToken());

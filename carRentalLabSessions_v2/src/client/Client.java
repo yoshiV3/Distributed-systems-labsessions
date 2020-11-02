@@ -19,20 +19,19 @@ import rental.ICarRentalCompany;
 import rental.Quote;
 import rental.Reservation;
 import rental.ReservationConstraints;
-import agency.ICarRentalAgency;
-import agency.CarRentalAgency;
-import agency.IManagerSession;
 import agency.IReservationSession;
+import agency.IManagerSession;
+import agency.ICarRentalAgency;
 
-
-public class Client extends AbstractTestBooking {
+public class Client extends AbstractTestManagement<IReservationSession, IManagerSession> {
 
 	/********
 	 * MAIN *
 	 ********/
+
 	private static Logger logger = Logger.getLogger(Client.class.getName());
-	private static Registry registry = null;
-	private static ICarRentalAgency rentalAgency = null;
+	private Registry registry = null;
+	private ICarRentalAgency rentalAgency = null;
 	private static ICarRentalCompany company = null;
 	private final static int LOCAL = 0;
 	private final static int REMOTE = 1;
@@ -54,10 +53,9 @@ public class Client extends AbstractTestBooking {
 
 		String carRentalAgency = "testagency";
 
-		// Client runs the trip script connecting to the carRentalAgency stub
 		Client client = new Client("trips", carRentalAgency, localOrRemote);
+		client.setupManager();
 		client.run();
-
 	}
 
 	/***************
@@ -74,147 +72,78 @@ public class Client extends AbstractTestBooking {
 		logger.log(Level.INFO, "Connecting with <{0}> ", carRentalAgency);
 
 		try {
-			registry = LocateRegistry.getRegistry();
+			this.registry = LocateRegistry.getRegistry();
 		} catch (RemoteException e) {
 			System.exit(-1);
 		}
 
 		try {
-			rentalAgency = (ICarRentalAgency) registry.lookup(carRentalAgency);
+			this.rentalAgency = (ICarRentalAgency) this.registry.lookup(carRentalAgency);
 		} catch (RemoteException e) {
 			e.printStackTrace();
 		}
 
 	}
 
-    @Override
-    protected IReservationSession getNewReservationSession(String client)
-                    throws Exception {
-            return this.rentalAgency.openReservationSession(client);
-    }
+	protected IReservationSession getNewReservationSession(String client) throws Exception {
+		System.out.println("--> New Reservation Session");
+		return this.rentalAgency.openReservationSession(client);
+	}
 
-    @Override
-    protected IManagerSession getNewManagerSession(String manager)
-                    throws Exception {
-            return this.rentalAgency.openManagerSession(manager);
-    }
+	protected IManagerSession getNewManagerSession(String manager) throws Exception {
+		System.out.println("--> New Manager Session");
+		return this.rentalAgency.openManagerSession(manager);
+	}
 
-	
-	
-	/**
-	 * Check which car types are available in the given period (across all companies
-	 * and regions) and print this list of car types.
-	 *
-	 * @param start start time of the period
-	 * @param end   end time of the period
-	 * @throws Exception if things go wrong, throw exception
-	 */
-//	@Override
-//	protected void checkForAvailableCarTypes(Date start, Date end) throws Exception {
-//		// TODO Auto-generated method stub
-//
-//		Set<CarType> availablecartypesdata = company.getAvailableCarTypes(start, end);
-//		System.out.println("************Available cars ***********");
-//		for (CarType value : availablecartypesdata) {
-//			System.out.println(value);
-//		}
-//		// throw new UnsupportedOperationException("TODO");
-//	}
-
-	@Override
-	protected void checkForAvailableCarTypes(IReservationSession session, Date start, Date end) {
+	protected void checkForAvailableCarTypes(IReservationSession session, Date start, Date end) throws Exception {
+		System.out.println("************Available cars ***********");
 		Map<String, Set<CarType>> cartypes = session.getAvailableCarTypes(start, end);
-		System.out.println("Checking for available car types...");
+		System.out.println("		CRC     -   CarType");
 		for (String company : cartypes.keySet()) {
-			System.out.println("company: " + company);
 			for (CarType carType : cartypes.get(company)) {
-				System.out.println("- type: " + carType.getName());
+				System.out.println("		" + company + "   -   " + carType.getName());
 			}
 		}
+	}
 
+	private void setupManager() throws Exception {
+		System.out.println("Setting up manager");
+		IManagerSession session = getNewManagerSession("manager");
+		session.registerCompany("Hertz");
+		session.registerCompany("Dockx");
 	}
-	
-	@Override
-	protected CarType getMostPopularCarTypeInCRC(IManagerSession session, String carRentalCompanyName, int year) {
-		
+
+	protected void addQuoteToSession(IReservationSession session, String client, Date start, Date end, String carType,
+			String region) throws Exception {
+		ReservationConstraints rconstraints = new ReservationConstraints(start, end, carType, region);
+		session.createQuote(rconstraints, client);
 	}
-	
-	
-//	/**
-//	 * Retrieve a quote for a given car type (tentative reservation).
-//	 * 
-//	 * @param clientName name of the client
-//	 * @param start      start time for the quote
-//	 * @param end        end time for the quote
-//	 * @param carType    type of car to be reserved
-//	 * @param region     region in which car must be available
-//	 * @return the newly created quote
-//	 * 
-//	 * @throws Exception if things go wrong, throw exception
-//	 */
-//	@Override
-//	protected Quote createQuote(String clientName, Date start, Date end, String carType, String region)
-//			throws Exception {
-//		System.out.println("************Creating Quote for <" + clientName + ">***********");
-//		ReservationConstraints args = new ReservationConstraints(start, end, carType, region);
-//
-//		Quote quote_value = company.createQuote(args, clientName);
-//		System.out.println(quote_value);
-//
-//		return quote_value;
-//		// TODO Auto-generated method stub
-//		// throw new UnsupportedOperationException("TODO");
-//	}
-//
-//	/**
-//	 * Confirm the given quote to receive a final reservation of a car.
-//	 * 
-//	 * @param quote the quote to be confirmed
-//	 * @return the final reservation of a car
-//	 * 
-//	 * @throws Exception if things go wrong, throw exception
-//	 */
-//	@Override
-//	protected Reservation confirmQuote(Quote quote) throws Exception {
-//		// TODO Auto-generated method stub
-//		System.out.println("************Confirmation Quote Data ***********");
-//		Reservation confirmation_data = company.confirmQuote(quote);
-//		System.out.println(confirmation_data);
-//		return confirmation_data;
-////		throw new UnsupportedOperationException("TODO");
-//	}
-//
-//	/**
-//	 * Get all reservations made by the given client.
-//	 *
-//	 * @param clientName name of the client
-//	 * @return the list of reservations of the given client
-//	 * 
-//	 * @throws Exception if things go wrong, throw exception
-//	 */
-//	@Override
-////	protected List<Reservation> getReservationsByRenter(String clientName) throws Exception {
-//	protected Set<Reservation> getReservationsByRenter(String clientName) throws Exception {
-//
-//		System.out.println("************Getting reservation data for <" + clientName + ">***********");
-//		Set<Reservation> getreservations_data = company.getReservationsFromRenter(clientName);
-//		return getreservations_data;
-//	}
-//
-//	/**
-//	 * Get the number of reservations for a particular car type.
-//	 * 
-//	 * @param carType name of the car type
-//	 * @return number of reservations for the given car type
-//	 * 
-//	 * @throws Exception if things go wrong, throw exception
-//	 */
-//	@Override
-//	protected int getNumberOfReservationsForCarType(String carType) throws Exception {
-//		System.out.println("************Getting the number of reservations for <" + carType + ">***********");
-//		Set<Reservation> getreservationsforcar_data = company.getReservationsForCarType(carType);
-//		// System.out.println(getreservationsforcar_data.size());
-//		return getreservationsforcar_data.size();
-//		// throw new UnsupportedOperationException("TODO");
-//	}
+
+	protected List<Reservation> confirmQuotes(IReservationSession session, String client) throws Exception {
+		return session.confirmQuotes();
+	}
+
+	protected int getNumberOfReservationsByRenter(IManagerSession session, String clientName) throws Exception {
+		return session.getNumberOfReservationsByRenter(clientName);
+	}
+
+	protected int getNumberOfReservationsForCarType(IManagerSession session, String carRentalName, String carType)
+			throws Exception {
+		return session.getNumberOfReservationsForCarType(carRentalName, carType);
+	}
+
+	protected Set<String> getBestClients(IManagerSession session) throws Exception {
+		return session.getBestClients();
+	}
+
+	protected String getCheapestCarType(IReservationSession session, Date start, Date end, String region)
+			throws Exception {
+		return session.getCheapestCarType(start, end, region).getName();
+	}
+
+	protected CarType getMostPopularCarTypeInCRC(IManagerSession session, String carRentalCompanyName, int year)
+			throws Exception {
+		return session.getMostPopularCarTypeInCRC(carRentalCompanyName, year);
+	}
+
 }

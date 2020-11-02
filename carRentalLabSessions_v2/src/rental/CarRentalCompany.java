@@ -61,7 +61,6 @@ public class CarRentalCompany implements ICarRentalCompany {
 		return this.regions;
 	}
 
-	@Override
 	public boolean operatesInRegion(String region) {
 		return this.regions.contains(region);
 	}
@@ -84,20 +83,23 @@ public class CarRentalCompany implements ICarRentalCompany {
 	@Override
 	public boolean isAvailable(String carTypeName, Date start, Date end) {
 		logger.log(Level.INFO, "<{0}> Checking availability for car type {1}", new Object[] { name, carTypeName });
+
 		if (carTypes.containsKey(carTypeName)) {
+			// logger.log(Level.INFO, "< Checking availability for car type {0}",
+			// getAvailableCarTypes(start, end));
 			return getAvailableCarTypes(start, end).contains(carTypes.get(carTypeName));
 		} else {
-			throw new IllegalArgumentException("<" + carTypeName + "> No car type of name " + carTypeName);
+			return false;
 		}
 	}
 
 	@Override
 	public CarType getCheapestCarType(Date start, Date end) {
 		double price = 10000;
-		CarType type = null;
 		CarType cheapest = null;
 		for (CarType type : this.getAvailableCarTypes(start, end)) {
 			if (price > type.getRentalPricePerDay()) {
+				price = type.getRentalPricePerDay();
 				cheapest = type;
 			}
 		}
@@ -152,6 +154,7 @@ public class CarRentalCompany implements ICarRentalCompany {
 	 ****************/
 
 	public boolean canReserve(ReservationConstraints constraints) {
+		System.out.println("checking for cartype: " + constraints.getCarType() + name);
 		boolean result = operatesInRegion(constraints.getRegion());
 		result = result && isAvailable(constraints.getCarType(), constraints.getStartDate(), constraints.getEndDate());
 		return result;
@@ -164,7 +167,6 @@ public class CarRentalCompany implements ICarRentalCompany {
 		return 0;
 	}
 
-	@Override
 	public void cancelReservation(Reservation reservation) {
 		int carID = reservation.getCarId();
 		for (Car car : this.cars) {
@@ -206,18 +208,17 @@ public class CarRentalCompany implements ICarRentalCompany {
 			throw new ReservationException("Reservation failed, all cars of type " + quote.getCarType()
 					+ " are unavailable from " + quote.getStartDate() + " to " + quote.getEndDate());
 		Car car = availableCars.get((int) (Math.random() * availableCars.size()));
-		synchronized (car) {
-			Reservation res = new Reservation(quote, car.getId());
-			car.addReservation(res);
-			return res;
-		}
-		
+
+		Reservation res = new Reservation(quote, car.getId());
+		car.addReservation(res);
+		return res;
 	}
 
 	public Set<Reservation> getReservationsFromRenter(String client) {
 		Set<Reservation> reservations = new HashSet<Reservation>();
 		for (Car car : this.cars) {
 			for (Reservation reservation : car.getReservationsFromClient(client)) {
+				System.out.println("reservation " + client + "  " + reservation.getCarType());
 				reservations.add(reservation);
 			}
 		}
@@ -238,12 +239,30 @@ public class CarRentalCompany implements ICarRentalCompany {
 			}
 		}
 		return reservations;
-
 	}
 
-	public void cancelReservation(Reservation res) {
-		logger.log(Level.INFO, "<{0}> Cancelling reservation {1}\n", new Object[] { name, res.toString() });
-		getCar(res.getCarId()).removeReservation(res);
+	public int getNumberOfReservationsForType(String client) {
+		return this.getReservationsForCarType(client).size();
+	}
+
+	// @SuppressWarnings("deprecation")
+	public CarType getMostPopularCarTypeInYear(int year) throws RemoteException {
+		int number = 0;
+		CarType cartype = null;
+
+		for (CarType car : getAllCarTypes()) {
+			Set<Reservation> reservations = getReservationsForCarType(car.getName());
+			for (Reservation res : reservations) {
+				if (res.getEndDate().getYear() + 1900 != year) {
+					reservations.remove(res);
+				}
+			}
+			if (number < reservations.size()) {
+				number = reservations.size();
+				cartype = car;
+			}
+		}
+		return cartype;
 	}
 
 	@Override

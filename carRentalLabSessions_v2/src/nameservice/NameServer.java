@@ -21,13 +21,12 @@ import java.util.Date;
 
 import nameservice.INameService;
 
-
 public class NameServer {
 
-//	private final static int LOCAL = 0;
-//	private final static int REMOTE = 1;
+	private final static int LOCAL = 0;
+	private final static int REMOTE = 1;
 
-	public static void main(String[] args) throws  RemoteException {
+	public static void main(String[] args) throws RemoteException {
 
 		System.out.println("\n=============== Starting Name Server Process ===============\n");
 
@@ -37,11 +36,9 @@ public class NameServer {
 
 		// The first argument passed to the `main` method (if present)
 		// indicates whether the application is run on the remote setup or not.
-		//int localOrRemote = (args.length == 1 && args[0].equals("REMOTE")) ? REMOTE : LOCAL;
-
+		int localOrRemote = (args.length == 1 && args[0].equals("REMOTE")) ? REMOTE : LOCAL;
 
 		INameService nameservice = new NameService();
-
 		Registry registry = null;
 		try {
 			registry = LocateRegistry.getRegistry();
@@ -54,12 +51,12 @@ public class NameServer {
 		INameService stub;
 		try {
 			stub = (INameService) UnicastRemoteObject.exportObject(nameservice, 0);
-			registry.rebind("testnameservice", stub); //calling it as "nameservice" while lookup
+			registry.rebind("testnameservice", stub); // calling it as "nameservice" while lookup
+			System.out.println("Done egistering the Name service name now");
 		} catch (RemoteException e) {
+			System.out.println("Namerservice register failed now");
 			e.printStackTrace();
 		}
-		
-		
-		
+
 	}
 }

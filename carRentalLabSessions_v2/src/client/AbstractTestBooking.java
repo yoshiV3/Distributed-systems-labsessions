@@ -4,12 +4,14 @@ import java.text.ParseException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 import java.util.Map;
 import java.util.StringTokenizer;
 
+import rental.Quote;
 import rental.Reservation;
 
-import agency.ICarRentalAgency;
+//import agency.ICarRentalAgency;
 import agency.IManagerSession;
 import agency.IReservationSession;
 
@@ -28,7 +30,7 @@ public abstract class AbstractTestBooking<IReservationSession, IManagerSession> 
 	 *
 	 * @throws Exception if things go wrong, throw exception
 	 */
-	protected abstract ReservationSession getNewReservationSession(String name) throws Exception;
+	protected abstract IReservationSession getNewReservationSession(String name) throws Exception;
 
 	/**
 	 * Create a new manager session for the user with the given name (there is only
@@ -39,7 +41,7 @@ public abstract class AbstractTestBooking<IReservationSession, IManagerSession> 
 	 *
 	 * @throws Exception if things go wrong, throw exception
 	 */
-	protected abstract ManagerSession getNewManagerSession(String name) throws Exception;
+	protected abstract IManagerSession getNewManagerSession(String name) throws Exception;
 
 	/**
 	 * Check which car types are available in the given period and print them.
@@ -111,7 +113,7 @@ public abstract class AbstractTestBooking<IReservationSession, IManagerSession> 
 	/*
 	 * Open reservation sessions.
 	 */
-	protected Map<String, ReservationSession> sessions = new HashMap<String, ReservationSession>();
+	protected Map<String, IReservationSession> sessions = new HashMap<String, IReservationSession>();
 
 	/**
 	 * 
@@ -138,7 +140,9 @@ public abstract class AbstractTestBooking<IReservationSession, IManagerSession> 
 		//
 		// Pre processing command
 		//
+
 		Date startDate = null, endDate = null;
+		
 		if (cmd.equals("BA") || cmd.equals("BB")) {
 			try {
 				startDate = DATE_FORMAT.parse(scriptLineTokens.nextToken());
@@ -148,7 +152,7 @@ public abstract class AbstractTestBooking<IReservationSession, IManagerSession> 
 			}
 		}
 
-		ReservationSession session = null;
+		IReservationSession session = null;
 		if (cmd.equals("BA") || cmd.equals("BB") || cmd.equals("BF")) {
 			session = sessions.get(name);
 			if (session == null) {
@@ -210,30 +214,28 @@ public abstract class AbstractTestBooking<IReservationSession, IManagerSession> 
 	}
 
 	private void assessTotalReservationsRenter(String name, StringTokenizer scriptReader) throws Exception {
-		ManagerSession rental = getNewManagerSession(name);
-
+		IManagerSession rental = getNewManagerSession(name);
 		while (scriptReader.hasMoreTokens()) {
 			String pars = scriptReader.nextToken();
-
 			int nr = getNumberOfReservationsByRenter(rental, name);
 			if (Integer.parseInt(pars) == nr) {
-				System.out.println(name + " has correct totals " + pars + " " + nr);
+				System.out.println(name + " has correct totals " + pars + " res=" + nr);
 			} else {
-				System.err.println(name + " has wrong totals " + pars + " " + nr);
+				System.err.println(name + " has wrong totals " + pars + " res=" + nr);
 			}
 		}
 	}
 
 	private void assessTotalReservations(String name, StringTokenizer scriptReader) throws Exception {
-		ManagerSession rental = getNewManagerSession(name);
+		IManagerSession rental = getNewManagerSession(name);
 		while (scriptReader.hasMoreTokens()) {
 			String pars = scriptReader.nextToken();
 			String[] pair = pars.split(":");
 			int nr = getNumberOfReservationsForCarType(rental, name, pair[0]);
 			if (Integer.parseInt(pair[1]) == nr) {
-				System.out.println(name + " has correct totals " + pars + " " + nr);
+				System.out.println(name + " has correct totals " + pars + " res=" + nr);
 			} else {
-				System.err.println(name + " has wrong totals " + pars + " " + nr);
+				System.err.println(name + " has wrong totals " + pars + " res=" + nr);
 			}
 		}
 	}

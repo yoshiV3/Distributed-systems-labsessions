@@ -16,80 +16,104 @@ import rental.CarType;
 import rental.Quote;
 import rental.Reservation;
 import rental.ReservationConstraints;
+import rental.ReservationException;
 import rental.ICarRentalCompany;
 import rental.CarRentalCompany;
 import agency.ICarRentalAgency;
-import agency.CarRentalAgency;
-import agency.AgencyQuote;
+//import agency.CarRentalAgency;
+//import agency.AgencyQuote;
 import nameservice.INameService;
-import nameservice.NameService;
-
 
 public class ReservationSession implements IReservationSession {
 
 	private Registry registry = null;
 	private String client;
-	private CarRentalAgency agency;
-//	private List<AgencyQuote> quotes;
-//
+	private ICarRentalAgency agency;
+	private List<AgencyQuote> quotes;
 	private INameService namingService = null;
 
 	// constructor
-	public ReservationSession(String client, ICarRentalAgency agency) {
+	public ReservationSession(String client, ICarRentalAgency agency, INameService namingService) {
 		this.client = client;
 		this.agency = agency;
-		this.namingService = agency.getNameService();
+		this.namingService = namingService;
 		this.quotes = new ArrayList<AgencyQuote>();
 	}
 
-//	@Override
-//	public Map<String, Set<CarType>> getAvailableCarTypes(Date start, Date end) {
-//		return this.agency.getAvailbaleCarTypes(start, end);
-//	}
-
 	@Override
-	public Map<String, Set<CarType>> getAvailableCarTypes(Date start, Date end) {
+	public Map<String, Set<CarType>> getAvailableCarTypes(Date start, Date end) throws RemoteException {
+
 		Map<String, Set<CarType>> cartypes = new HashMap<String, Set<CarType>>();
 		List<ICarRentalCompany> stubs = this.namingService.getAllRegisteredCRCStubs();
-		// Set<CarType> result = new HashSet<CarType>();
 		for (ICarRentalCompany stub : stubs) {
-			cartypes.put(stub, stub.getAvailableCarTypes(start, end));
-			// result.add(stub.getAvailableCarTypes(start, end));
+			cartypes.put(stub.getName(), stub.getAvailableCarTypes(start, end));
 		}
 		return cartypes;
 	}
 
-//
-//	@Override
-//	public AgencyQuote createQuote(ReservationConstraints constraints, String client) {
-//		AgencyQuote quote = this.agency.createQuote(constraints, client);
-//		this.quotes.add(quote);
-//		return quote;
-//	}
-//
-//	@Override
-//	public Set<AgencyReservation> confirmQuotes() {
-//		this.agency.confirmQuotes(quotes);
-//	}
-//
-//	@Override
-//	public Set<AgencyQuote> getCurrentQuotes() {
-//		return new HashSet<AgencyQuote>(this.quotes);
-//	}
-//
-//	@Override
-//	public Set<CarType> getAvailableCarTypes(Date start, Date end) {
-//		return this.agency.getAvailbaleCarTypes(start, end);
-//	}
-//
-//	@Override
-//	public CarType getCheapestCarType(Date start, Date end, String region) {
-//		return this.agency.getCheapestCarType(start, end, region);
-//	}
-//
-//	public void closeReservationSession() {
-//		registry.unbind(this.client);
-//		UnicastRemoteObject.unexportObject(this, true);
-//	}
+	@Override
+	public synchronized void createQuote(ReservationConstraints constraints, String client) throws RemoteException {
+		List<ICarRentalCompany> stubs = this.namingService.getAllRegisteredCRCStubs();
+		double price = 90000;
+
+		ICarRentalCompany company = null;
+		for (ICarRentalCompany stub : stubs) {
+			if (stub.canReserve(constraints)) {
+				if (price > stub.getRentalPricePerDay(constraints.getCarType())) {
+					company = stub;
+					break; // stopping to check here, we can add another check to pick the lowest priced
+							// crc
+				}
+			}
+		}
+		if (company == null) {
+			System.out.println("<" + client + "> No cars available to satisfy the given constraints.");
+			return;
+		}
+		System.out.println("selected quote for " + company.getName() + constraints.getCarType());
+		Quote quote = company.createQuote(constraints, client);
+		quotes.add(new AgencyQuote(quote, company));
+	}
+
+	@Override
+	public synchronized List<Reservation> confirmQuotes() throws RemoteException {
+		Set<AgencyReservation> reservations = new HashSet<AgencyReservation>();
+		List<Reservation> reservationlist = new ArrayList<Reservation>();
+		for (AgencyQuote quote : quotes) {
+			ICarRentalCompany stub = quote.getCompany();
+			try {
+				Reservation res = stub.confirmQuote(quote.getQuote());
+				reservations.add(new AgencyReservation(res, stub));
+				reservationlist.add(res);
+
+			} catch (ReservationException e) {
+				for (AgencyReservation res : reservations) {
+					res.getCompany().cancelReservation(res.getReservation());
+				}
+				return null;
+			}
+
+		}
+		return reservationlist;
+
+	}
+
+	@Override
+	public CarType getCheapestCarType(Date start, Date end, String region) throws RemoteException {
+		List<ICarRentalCompany> stubs = this.namingService.getAllRegisteredCRCStubs();
+		CarType minType = null;
+		double currentMinPrice = 8000;
+		for (ICarRentalCompany stub : stubs) {
+			if (stub.operatesInRegion(region)) {
+				CarType type = stub.getCheapestCarType(start, end);
+				if (type.getRentalPricePerDay() < currentMinPrice) {
+					currentMinPrice = type.getRentalPricePerDay();
+					minType = type;
+				}
+			}
+		}
+		return minType;
+
+	}
 
 }
