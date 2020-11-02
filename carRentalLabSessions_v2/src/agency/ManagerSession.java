@@ -31,7 +31,6 @@ import nameservice.INameService;
 //import rental.ICarRentalCompany;
 //import rental.CarRentalCompany;
 
-
 public class ManagerSession implements IManagerSession {
 
 //	private String manager;
@@ -44,9 +43,7 @@ public class ManagerSession implements IManagerSession {
 		this.namingService = agency.getNameService();
 	}
 
-	
-	
-	public void registerCompany(String company) throws RemoteException, NotBoundException {		
+	public void registerCompany(String company) throws RemoteException, NotBoundException {
 		this.namingService.registerCRC(company);
 	}
 //
@@ -74,22 +71,23 @@ public class ManagerSession implements IManagerSession {
 ////		}
 //	}
 //
-//
-//	public Set<String> getBestClients() {
-////		Set<String> result = new HashSet<String>();
-////		int number = 0;
-////		for (String client : this.agency.getAllClients()) {
-////			int nb = this.getNumberOfReservationsBy(client);
-////			if (number < nb) {
-////				result = new HashSet<String>();
-////				result.add(client);
-////			} else if (nb == number) {
-////				result.add(client);
-////			}
-////		}
-////		return result;
-//	}
-//
+
+	public Set<String> getBestClients() throws RemoteException {
+		Set<String> result = new HashSet<String>();
+		int number = 0;
+		for (String client : this.agency.getAllClients()) {
+			int nb = this.agency.getNumberOfReservationsBy(client);
+			if (number < nb) {
+				number = nb;
+				result = new HashSet<String>();
+				result.add(client);
+			} else if (nb == number) {
+				result.add(client);
+			}
+		}
+		return result;
+	}
+
 ////	public Set<String> getBestClients()
 ////	{
 ////		return this.agency.getBestClients();

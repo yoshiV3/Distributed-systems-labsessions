@@ -23,8 +23,7 @@ import agency.IReservationSession;
 import agency.IManagerSession;
 import agency.ICarRentalAgency;
 
-
-public class Client extends AbstractTestBooking<IReservationSession, IManagerSession>  {
+public class Client extends AbstractTestManagement<IReservationSession, IManagerSession> {
 
 	/********
 	 * MAIN *
@@ -101,36 +100,29 @@ public class Client extends AbstractTestBooking<IReservationSession, IManagerSes
 	
 	
 
+	// @Override
+	protected IReservationSession getNewReservationSession(String client) throws Exception {
+		logger.log(Level.INFO, "Inside getNewReservationSession");
+		return this.rentalAgency.openReservationSession(client);
+	}
 
-	
-	//@Override
-    protected IReservationSession getNewReservationSession(String client) throws Exception{
-    	logger.log(Level.INFO, "Inside getNewReservationSession");
-    	return this.rentalAgency.openReservationSession(client);
-    }
+	// @Override
+	protected IManagerSession getNewManagerSession(String manager) throws Exception {
+		logger.log(Level.INFO, "Inside getNewManagerSession");
+		return this.rentalAgency.openManagerSession(manager);
+	}
 
-	
-	//@Override
-    protected IManagerSession getNewManagerSession(String manager) throws Exception{
-    	logger.log(Level.INFO, "Inside getNewManagerSession");
-    	return this.rentalAgency.openManagerSession(manager);
-    }
-
-
-	//@Override
+	// @Override
 	protected void checkForAvailableCarTypes(IReservationSession session, Date start, Date end) throws Exception {
 		System.out.println("************Available cars ***********");
 		Map<String, Set<CarType>> cartypes = session.getAvailableCarTypes(start, end);
 		System.out.println("		CRC     -   CarType");
-		for (String company : cartypes.keySet()) {			
+		for (String company : cartypes.keySet()) {
 			for (CarType carType : cartypes.get(company)) {
-				System.out.println("		"+company +"   -   " + carType.getName());
+				System.out.println("		" + company + "   -   " + carType.getName());
 			}
 		}
 
-		
-				
-		
 		// TODO Auto-generated method stub
 		
 //		Set<CarType> availablecartypesdata= company.getAvailableCarTypes(start,end);
@@ -159,26 +151,33 @@ public class Client extends AbstractTestBooking<IReservationSession, IManagerSes
 	protected List<Reservation> confirmQuotes(IReservationSession session, String client) throws Exception{
 		return session.confirmQuotes();
 	}
-	
-	//@Override
-    protected int getNumberOfReservationsByRenter(IManagerSession ms, String clientName) throws Exception{
-    	return 0;
-    }
-	
-	//@Override
-	protected int getNumberOfReservationsForCarType(IManagerSession ms, String carRentalName, String carType) throws Exception{
+
+	// @Override
+	protected int getNumberOfReservationsByRenter(IManagerSession ms, String clientName) throws Exception {
 		return 0;
-	}    
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+	}
+
+	// @Override
+	protected int getNumberOfReservationsForCarType(IManagerSession ms, String carRentalName, String carType)
+			throws Exception {
+		return 0;
+	}
+
+	protected Set<String> getBestClients(IManagerSession session) throws Exception {
+		System.out.println("will get best clients");
+		return session.getBestClients();
+	}
+
+	protected String getCheapestCarType(IReservationSession session, Date start, Date end, String region)
+			throws Exception {
+		return session.getCheapestCarType(start, end, region).getName();
+	}
+
+	protected CarType getMostPopularCarTypeInCRC(IManagerSession session, String carRentalCompanyName, int year)
+			throws Exception {
+		return null;
+	}
+
 //	/**
 //	 * Retrieve a quote for a given car type (tentative reservation).
 //	 * 

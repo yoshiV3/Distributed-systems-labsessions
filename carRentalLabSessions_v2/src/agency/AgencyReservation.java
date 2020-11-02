@@ -9,8 +9,8 @@ public class AgencyReservation {
 	private ICarRentalCompany company;
 
 	public AgencyReservation(Reservation reservation, ICarRentalCompany company) {
-		this.reservation=reservation;
-		this.company=company;
+		this.reservation = reservation;
+		this.company = company;
 	}
 
 	public Reservation getReservation() {
@@ -21,5 +21,4 @@ public class AgencyReservation {
 		return this.company;
 	}
 
-	
 }

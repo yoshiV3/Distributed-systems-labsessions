@@ -54,15 +54,15 @@ public class NameService implements INameService{
 //		}
 //	}
 
-	@Override
+	// @Override
 	public void registerCRC(String crcname) throws RemoteException, NotBoundException {
 		if (!this.carRentalCompanyList.containsKey(crcname)) {
-			ICarRentalCompany crc=(ICarRentalCompany) this.registry.lookup(crcname);
+			ICarRentalCompany crc = (ICarRentalCompany) this.registry.lookup(crcname);
 			this.carRentalCompanyList.put(crcname, crc);
 		}
 	}
 
-	@Override
+	// @Override
 	public void unregisterCRC(String company) {
 		this.carRentalCompanyList.remove(company);
 	}
@@ -72,11 +72,13 @@ public class NameService implements INameService{
 		return this.carRentalCompanyList;
 	}
 
-	@Override
-	public ICarRentalCompany getRegisteredCRCStub(String company) {
+	// @Override
+	public ICarRentalCompany getRegisteredCRCStub(String company) throws RemoteException {
 		if (this.carRentalCompanyList.containsKey(company)) {
 			try {
+
 				ICarRentalCompany companyStub = (ICarRentalCompany) this.registry.lookup(company);
+
 				return companyStub;
 			} catch (RemoteException | NotBoundException e) {
 				e.printStackTrace();
@@ -85,16 +87,17 @@ public class NameService implements INameService{
 		return null;
 	}
 
-	@Override
+	// @Override
 	public HashMap<String, ICarRentalCompany> getAllRegisteredCRCNames() {
 		return (this.carRentalCompanyList);
 	}
-	
-	@Override
-	public List<ICarRentalCompany> getAllRegisteredCRCStubs() {
+
+	// @Override
+	public List<ICarRentalCompany> getAllRegisteredCRCStubs() throws RemoteException {
 		List<ICarRentalCompany> result = new ArrayList<ICarRentalCompany>();
 		for (String name : this.carRentalCompanyList.keySet()) {
-			result.add(this.getRegisteredCRCStub(name));
+//			result.add(this.getRegisteredCRCStub(name));
+			result.add(this.carRentalCompanyList.get(name));
 		}
 		return result;
 	}

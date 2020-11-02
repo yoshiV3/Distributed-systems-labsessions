@@ -70,7 +70,8 @@ public class ReservationSession implements IReservationSession {
 			if (stub.canReserve(constraints)) {
 				if (price > stub.getRentalPricePerDay(constraints.getCarType())) {
 					company = stub;
-					break; //stopping to check here, we can add another check to pick the lowest priced crc
+					break; // stopping to check here, we can add another check to pick the lowest priced
+							// crc
 				}
 			}
 		}
@@ -78,14 +79,14 @@ public class ReservationSession implements IReservationSession {
 			System.out.println("<" + client + "> No cars available to satisfy the given constraints.");
 			return;
 		}
-		System.out.println("selected quote for "+company.getName()+constraints.getCarType());
+		System.out.println("selected quote for " + company.getName() + constraints.getCarType());
 		Quote quote = company.createQuote(constraints, client);
 		quotes.add(new AgencyQuote(quote, company));
 //		return new AgencyQuote(quote, company);
 	}
 
 	@Override
-	public List<Reservation> confirmQuotes() throws RemoteException{
+	public List<Reservation> confirmQuotes() throws RemoteException {
 		Set<AgencyReservation> reservations = new HashSet<AgencyReservation>();
 		List<Reservation> reservationlist = new ArrayList<Reservation>();
 		for (AgencyQuote quote : quotes) {
@@ -106,8 +107,25 @@ public class ReservationSession implements IReservationSession {
 		return reservationlist;
 
 	}
-	
-	
+
+	@Override
+	public CarType getCheapestCarType(Date start, Date end, String region) throws RemoteException {
+		List<ICarRentalCompany> stubs = this.namingService.getAllRegisteredCRCStubs();
+		CarType minType = null;
+		double currentMinPrice = 8000;
+		for (ICarRentalCompany stub : stubs) {
+			if (stub.operatesInRegion(region)) {
+				CarType type = stub.getCheapestCarType(start, end);
+				if (type.getRentalPricePerDay() < currentMinPrice) {
+					currentMinPrice = type.getRentalPricePerDay();
+					minType = type;
+				}
+			}
+		}
+		return minType;
+
+	}
+
 //	@Override
 //	public Set<AgencyReservation> confirmQuotes() {
 //		this.agency.confirmQuotes(quotes);

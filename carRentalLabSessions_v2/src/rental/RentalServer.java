@@ -46,7 +46,7 @@ public class RentalServer {
 		} catch (RemoteException e) {
 			System.exit(-1);
 		}
-		System.out.println("Registering the Car Rental Compnay <"+input.name+"> now");
+		System.out.println("Registering the Car Rental Compnay <" + input.name + "> now");
 		// convert to stub
 		ICarRentalCompany stub;
 		try {

@@ -58,45 +58,46 @@ public class CarRentalAgency implements ICarRentalAgency {
 		}
 	}
 
-	public IReservationSession openReservationSession(String client) throws RemoteException{
+	public IReservationSession openReservationSession(String client) throws RemoteException {
 		System.out.println("\n=============== Starting openReservationSession ===============\n");
 		IReservationSession session = this.reservationSessions.get(client);
 		if (session != null)
 			return session;
 		else {
 			try {
-			ReservationSession createsession = new ReservationSession(client, this, this.namingService);
-			this.reservationSessions.put(client, createsession);
-			this.addNewClient(client);
-			IReservationSession stub;
-			stub = (IReservationSession) UnicastRemoteObject.exportObject(createsession, 0);
-			//this.registry.rebind(client,stub);
-			
-			return stub;
-		} catch(RemoteException e) {
-			e.printStackTrace();
-			return null;
-		}
+				ReservationSession createsession = new ReservationSession(client, this, this.namingService);
+				this.reservationSessions.put(client, createsession);
+				this.addNewClient(client);
+				IReservationSession stub;
+				stub = (IReservationSession) UnicastRemoteObject.exportObject(createsession, 0);
+				// this.registry.rebind(client,stub);
+
+				return stub;
+			} catch (RemoteException e) {
+				e.printStackTrace();
+				return null;
+			}
 
 		}
 	}
 
-	public IManagerSession openManagerSession(String manager) throws RemoteException{
+	public IManagerSession openManagerSession(String manager) throws RemoteException {
 		IManagerSession session = this.managerSessions.get(manager);
 		if (session != null)
 			return session;
-		else {			
+		else {
 			try {
-			ManagerSession createsession = new ManagerSession(manager, this);
-			this.managerSessions.put(manager, createsession);
-			IManagerSession stub;
-			stub = (IManagerSession) UnicastRemoteObject.exportObject(createsession, 0);
-			//this.registry.rebind(manager, stub);
-			return stub;
-			} catch(RemoteException e) {
+				ManagerSession createsession = new ManagerSession(manager, this);
+				this.managerSessions.put(manager, createsession);
+				IManagerSession stub;
+				stub = (IManagerSession) UnicastRemoteObject.exportObject(createsession, 0);
+				this.registry.rebind(manager, stub);
+				System.out.println("managersession created for <" + manager + ">");
+				return stub;
+			} catch (RemoteException e) {
 				e.printStackTrace();
 				return null;
-			}	
+			}
 		}
 //		IManagerSession session = new ManagerSession(manager, this);
 //		IManagerSession stub;
@@ -122,10 +123,10 @@ public class CarRentalAgency implements ICarRentalAgency {
 //		}
 //	}
 
-//	public List<String> getAllClients() {
-//		return this.clientList.copy();
-//	}
-//
+	public List<String> getAllClients() throws RemoteException {
+		return this.clientList;
+	}
+
 	public boolean isNewClient(String client) {
 		return this.clientList.contains(client);
 	}
@@ -156,7 +157,7 @@ public class CarRentalAgency implements ICarRentalAgency {
 //		}
 //	}
 
-	public INameService getNameService() throws RemoteException{
+	public INameService getNameService() throws RemoteException {
 		return this.namingService;
 //		try {
 //			return this.namingService;
@@ -228,13 +229,15 @@ public class CarRentalAgency implements ICarRentalAgency {
 //		return stub.getNumberOfReservationsFOrType(type);
 //	}
 //
-//	public int getNumberOfReservationsBy(String client) {
-//		int total = 0;
-//		List<ICarRentalCompany> stubs = this.namingService.getAllRegisteredCRCStubs();
-//		for (ICarRentalCompany stub : stubs) {
-//			total = total + stub.getNumberOfReservationsFromRenter(client);
-//		}
-//	}
+	public int getNumberOfReservationsBy(String client) throws RemoteException {
+		int total = 0;
+		List<ICarRentalCompany> stubs = this.namingService.getAllRegisteredCRCStubs();
+		for (ICarRentalCompany stub : stubs) {
+			total = total + stub.getNumberOfReservationsFromRenter(client);
+		}
+
+		return total;
+	}
 //
 //	public Set<String> getBestClients() {
 //		Set<String> result = new HashSet<String>();
