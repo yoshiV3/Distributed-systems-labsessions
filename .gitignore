@@ -6,3 +6,15 @@
 *.nar
 .classpath
 *.swp
+/carRentalLabSessions_v3/CarRental/nbproject/private/
+/carRentalLabSessions_v3/CarRental-ejb/nbproject/private/
+/carRentalLabSessions_v3/CarRental-client/nbproject/private/
+/carRentalLabSessions_v3/CarRental-lib/nbproject/private/
+/carRentalLabSessions_v3/CarRental-lib/dist/
+/carRentalLabSessions_v3/CarRental-lib/build/
+/carRentalLabSessions_v3/CarRental/dist/
+/carRentalLabSessions_v3/CarRental/build/
+/carRentalLabSessions_v3/CarRental-ejb/dist/
+/carRentalLabSessions_v3/CarRental-ejb/build/
+/carRentalLabSessions_v3/CarRental-client/dist/
+/carRentalLabSessions_v3/CarRental-client/build/
