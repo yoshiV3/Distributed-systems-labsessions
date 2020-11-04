@@ -1,33 +1,14 @@
 package agency;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.Date;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
-import java.rmi.registry.LocateRegistry;
-import java.rmi.registry.Registry;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
-import rental.ICarRentalCompany;
-import rental.CarType;
-import rental.Quote;
-import rental.Reservation;
-import rental.ReservationConstraints;
-import rental.CarRentalCompany;
-import agency.ICarRentalAgency;
-
-//import agency.CarRentalAgency;
-//import agency.AgencyQuote;
-//import nameservice.INameService;
-//import nameservice.NameService;
-//
-//import agency.ICarRentalAgency;
-//import agency.CarRentalAgency;
 import nameservice.INameService;
+import rental.CarType;
+import rental.ICarRentalCompany;
 
 public class ManagerSession implements IManagerSession {
 

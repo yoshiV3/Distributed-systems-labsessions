@@ -1,31 +1,11 @@
 package agency;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.lang.invoke.MethodHandles;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Date;
-import java.util.StringTokenizer;
-
 import nameservice.INameService;
-//import nameservice.NameService;
-//import client.Client;
-import agency.ICarRentalAgency;
-//import agency.CarRentalAgency;
 
 public class CarRentalAgencyServer {
 

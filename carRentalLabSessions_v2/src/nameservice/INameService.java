@@ -5,7 +5,6 @@ import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.HashMap;
 import java.util.List;
-import java.util.StringTokenizer;
 import rental.ICarRentalCompany;
 
 public interface INameService extends Remote {

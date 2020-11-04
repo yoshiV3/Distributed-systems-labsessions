@@ -1,15 +1,13 @@
 package agency;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.Date;
-import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
-import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import rental.ICarRentalCompany;
 import rental.CarType;
@@ -17,11 +15,6 @@ import rental.Quote;
 import rental.Reservation;
 import rental.ReservationConstraints;
 import rental.ReservationException;
-import rental.ICarRentalCompany;
-import rental.CarRentalCompany;
-import agency.ICarRentalAgency;
-//import agency.CarRentalAgency;
-//import agency.AgencyQuote;
 import nameservice.INameService;
 
 public class ReservationSession implements IReservationSession {
@@ -76,7 +69,7 @@ public class ReservationSession implements IReservationSession {
 	}
 
 	@Override
-	public synchronized List<Reservation> confirmQuotes() throws RemoteException {
+	public List<Reservation> confirmQuotes() throws RemoteException {
 		Set<AgencyReservation> reservations = new HashSet<AgencyReservation>();
 		List<Reservation> reservationlist = new ArrayList<Reservation>();
 		for (AgencyQuote quote : quotes) {

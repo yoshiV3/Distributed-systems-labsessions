@@ -4,19 +4,15 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
-import java.rmi.server.UnicastRemoteObject;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
 import java.util.Map;
-import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import rental.CarRentalCompany;
 import rental.CarType;
 import rental.ICarRentalCompany;
-import rental.Quote;
 import rental.Reservation;
 import rental.ReservationConstraints;
 import agency.IReservationSession;
@@ -86,12 +82,12 @@ public class Client extends AbstractTestManagement<IReservationSession, IManager
 	}
 
 	protected IReservationSession getNewReservationSession(String client) throws Exception {
-		System.out.println("--> New Reservation Session");
+		//System.out.println("--> New Reservation Session");
 		return this.rentalAgency.openReservationSession(client);
 	}
 
 	protected IManagerSession getNewManagerSession(String manager) throws Exception {
-		System.out.println("--> New Manager Session");
+		//System.out.println("--> New Manager Session");
 		return this.rentalAgency.openManagerSession(manager);
 	}
 
