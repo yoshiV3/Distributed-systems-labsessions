@@ -11,8 +11,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.io.*;
-import java.util.*;
 
 public class CarRentalCompany implements ICarRentalCompany {
 
@@ -154,7 +152,7 @@ public class CarRentalCompany implements ICarRentalCompany {
 	 ****************/
 
 	public boolean canReserve(ReservationConstraints constraints) {
-		System.out.println("checking for cartype: " + constraints.getCarType() + name);
+		System.out.println("checking for cartype: " + constraints.getCarType() + " in "+name);
 		boolean result = operatesInRegion(constraints.getRegion());
 		result = result && isAvailable(constraints.getCarType(), constraints.getStartDate(), constraints.getEndDate());
 		return result;
@@ -201,7 +199,7 @@ public class CarRentalCompany implements ICarRentalCompany {
 	}
 
 	@Override
-	public Reservation confirmQuote(Quote quote) throws ReservationException {
+	public synchronized Reservation confirmQuote(Quote quote) throws ReservationException {
 		logger.log(Level.INFO, "<{0}> Reservation of {1}\n", new Object[] { name, quote.toString() });
 		List<Car> availableCars = getAvailableCars(quote.getCarType(), quote.getStartDate(), quote.getEndDate());
 		if (availableCars.isEmpty())

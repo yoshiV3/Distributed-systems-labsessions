@@ -8,10 +8,8 @@ import java.util.List;
 import java.util.Map;
 
 import rental.CarType;
-import rental.Quote;
 import rental.Reservation;
 import rental.ReservationConstraints;
-import agency.AgencyQuote;
 
 public interface IReservationSession extends Remote {
 	public void createQuote(ReservationConstraints constraints, String client) throws RemoteException;
