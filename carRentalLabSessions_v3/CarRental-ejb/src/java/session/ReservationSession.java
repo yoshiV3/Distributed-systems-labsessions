@@ -10,6 +10,7 @@ import rental.CarType;
 import rental.RentalStore;
 import rental.CarRentalCompany;
 import rental.Quote;
+import rental.Reservation;
 import rental.ReservationConstraints;
 import rental.ReservationException;
 
@@ -61,6 +62,7 @@ public class ReservationSession implements ReservationSessionRemote {
         try 
         {
             Quote quote = companies.get((int)(Math.random()*companies.size())).createQuote(constraint, this.guest);
+            this.quotes.add(quote);
             return quote; 
             
         }
@@ -68,9 +70,34 @@ public class ReservationSession implements ReservationSessionRemote {
         {
             return null;
         }
-        
     }
-
     
+    @Override
+    public Set<Quote> getCurrentQuotes()
+    {
+        return new HashSet<Quote>(this.quotes);
+    }
     
+    @Override
+    public Set<Reservation> confirmQuotes() throws ReservationException
+    {
+        Set<Reservation> reservations = new HashSet<Reservation>();
+        for (Quote quote : this.quotes)
+        {
+            CarRentalCompany comp = RentalStore.getRental(quote.getRentalCompany());
+            try
+            {
+                reservations.add(comp.confirmQuote(quote));
+            }
+            catch(ReservationException e)
+            {
+               for (Reservation resv :reservations)
+               {
+                   RentalStore.getRental(resv.getRentalCompany()).cancelReservation(resv);
+               }
+               throw e ; 
+            }
+        }
+        return reservations;
+    }
 }
