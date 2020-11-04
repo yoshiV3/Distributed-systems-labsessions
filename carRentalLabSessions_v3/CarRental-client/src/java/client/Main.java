@@ -5,11 +5,15 @@ import session.ReservationSessionRemote;
 import java.util.Date;
 import rental.ReservationConstraints;
 import rental.ReservationException;
+import session.ManagerSessionRemote;
 
 public class Main {
     
     @EJB
     static ReservationSessionRemote session;
+    
+    @EJB
+    static ManagerSessionRemote      sessionM;
     /**
      * @param args the command line arguments
      */
