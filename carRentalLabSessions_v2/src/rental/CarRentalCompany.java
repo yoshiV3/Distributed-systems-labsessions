@@ -199,7 +199,7 @@ public class CarRentalCompany implements ICarRentalCompany {
 	}
 
 	@Override
-	public Reservation confirmQuote(Quote quote) throws ReservationException {
+	public synchronized Reservation confirmQuote(Quote quote) throws ReservationException {
 		logger.log(Level.INFO, "<{0}> Reservation of {1}\n", new Object[] { name, quote.toString() });
 		List<Car> availableCars = getAvailableCars(quote.getCarType(), quote.getStartDate(), quote.getEndDate());
 		if (availableCars.isEmpty())
