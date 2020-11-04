@@ -120,8 +120,13 @@ public class CarRentalCompany {
 	/****************
 	 * RESERVATIONS *
 	 ****************/
+        
+        public boolean quoteCanBeCreated(ReservationConstraints constraints)
+        {
+            return this.regions.contains(constraints.getRegion()) && isAvailable(constraints.getCarType(), constraints.getStartDate(), constraints.getEndDate());
+        }
 
-	public Quote createQuote(ReservationConstraints constraints, String guest)
+	public synchronized Quote createQuote(ReservationConstraints constraints, String guest)
 			throws ReservationException {
 		logger.log(Level.INFO, "<{0}> Creating tentative reservation for {1} with constraints {2}", 
                         new Object[]{name, guest, constraints.toString()});

@@ -1,8 +1,10 @@
 package rental;
 
+import java.io.Serializable;
 import java.util.Date;
 
-public class Quote {
+public class Quote implements Serializable
+{
 
     private Date startDate;
     private Date endDate;
