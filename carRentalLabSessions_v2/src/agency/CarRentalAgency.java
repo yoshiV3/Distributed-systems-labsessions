@@ -1,42 +1,15 @@
 package agency;
 
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.StringTokenizer;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.lang.invoke.MethodHandles;
-import java.rmi.AccessException;
-import java.rmi.NoSuchObjectException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Date;
-
-import rental.CarType;
-import rental.ICarRentalCompany;
-import rental.Quote;
-import rental.Reservation;
-import rental.ReservationConstraints;
-import rental.ReservationException;
-
-//import client.Client;
-//import agency.ManagerSession;
-//import agency.ReservationSession;
-import agency.IManagerSession;
-import agency.IReservationSession;
-//import nameservice.NameService;
 import nameservice.INameService;
+import rental.ICarRentalCompany;
 
 public class CarRentalAgency implements ICarRentalAgency {
 
@@ -59,9 +32,10 @@ public class CarRentalAgency implements ICarRentalAgency {
 
 	public IReservationSession openReservationSession(String client) throws RemoteException {
 		IReservationSession session = this.reservationSessions.get(client);
-		if (session != null)
+		if (session != null) {
+			System.out.println("--> Opening Reservation Session for [" + client + "]");
 			return session;
-		else {
+		} else {
 			try {
 				ReservationSession createsession = new ReservationSession(client, this, this.namingService);
 				this.reservationSessions.put(client, createsession);
@@ -69,6 +43,7 @@ public class CarRentalAgency implements ICarRentalAgency {
 				IReservationSession stub;
 				stub = (IReservationSession) UnicastRemoteObject.exportObject(createsession, 0);
 				// this.registry.rebind(client,stub);
+				System.out.println("--> New Reservation Session for [" + client + "]");
 				return stub;
 			} catch (RemoteException e) {
 				e.printStackTrace();
@@ -80,15 +55,17 @@ public class CarRentalAgency implements ICarRentalAgency {
 
 	public IManagerSession openManagerSession(String manager) throws RemoteException {
 		IManagerSession session = this.managerSessions.get(manager);
-		if (session != null)
+		if (session != null) {
+			System.out.println("--> Opening Manager Session for [" + manager + "]");
 			return session;
-		else {
+		} else {
 			try {
 				ManagerSession createsession = new ManagerSession(manager, this);
 				this.managerSessions.put(manager, createsession);
 				IManagerSession stub;
 				stub = (IManagerSession) UnicastRemoteObject.exportObject(createsession, 0);
 				// this.registry.rebind(manager, stub);
+				System.out.println("--> New Manager Session for [" + manager + "]");
 				return stub;
 			} catch (RemoteException e) {
 				e.printStackTrace();

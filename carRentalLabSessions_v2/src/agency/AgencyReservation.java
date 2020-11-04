@@ -1,7 +1,6 @@
 package agency;
 
 import rental.ICarRentalCompany;
-import rental.Quote;
 import rental.Reservation;
 
 public class AgencyReservation {
