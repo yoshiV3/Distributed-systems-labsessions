@@ -17,35 +17,29 @@ import rental.Reservation;
  */
 @Stateful
 public class ManagerSession implements ManagerSessionRemote {
-    public int getNumberOfReservationsForCarTypeAtCompany(String company, String type )
-    {
+
+    public int getNumberOfReservationsForCarTypeAtCompany(String company, String type) {
         int result = 0;
         CarRentalCompany comp = RentalStore.getRental(company);
-        for (Car car: comp.getCars())
-        {
-            if (car.getType().getName().equals(type))
-            {
+        for (Car car : comp.getCars()) {
+            if (car.getType().getName().equals(type)) {
                 result = result + car.getAllReservations().size();
             }
         }
         return result;
     }
-    public int getNumberOfReservationsByRenter(String renter)
-    {
+
+    public int getNumberOfReservationsByRenter(String renter) {
         int result = 0;
-        for(CarRentalCompany comp: RentalStore.getRentals().values())
-        {
-            for (Car car: comp.getCars())
-            {
-                for (Reservation rsv : car.getAllReservations())
-                {
-                    if(rsv.getCarRenter().equals(renter))
-                    {
+        for (CarRentalCompany comp : RentalStore.getRentals().values()) {
+            for (Car car : comp.getCars()) {
+                for (Reservation rsv : car.getAllReservations()) {
+                    if (rsv.getCarRenter().equals(renter)) {
                         result = result + 1;
                     }
                 }
             }
-            
+
         }
         return result;
     }

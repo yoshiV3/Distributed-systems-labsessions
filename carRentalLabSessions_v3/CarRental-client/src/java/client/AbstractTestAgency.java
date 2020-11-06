@@ -128,6 +128,10 @@ public abstract class AbstractTestAgency<ReservationSession, ManagerSession> ext
 		//
 		// Pre processing command 
 		//
+                if (flags.contains('c')) {
+			return;			
+		}               
+                
 		Date startDate = null, endDate = null;		
 		if (cmd.equals("BA") || cmd.equals("BB")) {
 			try {

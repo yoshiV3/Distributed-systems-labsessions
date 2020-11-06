@@ -13,7 +13,9 @@ import javax.ejb.Remote;
  */
 @Remote
 public interface ManagerSessionRemote {
-    public int getNumberOfReservationsForCarTypeAtCompany(String company, String type );
+
+    public int getNumberOfReservationsForCarTypeAtCompany(String company, String type);
+
     public int getNumberOfReservationsByRenter(String renter);
-    
+
 }
