@@ -166,6 +166,10 @@ public class ManagerSession implements ManagerSessionRemote {
     @Override
     public void addCarTypeToRental(String name, int nbOfSeats, float trunkSpace, double rentalPricePerDay, boolean smokingAllowed, String company) {
         CarRentalCompany crc = em.find(CarRentalCompany.class, company);
+        if (crc == null)
+        {
+            throw new IllegalArgumentException("not a valid crc");
+        }
         for (CarType type : crc.getCarTypes())
         {
             if (type.getName().equals(name))
