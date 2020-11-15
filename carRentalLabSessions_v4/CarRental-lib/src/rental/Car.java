@@ -7,6 +7,7 @@ import static javax.persistence.CascadeType.ALL;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
 @Entity
@@ -16,10 +17,10 @@ public class Car {
     @Id
     @GeneratedValue
     private int id;
-    @OneToMany
+    @ManyToOne
     private CarType type;
     @OneToMany(cascade=ALL, mappedBy="Car")
-    private Set<Reservation> reservations;
+    private Set<Reservation> reservations = new HashSet<Reservation>();
 
     /***************
      * CONSTRUCTOR *
@@ -77,7 +78,4 @@ public class Car {
         reservations.remove(reservation);
     }
 
-    public Set<Reservation> getReservations() {
-        return reservations;
-    }
 }

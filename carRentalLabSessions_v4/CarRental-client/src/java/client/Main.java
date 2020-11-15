@@ -18,7 +18,9 @@ public class Main extends AbstractTestManagement<ReservationSessionRemote, Manag
 
     public static void main(String[] args) throws Exception {
         // TODO: use updated manager interface to load cars into companies
-        new Main("trips").run();
+        //new Main("trips").run();
+        ManagerSessionRemote session = (ManagerSessionRemote) (new InitialContext()).lookup(ManagerSessionRemote.class.getName());
+        session.loadRental("dockx.csv");
     }
 
     @Override

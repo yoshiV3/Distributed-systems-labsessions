@@ -1,5 +1,6 @@
 package rental;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
@@ -20,10 +21,10 @@ public class CarRentalCompany {
     @Id
     private String name;
     @OneToMany
-    private Collection<Car> cars;
-    private Collection<String> regions;
+    private List<Car> cars= new ArrayList<Car>();
+    private List<String> regions;
     @OneToMany
-    private Collection<CarType> carTypes;
+    private Set<CarType> carTypes = new HashSet<CarType>();
 
 	
     /***************
@@ -77,10 +78,6 @@ public class CarRentalCompany {
         return this.cars;
     }
      
-     public void setCars(Collection<Car> cars)
-     {
-         this.cars = cars;
-     }
      
      public void addCar(Car car)
      {
@@ -92,7 +89,9 @@ public class CarRentalCompany {
          this.cars.remove(car);
      }
      
-     public Collection<CarType> getCarTypes()
+     
+
+     public Set<CarType> getCarTypes()
      {
          return this.carTypes;
      }
