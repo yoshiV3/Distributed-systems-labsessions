@@ -22,12 +22,20 @@ public class CarRentalCompany {
     @OneToMany
     private Collection<Car> cars;
     private Collection<String> regions;
+    @OneToMany
+    private Collection<CarType> carTypes;
 
 	
     /***************
-     * CONSTRUCTOR *
+     * CONSTRUCTORS *
      ***************/
     public CarRentalCompany(){}
+    
+    public CarRentalCompany(String name, List<String> regions)
+    {
+        setName(name);
+        setRegions(regions);
+    }
     
     
     public CarRentalCompany(String name, List<String> regions, List<Car> cars) {
@@ -82,5 +90,20 @@ public class CarRentalCompany {
      public void removeCar(Car car)
      {
          this.cars.remove(car);
+     }
+     
+     public Collection<CarType> getCarTypes()
+     {
+         return this.carTypes;
+     }
+     
+     public void addCarType(CarType type)
+     {
+         this.carTypes.add(type);
+     }
+     
+     public void removeCarType(CarType type)
+     {
+         this.carTypes.remove(type);
      }
 }
