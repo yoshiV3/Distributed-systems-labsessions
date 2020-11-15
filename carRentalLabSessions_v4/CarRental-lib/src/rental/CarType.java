@@ -1,9 +1,16 @@
 package rental;
 
 import java.io.Serializable;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
 
+@Entity
 public class CarType implements Serializable{
     
+    @Id
+    @GeneratedValue
+    private int id;
     private String name;
     private int nbOfSeats;
     private boolean smokingAllowed;
@@ -15,12 +22,20 @@ public class CarType implements Serializable{
      * CONSTRUCTOR *
      ***************/
     
+    public CarType(){}
+    
+    
     public CarType(String name, int nbOfSeats, float trunkSpace, double rentalPricePerDay, boolean smokingAllowed) {
         this.name = name;
         this.nbOfSeats = nbOfSeats;
         this.trunkSpace = trunkSpace;
         this.rentalPricePerDay = rentalPricePerDay;
         this.smokingAllowed = smokingAllowed;
+    }
+    
+    public int getId()
+    {
+        return this.id;
     }
 
     public String getName() {

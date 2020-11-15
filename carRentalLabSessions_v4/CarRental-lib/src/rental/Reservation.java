@@ -1,13 +1,29 @@
 package rental;
 
-public class Reservation extends Quote {
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 
+
+@Entity
+public class Reservation extends Quote {
+    
+    
+    
+    @Id
+    @GeneratedValue
+    private int id;
+    @ManyToOne
     private int carId;
     
     /***************
      * CONSTRUCTOR *
      ***************/
 
+    
+    public Reservation(){}
+    
     public Reservation(Quote quote, int carId) {
     	super(quote.getCarRenter(), quote.getStartDate(), quote.getEndDate(), 
     		quote.getRentalCompany(), quote.getCarType(), quote.getRentalPrice());
@@ -17,7 +33,11 @@ public class Reservation extends Quote {
     /******
      * ID *
      ******/
-    
+    public int getId()
+    {
+        return this.id;
+    }
+  
     public int getCarId() {
     	return carId;
     }

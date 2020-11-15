@@ -3,16 +3,30 @@ package rental;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
+import static javax.persistence.CascadeType.ALL;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
 
+@Entity
 public class Car {
 
+    
+    @Id
+    @GeneratedValue
     private int id;
+    @OneToMany
     private CarType type;
+    @OneToMany(cascade=ALL, mappedBy="Car")
     private Set<Reservation> reservations;
 
     /***************
      * CONSTRUCTOR *
      ***************/
+    
+    
+    public Car() {}
     
     public Car(int uid, CarType type) {
     	this.id = uid;

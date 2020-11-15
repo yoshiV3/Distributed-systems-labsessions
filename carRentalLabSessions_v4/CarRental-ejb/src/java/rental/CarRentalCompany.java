@@ -8,20 +8,27 @@ import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.persistence.Entity;
+import javax.persistence.Id;
 
+
+@Entity 
 public class CarRentalCompany {
 
     private static Logger logger = Logger.getLogger(CarRentalCompany.class.getName());
+    @Id
     private String name;
     private List<Car> cars;
     private Set<CarType> carTypes = new HashSet<CarType>();
-	private List<String> regions;
+    private List<String> regions;
 
 	
     /***************
      * CONSTRUCTOR *
      ***************/
-
+    public CarRentalCompany(){}
+    
+    
     public CarRentalCompany(String name, List<String> regions, List<Car> cars) {
         logger.log(Level.INFO, "<{0}> Starting up CRC {0} ...", name);
         setName(name);
