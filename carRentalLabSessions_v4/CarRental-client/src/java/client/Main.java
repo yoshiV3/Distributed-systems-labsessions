@@ -21,13 +21,16 @@ public class Main extends AbstractTestManagement<ReservationSessionRemote, Manag
         //new Main("trips").run();
         ManagerSessionRemote sessionM = (ManagerSessionRemote) (new InitialContext()).lookup(ManagerSessionRemote.class.getName());
         ReservationSessionRemote session = (ReservationSessionRemote) (new InitialContext()).lookup(ReservationSessionRemote.class.getName());
+        ReservationSessionRemote session2 = (ReservationSessionRemote) (new InitialContext()).lookup(ReservationSessionRemote.class.getName());
         sessionM.loadRental("dockx.csv");
+        sessionM.loadRental("test.csv");
         sessionM.addCarTypeToRental("yoshi", 0, 0, 0, true, "Dockx");
         System.out.println(sessionM.getAllRentalCompanies());
         session.setRenterName("Yoshi");
+        session2.setRenterName("Tejas");
         System.out.println(session.getAvailableCarTypes(new Date(2019,11,31), new Date(2020,1,4)));
-        ReservationConstraints constr = new ReservationConstraints(new Date(2019,11,31), new Date(2020,1,4), "Eco", "Brussels");
-        session.createQuote("Dockx", constr);
+        ReservationConstraints constr = new ReservationConstraints(new Date(2019,11,31), new Date(2020,1,4), "Mini", "Brussels");
+        session.createQuote("Test", constr);
         System.out.println(session.getCurrentQuotes());
         System.out.println(session.confirmQuotes());
         System.out.println(session.getMyReservations());

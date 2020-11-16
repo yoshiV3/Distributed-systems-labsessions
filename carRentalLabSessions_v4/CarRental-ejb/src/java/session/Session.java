@@ -45,4 +45,8 @@ public abstract class Session {
         return em.createQuery("SELECT res FROM Reservation res WHERE res.carRenter = :name  ").setParameter("name", client).getResultList();
     }
     
+    protected int etReservationsBy(String client)
+    {
+        return em.createQuery("SELECT count(res) FROM Reservation res WHERE res.carRenter = :name  ").setParameter("name", client).getFirstResult();
+    }
 }
