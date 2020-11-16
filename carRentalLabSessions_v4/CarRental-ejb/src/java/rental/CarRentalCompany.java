@@ -33,7 +33,6 @@ public class CarRentalCompany {
     private List<Car> cars= new ArrayList<Car>();
     private List<String> regions;
     @ManyToMany
-    @JoinTable
     private Set<CarType> carTypes = new HashSet<CarType>();
 
 	

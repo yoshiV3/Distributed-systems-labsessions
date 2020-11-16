@@ -10,6 +10,7 @@ import javax.annotation.Resource;
 import javax.ejb.EJBContext;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import rental.CarType;
 import rental.Reservation;
 
 /**
@@ -40,9 +41,9 @@ public abstract class Session {
                 
     }
     
-    protected List<String> getCarTypesQ(String company)
+    protected List<CarType> getCarTypesQ(String company)
     {
-        return em.createQuery("SELECT  ct.name FROM CarRentalCompany_CarType crcct JOIN CarType ct WHERE ct.id = crcct.carTypr_Id AND crcct.carRentalCompany_name = :name ").setParameter("name", company).getResultList();
+       return em.createQuery("SELECT  ct FROM CarRentalCompany crc JOIN crc.carTypes ct  WHERE crc.name = :name").setParameter("name", company).getResultList();
     }
     
     protected List<Reservation> getReservationsBy(String client)

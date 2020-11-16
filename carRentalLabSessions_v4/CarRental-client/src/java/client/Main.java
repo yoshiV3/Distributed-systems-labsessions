@@ -34,6 +34,7 @@ public class Main extends AbstractTestManagement<ReservationSessionRemote, Manag
         System.out.println(session.getCurrentQuotes());
         System.out.println(session.confirmQuotes());
         System.out.println(session.getMyReservations());
+        System.out.println(sessionM.getCarTypes("Test"));
     }
 
     @Override
