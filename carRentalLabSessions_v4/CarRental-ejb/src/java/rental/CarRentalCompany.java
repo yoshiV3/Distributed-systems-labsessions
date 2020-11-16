@@ -14,6 +14,8 @@ import static javax.ejb.TransactionAttributeType.MANDATORY;
 import static javax.ejb.TransactionAttributeType.SUPPORTS;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.Transient;
 
@@ -30,7 +32,8 @@ public class CarRentalCompany {
     @OneToMany
     private List<Car> cars= new ArrayList<Car>();
     private List<String> regions;
-    @OneToMany
+    @ManyToMany
+    @JoinTable
     private Set<CarType> carTypes = new HashSet<CarType>();
 
 	

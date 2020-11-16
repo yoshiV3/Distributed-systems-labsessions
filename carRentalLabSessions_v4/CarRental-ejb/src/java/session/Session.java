@@ -40,13 +40,23 @@ public abstract class Session {
                 
     }
     
+    protected List<String> getCarTypesQ(String company)
+    {
+        return em.createQuery("SELECT  ct.name FROM CarRentalCompany_CarType crcct JOIN CarType ct WHERE ct.id = crcct.carTypr_Id AND crcct.carRentalCompany_name = :name ").setParameter("name", company).getResultList();
+    }
+    
     protected List<Reservation> getReservationsBy(String client)
     {
         return em.createQuery("SELECT res FROM Reservation res WHERE res.carRenter = :name  ").setParameter("name", client).getResultList();
     }
     
-    protected int etReservationsBy(String client)
+    protected int getNumberOfReservationsBy(String client)
     {
         return em.createQuery("SELECT count(res) FROM Reservation res WHERE res.carRenter = :name  ").setParameter("name", client).getFirstResult();
+    }
+    
+    protected String getBestClient()
+    {
+        return em.createQuery("SELECT max((count(res)) FROM Reservation res GROUP BY res.carRenter", String.class).getSingleResult();
     }
 }
