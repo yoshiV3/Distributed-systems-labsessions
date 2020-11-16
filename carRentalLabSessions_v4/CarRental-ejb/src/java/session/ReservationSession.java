@@ -87,7 +87,9 @@ public class ReservationSession extends Session implements ReservationSessionRem
             for(Quote quote : this.quotes)
             {
                 CarRentalCompany crc = this.getEntityManager().find(CarRentalCompany.class,quote.getRentalCompany());
-                reservations.add(crc.confirmQuote(quote).toReservationPrint());
+                Reservation res = crc.confirmQuote(quote);
+                this.getEntityManager().persist(res);
+                reservations.add(res.toReservationPrint());
             }
             return reservations;
         }

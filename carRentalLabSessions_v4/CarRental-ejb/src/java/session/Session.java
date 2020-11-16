@@ -65,4 +65,10 @@ public abstract class Session {
     {
         return em.createQuery("SELECT max((count(res)) FROM Reservation res GROUP BY res.carRenter", String.class).getSingleResult();
     }
+    
+    protected int getNumberOfReservationsQ(String company, String type, int id)
+    {
+        Integer answer = em.createQuery("SELECT count(res) FROM CarRentalCompany crc JOIN crc.cars car Join car.reservations res WHERE car.type.name = :tname AND crc.name = :cname AND car.id = :id", Integer.class).setParameter("tname", type).setParameter("cname", company).setParameter("id",new Integer(id)).getFirstResult();
+        return answer.intValue();
+    }
 }
