@@ -19,10 +19,17 @@ public class Main extends AbstractTestManagement<ReservationSessionRemote, Manag
     public static void main(String[] args) throws Exception {
         // TODO: use updated manager interface to load cars into companies
         //new Main("trips").run();
-        ManagerSessionRemote session = (ManagerSessionRemote) (new InitialContext()).lookup(ManagerSessionRemote.class.getName());
-        session.loadRental("dockx.csv");
-        session.addCarTypeToRental("yoshi", 0, 0, 0, true, "Dockx");
-        System.out.println(session.getAllRentalCompanies());
+        ManagerSessionRemote sessionM = (ManagerSessionRemote) (new InitialContext()).lookup(ManagerSessionRemote.class.getName());
+        ReservationSessionRemote session = (ReservationSessionRemote) (new InitialContext()).lookup(ReservationSessionRemote.class.getName());
+        sessionM.loadRental("dockx.csv");
+        sessionM.addCarTypeToRental("yoshi", 0, 0, 0, true, "Dockx");
+        System.out.println(sessionM.getAllRentalCompanies());
+        session.setRenterName("Yoshi");
+        System.out.println(session.getAvailableCarTypes(new Date(2019,11,31), new Date(2020,1,4)));
+        ReservationConstraints constr = new ReservationConstraints(new Date(2019,11,31), new Date(2020,1,4), "Eco", "Brussels");
+        session.createQuote("Dockx", constr);
+        System.out.println(session.getCurrentQuotes());
+        System.out.println(session.confirmQuotes());
     }
 
     @Override
