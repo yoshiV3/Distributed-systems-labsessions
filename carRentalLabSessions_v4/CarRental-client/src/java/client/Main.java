@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Set;
 import javax.naming.InitialContext;
 import rental.CarType;
-import rental.Reservation;
+import rental.ReservationPrint;
 import rental.ReservationConstraints;
 import session.ManagerSessionRemote;
 import session.ReservationSessionRemote;
@@ -61,7 +61,7 @@ public class Main extends AbstractTestManagement<ReservationSessionRemote, Manag
     }
 
     @Override
-    protected List<Reservation> confirmQuotes(ReservationSessionRemote session, String name) throws Exception {
+    protected List<ReservationPrint> confirmQuotes(ReservationSessionRemote session, String name) throws Exception {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 

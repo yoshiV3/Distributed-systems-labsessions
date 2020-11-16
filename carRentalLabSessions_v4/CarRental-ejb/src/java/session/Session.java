@@ -6,6 +6,8 @@
 package session;
 
 import java.util.List;
+import javax.annotation.Resource;
+import javax.ejb.EJBContext;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
@@ -17,6 +19,14 @@ public abstract class Session {
     
     @PersistenceContext 
     private  EntityManager em;
+    
+    @Resource
+    EJBContext context;
+    
+    protected EJBContext getEJBContext()
+    {
+        return context;
+    }
     
     protected EntityManager getEntityManager()
     {

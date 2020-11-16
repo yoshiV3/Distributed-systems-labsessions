@@ -30,8 +30,7 @@ public class ManagerSession extends Session implements ManagerSessionRemote {
     
     
        
-    @Resource
-    EJBContext context;
+
     
     private void addCar(String company, Car car)
     {
@@ -52,12 +51,12 @@ public class ManagerSession extends Session implements ManagerSessionRemote {
         {
             if (company == null)
             {
-                context.setRollbackOnly();
+                this.getEJBContext().setRollbackOnly();
                 throw new IllegalArgumentException("Not a supported company");
             }
             if(car == null)
             {
-                context.setRollbackOnly();
+                this.getEJBContext().setRollbackOnly();
                 throw new IllegalArgumentException("Not a valid car");
             }
             if (company.getCarTypes().contains(car.getType()))
@@ -66,7 +65,7 @@ public class ManagerSession extends Session implements ManagerSessionRemote {
             }
             else
             {
-                context.setRollbackOnly();
+                this.getEJBContext().setRollbackOnly();
                 throw new IllegalArgumentException("Not a valid car");               
             }
             
@@ -99,12 +98,12 @@ public class ManagerSession extends Session implements ManagerSessionRemote {
         {
             if (company == null)
             {
-                context.setRollbackOnly();
+                this.getEJBContext().setRollbackOnly();
                 throw new IllegalArgumentException("Not a supported company");
             }
             if (type == null)
             {
-                context.setRollbackOnly();
+                this.getEJBContext().setRollbackOnly();
                 throw new IllegalArgumentException("Not a valid car type");               
             }
             Collection<CarType> types = company.getCarTypes();
@@ -114,7 +113,7 @@ public class ManagerSession extends Session implements ManagerSessionRemote {
             }
             else
             {
-                context.setRollbackOnly();
+                this.getEJBContext().setRollbackOnly();
                 throw new IllegalArgumentException("Type name already in use");               
             }
             
@@ -220,7 +219,7 @@ public class ManagerSession extends Session implements ManagerSessionRemote {
         }
         if(!added)
         {
-            context.setRollbackOnly();
+            this.getEJBContext().setRollbackOnly();
             throw new IllegalArgumentException("Type does not exist");
         }
     }
