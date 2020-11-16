@@ -26,14 +26,10 @@ import rental.CarType;
 import rental.Reservation;
 
 @Stateless
-public class ManagerSession implements ManagerSessionRemote {
+public class ManagerSession extends Session implements ManagerSessionRemote {
     
     
-    @PersistenceContext 
-    private EntityManager em;
-    
- 
-    
+       
     @Resource
     EJBContext context;
     
@@ -41,7 +37,7 @@ public class ManagerSession implements ManagerSessionRemote {
     {
         try 
         {
-            CarRentalCompany comp = em.find(CarRentalCompany.class,  company);
+            CarRentalCompany comp = getEntityManager().find(CarRentalCompany.class,  company);
             this.addCar(comp, car);
         }
         catch(Exception ex)
@@ -86,7 +82,7 @@ public class ManagerSession implements ManagerSessionRemote {
         try
         {
             Car car = new Car(type);
-            em.persist(car);
+            getEntityManager().persist(car);
             return car;
         }
         catch(Exception ex)
@@ -135,7 +131,7 @@ public class ManagerSession implements ManagerSessionRemote {
         try
         {
             CarType type = new CarType(name, nbOfSeats, trunkSpace, rentalPricePerDay, smokingAllowed);
-            em.persist(type);
+            getEntityManager().persist(type);
             return type;
         }
         catch(Exception ex)
@@ -150,7 +146,7 @@ public class ManagerSession implements ManagerSessionRemote {
         try 
         {
             CarRentalCompany crc = new CarRentalCompany(name, regions);
-            em.persist(crc);
+            getEntityManager().persist(crc);
             return crc;
             
         }
@@ -204,7 +200,7 @@ public class ManagerSession implements ManagerSessionRemote {
 
     @Override
     public void addCarTypeToRental(String name, int nbOfSeats, float trunkSpace, double rentalPricePerDay, boolean smokingAllowed, String company) {
-        CarRentalCompany crc = em.find(CarRentalCompany.class, company);
+        CarRentalCompany crc = getEntityManager().find(CarRentalCompany.class, company);
         CarType type = this.createCarType(name, nbOfSeats, trunkSpace, rentalPricePerDay, smokingAllowed);
         this.addCarType(crc, type);
     }
@@ -212,7 +208,7 @@ public class ManagerSession implements ManagerSessionRemote {
     @Override
     public void addCarToRental(String type, String company) {
         boolean added = false;
-        CarRentalCompany crc = em.find(CarRentalCompany.class, company);
+        CarRentalCompany crc = getEntityManager().find(CarRentalCompany.class, company);
         for (CarType t : crc.getCarTypes())
         {
             if (t.getName().equals(type))
@@ -267,6 +263,11 @@ public class ManagerSession implements ManagerSessionRemote {
         }
 
         return out;
+    }
+
+    @Override
+    public List<String> getAllRentalCompanies() {
+        return getAllCarRentalCompanies();
     }
     
     static class CrcData {
