@@ -31,6 +31,8 @@ public class Main extends AbstractTestManagement<ReservationSessionRemote, Manag
         System.out.println(session.getAvailableCarTypes(new Date(2019,11,31), new Date(2020,1,4)));
         ReservationConstraints constr = new ReservationConstraints(new Date(2019,11,31), new Date(2020,1,4), "Mini", "Brussels");
         session.createQuote("Test", constr);
+        ReservationConstraints constr2 = new ReservationConstraints(new Date(2020,11,31), new Date(2021,1,4), "Mini", "Brussels");
+        session.createQuote("Test", constr2);
         System.out.println(session.getCurrentQuotes());
         System.out.println(session.confirmQuotes());
         System.out.println(session.getMyReservations());
