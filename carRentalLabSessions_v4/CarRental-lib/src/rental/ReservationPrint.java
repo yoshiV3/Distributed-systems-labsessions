@@ -17,10 +17,11 @@ public class ReservationPrint extends Quote implements Serializable{
     private int carId;
     private int reservationId;
     
-    public ReservationPrint(Quote quote, int carId) {
+    public ReservationPrint(Quote quote, int carId, int reservationId) {
     	super(quote.getCarRenter(), quote.getStartDate(), quote.getEndDate(), 
     		quote.getRentalCompany(), quote.getCarType(), quote.getRentalPrice());
         this.carId = carId;
+        this.reservationId = reservationId;
     }
     
     public int getReservationId()

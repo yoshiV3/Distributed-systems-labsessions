@@ -57,6 +57,6 @@ public class Reservation extends Quote {
     public ReservationPrint toReservationPrint()
     {
         Quote quote = new Quote(this.getCarRenter(), this.getStartDate(), this.getEndDate(), this.getRentalCompany(), this.getCarType(), this.getRentalPrice());
-        return new ReservationPrint(quote, this.car.getId());
+        return new ReservationPrint(quote, this.car.getId(), this.getId());
     }
 }
