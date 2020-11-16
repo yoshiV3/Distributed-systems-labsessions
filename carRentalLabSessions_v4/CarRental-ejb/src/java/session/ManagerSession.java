@@ -12,8 +12,11 @@ import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.ejb.EJBContext;
 import javax.ejb.EJBException;
 import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import static javax.ejb.TransactionAttributeType.MANDATORY;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import rental.Car;
@@ -28,6 +31,7 @@ public class ManagerSession implements ManagerSessionRemote {
     @PersistenceContext 
     private EntityManager em;
     
+    EJBContext context;
     
     private void addCar(String company, Car car)
     {
@@ -46,9 +50,24 @@ public class ManagerSession implements ManagerSessionRemote {
     {
         try 
         {
+            if (company == null)
+            {
+                context.setRollbackOnly();
+                throw new IllegalArgumentException("Not a supported company");
+            }
+            if(car == null)
+            {
+                context.setRollbackOnly();
+                throw new IllegalArgumentException("Not a valid car");
+            }
             if (company.getCarTypes().contains(car.getType()))
             {
                 company.addCar(car);   
+            }
+            else
+            {
+                context.setRollbackOnly();
+                throw new IllegalArgumentException("Not a valid car");               
             }
             
         }
@@ -73,14 +92,30 @@ public class ManagerSession implements ManagerSessionRemote {
     }
 
     
+
     private void addCarType(CarRentalCompany company, CarType type)
     {
          try 
         {
+            if (company == null)
+            {
+                context.setRollbackOnly();
+                throw new IllegalArgumentException("Not a supported company");
+            }
+            if (type == null)
+            {
+                context.setRollbackOnly();
+                throw new IllegalArgumentException("Not a valid car type");               
+            }
             Collection<CarType> types = company.getCarTypes();
-            if (types == null || !types.contains(type))
+            if (!types.contains(type))
             {
                 company.addCarType(type);   
+            }
+            else
+            {
+                context.setRollbackOnly();
+                throw new IllegalArgumentException("Type name already in use");               
             }
             
         }
@@ -166,17 +201,6 @@ public class ManagerSession implements ManagerSessionRemote {
     @Override
     public void addCarTypeToRental(String name, int nbOfSeats, float trunkSpace, double rentalPricePerDay, boolean smokingAllowed, String company) {
         CarRentalCompany crc = em.find(CarRentalCompany.class, company);
-        if (crc == null)
-        {
-            throw new IllegalArgumentException("not a valid crc");
-        }
-        for (CarType type : crc.getCarTypes())
-        {
-            if (type.getName().equals(name))
-            {
-                throw new IllegalArgumentException("Type name already in use for a type");
-            }
-        }
         CarType type = this.createCarType(name, nbOfSeats, trunkSpace, rentalPricePerDay, smokingAllowed);
         this.addCarType(crc, type);
     }
@@ -196,6 +220,7 @@ public class ManagerSession implements ManagerSessionRemote {
         }
         if(!added)
         {
+            context.setRollbackOnly();
             throw new IllegalArgumentException("Type does not exist");
         }
     }

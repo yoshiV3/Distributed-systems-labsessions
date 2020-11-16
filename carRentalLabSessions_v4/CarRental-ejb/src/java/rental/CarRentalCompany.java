@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.ejb.TransactionAttribute;
+import static javax.ejb.TransactionAttributeType.MANDATORY;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
@@ -37,7 +39,6 @@ public class CarRentalCompany {
         setName(name);
         setRegions(regions);
     }
-    
     
     public CarRentalCompany(String name, List<String> regions, List<Car> cars) {
         logger.log(Level.INFO, "<{0}> Starting up CRC {0} ...", name);
@@ -78,12 +79,13 @@ public class CarRentalCompany {
         return this.cars;
     }
      
-     
+     @TransactionAttribute(MANDATORY)
      public void addCar(Car car)
      {
          this.cars.add(car);
      }
      
+     @TransactionAttribute(MANDATORY)
      public void removeCar(Car car)
      {
          this.cars.remove(car);
@@ -95,12 +97,13 @@ public class CarRentalCompany {
      {
          return this.carTypes;
      }
-     
+     @TransactionAttribute(MANDATORY)
      public void addCarType(CarType type)
      {
          this.carTypes.add(type);
      }
      
+     @TransactionAttribute(MANDATORY)
      public void removeCarType(CarType type)
      {
          this.carTypes.remove(type);
