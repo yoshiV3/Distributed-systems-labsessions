@@ -12,6 +12,7 @@ import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.annotation.Resource;
 import javax.ejb.EJBContext;
 import javax.ejb.EJBException;
 import javax.ejb.Stateless;
@@ -31,6 +32,9 @@ public class ManagerSession implements ManagerSessionRemote {
     @PersistenceContext 
     private EntityManager em;
     
+ 
+    
+    @Resource
     EJBContext context;
     
     private void addCar(String company, Car car)

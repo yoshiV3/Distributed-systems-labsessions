@@ -21,7 +21,7 @@ public class Main extends AbstractTestManagement<ReservationSessionRemote, Manag
         //new Main("trips").run();
         ManagerSessionRemote session = (ManagerSessionRemote) (new InitialContext()).lookup(ManagerSessionRemote.class.getName());
         session.loadRental("dockx.csv");
-        session.addCarTypeToRental("yoshi", 0, 0, 0, true, "Dockx");
+        session.addCarTypeToRental("yoshi", 0, 0, 0, true, "dockx");
     }
 
     @Override
