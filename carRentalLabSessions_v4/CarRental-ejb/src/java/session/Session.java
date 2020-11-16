@@ -10,6 +10,7 @@ import javax.annotation.Resource;
 import javax.ejb.EJBContext;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import rental.Reservation;
 
 /**
  *
@@ -37,6 +38,11 @@ public abstract class Session {
     {
         return em.createQuery("SELECT crc.name FROM CarRentalCompany crc", String.class).getResultList();
                 
+    }
+    
+    protected List<Reservation> getReservationsBy(String client)
+    {
+        return em.createQuery("SELECT res FROM Reservation res WHERE res.carRenter = :name  ").setParameter("name", client).getResultList();
     }
     
 }

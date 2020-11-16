@@ -30,6 +30,7 @@ public class Main extends AbstractTestManagement<ReservationSessionRemote, Manag
         session.createQuote("Dockx", constr);
         System.out.println(session.getCurrentQuotes());
         System.out.println(session.confirmQuotes());
+        System.out.println(session.getMyReservations());
     }
 
     @Override

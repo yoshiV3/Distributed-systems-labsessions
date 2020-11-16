@@ -27,4 +27,6 @@ public interface ReservationSessionRemote {
     
     public List<ReservationPrint> confirmQuotes() throws ReservationException;
     
+    public List<ReservationPrint> getMyReservations();
+    
 }

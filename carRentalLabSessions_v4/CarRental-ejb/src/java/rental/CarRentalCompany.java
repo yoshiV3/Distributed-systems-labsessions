@@ -15,11 +15,14 @@ import static javax.ejb.TransactionAttributeType.SUPPORTS;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import javax.persistence.Transient;
 
 
 @Entity 
 public class CarRentalCompany {
 
+    
+    @Transient
     private static Logger logger = Logger.getLogger(CarRentalCompany.class.getName());
     
     @Id

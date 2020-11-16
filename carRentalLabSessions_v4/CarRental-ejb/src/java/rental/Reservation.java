@@ -5,11 +5,13 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+import javax.persistence.Temporal;
+import static javax.persistence.TemporalType.DATE;
 import rental.Quote;
 
 
 @Entity
-public class Reservation extends Quote {
+public class Reservation {
     
     
     
@@ -18,6 +20,14 @@ public class Reservation extends Quote {
     private int id;
     @ManyToOne
     private Car car;
+    @Temporal(DATE)
+    private Date startDate;
+    @Temporal(DATE)
+    private Date endDate;
+    private String carRenter;
+    private String rentalCompany;
+    private String carType;
+    private double rentalPrice;
     
     /***************
      * CONSTRUCTOR *
@@ -27,9 +37,19 @@ public class Reservation extends Quote {
     public Reservation(){}
     
     public Reservation(Quote quote, Car car) {
-    	super(quote.getCarRenter(), quote.getStartDate(), quote.getEndDate(), 
+    	getInfoFromQuote(quote.getCarRenter(), quote.getStartDate(), quote.getEndDate(), 
     		quote.getRentalCompany(), quote.getCarType(), quote.getRentalPrice());
         this.car = car;
+    }
+    
+    private void getInfoFromQuote(String carRenter, Date start, Date end, String rentalCompany, String carType, double rentalPrice)
+    {
+        this.carRenter = carRenter;
+        this.startDate = start;
+        this.endDate = end;
+        this.rentalCompany = rentalCompany;
+        this.carType = carType;
+        this.rentalPrice = rentalPrice;        
     }
     
     /******
@@ -42,6 +62,29 @@ public class Reservation extends Quote {
   
     public Car getCar() {
     	return this.car;
+    }
+    public Date getStartDate() {
+        return startDate;
+    }
+
+    public Date getEndDate() {
+        return endDate;
+    }
+
+    public String getCarRenter() {
+        return carRenter;
+    }
+
+    public String getRentalCompany() {
+        return rentalCompany;
+    }
+
+    public double getRentalPrice() {
+        return rentalPrice;
+    }
+    
+    public String getCarType() {
+	return carType;
     }
     
     /*************

@@ -111,4 +111,14 @@ public class ReservationSession extends Session implements ReservationSessionRem
     public String getRenterName() {
         return renter;
     }
+
+    @Override
+    public List<ReservationPrint> getMyReservations() {
+        List<ReservationPrint> reservations = new LinkedList();
+        for (Reservation res : this.getReservationsBy(this.getRenterName()))
+        {
+            reservations.add(res.toReservationPrint());
+        }
+        return reservations;
+    }
 }
