@@ -167,7 +167,12 @@ public class ManagerSession extends Session implements ManagerSessionRemote {
 
     @Override
     public Set<Integer> getCarIds(String company, String type) {
-        return null;
+        Set<Integer> carIds = new HashSet();
+        for (Integer id: this.getCarIdsQ(company, type))
+        {
+            carIds.add(id);
+        }
+        return carIds;
     }
 
     @Override

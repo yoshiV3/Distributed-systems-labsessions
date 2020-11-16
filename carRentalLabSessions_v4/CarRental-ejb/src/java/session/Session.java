@@ -46,6 +46,11 @@ public abstract class Session {
        return em.createQuery("SELECT  ct FROM CarRentalCompany crc JOIN crc.carTypes ct  WHERE crc.name = :name").setParameter("name", company).getResultList();
     }
     
+    protected List<Integer>  getCarIdsQ(String company, String type)
+    {
+        return em.createQuery("SELECT car.id FROM CarRentalCompany crc JOIN crc.cars car WHERE car.type.name = :tname AND crc.name = :cname", Integer.class).setParameter("tname", type).setParameter("cname", company).getResultList();
+    }
+    
     protected List<Reservation> getReservationsBy(String client)
     {
         return em.createQuery("SELECT res FROM Reservation res WHERE res.carRenter = :name  ").setParameter("name", client).getResultList();
