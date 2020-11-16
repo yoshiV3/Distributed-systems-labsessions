@@ -68,7 +68,9 @@ public abstract class Session {
     
     protected int getNumberOfReservationsQ(String company, String type, int id)
     {
-        Integer answer = em.createQuery("SELECT count(res) FROM CarRentalCompany crc JOIN crc.cars car Join car.reservations res WHERE car.type.name = :tname AND crc.name = :cname AND car.id = :id", Integer.class).setParameter("tname", type).setParameter("cname", company).setParameter("id",new Integer(id)).getFirstResult();
+        //Integer answer = em.createQuery("SELECT count(res) FROM CarRentalCompany crc JOIN crc.cars car Join car.reservations res WHERE car.type.name = :tname AND crc.name = :cname AND car.id = :id", Integer.class).setParameter("tname", type).setParameter("cname", company).setParameter("id",new Integer(id)).getFirstResult();
+        //List<Integer> answer = em.createQuery("SELECT count(car.id) FROM CarRentalCompany crc JOIN crc.cars car WHERE  car.type.name = :tname", Integer.class).setParameter("tname", type).getResultList();
+        Number answer = (Number) em.createQuery("SELECT count(res) FROM CarRentalCompany crc JOIN crc.cars car Join car.reservations res WHERE car.type.name = :tname AND crc.name = :cname AND car.id = :id").setParameter("tname", type).setParameter("cname", company).setParameter("id",new Integer(id)).getSingleResult();
         return answer.intValue();
     }
 }

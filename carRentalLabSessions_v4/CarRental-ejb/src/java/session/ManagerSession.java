@@ -182,7 +182,7 @@ public class ManagerSession extends Session implements ManagerSessionRemote {
 
     @Override
     public int getNumberOfReservations(String company, String type) {
-        return 0;
+        return 1;
     }
 
     @Override
