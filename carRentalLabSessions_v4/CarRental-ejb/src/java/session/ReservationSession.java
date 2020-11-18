@@ -24,22 +24,30 @@ public class ReservationSession extends Session implements ReservationSessionRem
     private String renter;
     private List<Quote> quotes = new LinkedList<Quote>();
 
+//    @Override
+//    @TransactionAttribute(SUPPORTS)
+//    public Set<String> getAllRentalCompanies() {
+//        System.out.println("inside reservation session");
+//        Set<String> companies = new HashSet();
+//        for (String company : this.getAllCarRentalCompanies())
+//        {
+//            companies.add(company);
+//        }
+//        System.out.println("inside reservation session" + companies);
+//        return companies;
+//    }
+    
     @Override
-    @TransactionAttribute(SUPPORTS)
-    public Set<String> getAllRentalCompanies() {
-        Set<String> companies = new HashSet();
-        for (String company : this.getAllCarRentalCompanies())
-        {
-            companies.add(company);
-        }
-        return companies;
+    public List<String> getAllRentalCompanies() {
+        return super.getAllCarRentalCompanies();
     }
+
     
     @Override
     @TransactionAttribute(SUPPORTS)
     public List<CarType> getAvailableCarTypes(Date start, Date end) {
         List<CarType> availableCarTypes = new LinkedList(); 
-        for (String company : this.getAllCarRentalCompanies())
+        for (String company : super.getAllCarRentalCompanies())
         {
             EntityManager e = this.getEntityManager();
             CarRentalCompany crc = e.find(CarRentalCompany.class, company);
@@ -117,7 +125,7 @@ public class ReservationSession extends Session implements ReservationSessionRem
     @Override
     public List<ReservationPrint> getMyReservations() {
         List<ReservationPrint> reservations = new LinkedList();
-        for (Reservation res : this.getReservationsBy(this.getRenterName()))
+        for (Reservation res : super.getReservationsByClient(this.getRenterName()))
         {
             reservations.add(res.toReservationPrint());
         }

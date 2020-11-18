@@ -18,59 +18,81 @@ import rental.Reservation;
  * @author yoshi
  */
 public abstract class Session {
-    
-    @PersistenceContext 
-    private  EntityManager em;
-    
+
+    @PersistenceContext
+    private EntityManager em;
+
     @Resource
     EJBContext context;
-    
-    protected EJBContext getEJBContext()
-    {
+
+    protected EJBContext getEJBContext() {
         return context;
     }
-    
-    protected EntityManager getEntityManager()
-    {
+
+    protected EntityManager getEntityManager() {
         return em;
     }
-    
-    protected  List<String> getAllCarRentalCompanies()
-    {
-        return em.createQuery("SELECT crc.name FROM CarRentalCompany crc", String.class).getResultList();
-                
+
+    protected List<String> getAllCarRentalCompanies() {
+        System.out.println("inside session for getAllCarRentalCompanies");
+        return em.createNamedQuery("getAllCarRentalCompanies", String.class).getResultList();
+
+    }
+
+    protected List<CarType> getCarTypesAtCompany(String company) {
+        System.out.println("inside session for getCarTypesAtCompany");
+        return em.createNamedQuery("getAllCarTypesAtCompany")
+                .setParameter("company", company)
+                .getResultList();
+    }
+
+    protected List<Integer> getCarIds(String company, String type) {
+        return em.createNamedQuery("getCarIds", Integer.class)
+                .setParameter("company", company)
+                .setParameter("type", type)
+                .getResultList();
+    }
+
+    protected List<Reservation> getReservationsByClient(String client) {
+        System.out.println("Making query --");
+        return em.createNamedQuery("getReservationsByClient")
+            .setParameter("name", client)
+            .getResultList();
+    }
+
+    protected Integer getNumberOfReservationsByClient(String client) {
+        return em.createNamedQuery("getNumberOfReservationsByClient")
+                .setParameter("name", client)
+                .getFirstResult();
+    }
+
+    protected String getBestClient() {
+        return em.createQuery("getBestClient", String.class)
+                .getSingleResult();
+    }
+
+    protected Integer getNumberOfReservations(String company, String type, Integer id) {        
+//                Number answer = (Number) em.createQuery("SELECT count(res) FROM CarRentalCompany crc JOIN crc.cars car Join car.reservations res WHERE car.type.name = :tname AND crc.name = :cname AND car.id = :id").setParameter("tname", type).setParameter("cname", company).setParameter("id",new Integer(id)).getSingleResult();
+//                return answer.intValue();
+            return em.createNamedQuery("getNumberOfReservationsByCRCByCarId", Long.class)
+            .setParameter("type", type)
+            .setParameter("company", company)
+            .setParameter("id", id)
+            .getSingleResult()
+            .intValue();
+             //return ans.intValue();
     }
     
-    protected List<CarType> getCarTypesQ(String company)
-    {
-       return em.createQuery("SELECT  ct FROM CarRentalCompany crc JOIN crc.carTypes ct  WHERE crc.name = :name").setParameter("name", company).getResultList();
+    protected Integer getNumberOfReservations(String company, String type) {        
+//        System.out.println("Making query -d-" +em.createNamedQuery("getNumberOfReservationsByCRCByType")
+//            .setParameter("type", type)
+//            .setParameter("company", company).getFirstResult());
+//        return 0;
+        return em.createNamedQuery("getNumberOfReservationsByCRCByType", Long.class)
+            .setParameter("type", type)
+            .setParameter("company", company)
+                .getSingleResult()
+                .intValue();
     }
-    
-    protected List<Integer>  getCarIdsQ(String company, String type)
-    {
-        return em.createQuery("SELECT car.id FROM CarRentalCompany crc JOIN crc.cars car WHERE car.type.name = :tname AND crc.name = :cname", Integer.class).setParameter("tname", type).setParameter("cname", company).getResultList();
-    }
-    
-    protected List<Reservation> getReservationsBy(String client)
-    {
-        return em.createQuery("SELECT res FROM Reservation res WHERE res.carRenter = :name  ").setParameter("name", client).getResultList();
-    }
-    
-    protected int getNumberOfReservationsBy(String client)
-    {
-        return em.createQuery("SELECT count(res) FROM Reservation res WHERE res.carRenter = :name  ").setParameter("name", client).getFirstResult();
-    }
-    
-    protected String getBestClient()
-    {
-        return em.createQuery("SELECT max((count(res)) FROM Reservation res GROUP BY res.carRenter", String.class).getSingleResult();
-    }
-    
-    protected int getNumberOfReservationsQ(String company, String type, int id)
-    {
-        //Integer answer = em.createQuery("SELECT count(res) FROM CarRentalCompany crc JOIN crc.cars car Join car.reservations res WHERE car.type.name = :tname AND crc.name = :cname AND car.id = :id", Integer.class).setParameter("tname", type).setParameter("cname", company).setParameter("id",new Integer(id)).getFirstResult();
-        //List<Integer> answer = em.createQuery("SELECT count(car.id) FROM CarRentalCompany crc JOIN crc.cars car WHERE  car.type.name = :tname", Integer.class).setParameter("tname", type).getResultList();
-        Number answer = (Number) em.createQuery("SELECT count(res) FROM CarRentalCompany crc JOIN crc.cars car Join car.reservations res WHERE car.type.name = :tname AND crc.name = :cname AND car.id = :id").setParameter("tname", type).setParameter("cname", company).setParameter("id",new Integer(id)).getSingleResult();
-        return answer.intValue();
-    }
+
 }

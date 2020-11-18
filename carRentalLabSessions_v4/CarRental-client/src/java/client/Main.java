@@ -26,19 +26,24 @@ public class Main extends AbstractTestManagement<ReservationSessionRemote, Manag
         sessionM.loadRental("test.csv");
         sessionM.addCarTypeToRental("yoshi", 0, 0, 0, true, "Dockx");
         System.out.println(sessionM.getAllRentalCompanies());
+        System.out.println("changed this - "+sessionM.getCarTypes("Dockx"));
         session.setRenterName("Yoshi");
         session2.setRenterName("Tejas");
         System.out.println(session.getAvailableCarTypes(new Date(2019,11,31), new Date(2020,1,4)));
         ReservationConstraints constr = new ReservationConstraints(new Date(2019,11,31), new Date(2020,1,4), "Mini", "Brussels");
         session.createQuote("Test", constr);
-        ReservationConstraints constr2 = new ReservationConstraints(new Date(2020,11,31), new Date(2021,1,4), "Mini", "Brussels");
+        ReservationConstraints constr2 = new ReservationConstraints(new Date(2019,11,31), new Date(2020,1,4), "Mini", "Brussels");
         session.createQuote("Test", constr2);
         System.out.println(session.getCurrentQuotes());
         System.out.println(session.confirmQuotes());
-        System.out.println(session.getMyReservations());
-        System.out.println(sessionM.getCarTypes("Test"));
+        System.out.println("my reservation: "+session.getMyReservations());
+        //System.out.println(sessionM.getBestClient());
         System.out.println(sessionM.getCarIds("Dockx", "Eco"));
+        System.out.println(sessionM.getCarIds("Test", "Mini"));
+
         System.out.println(sessionM.getNumberOfReservations("Test", "Mini", 50));
+        System.out.println("test "+sessionM.getNumberOfReservations("Test", "Mini"));
+
     }
 
     @Override
