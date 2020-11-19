@@ -5,13 +5,22 @@
  */
 package session;
 
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import javax.annotation.Resource;
 import javax.ejb.EJBContext;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.TemporalType;
+import rental.CarRentalCompany;
 import rental.CarType;
 import rental.Reservation;
+import rental.ReservationPrint;
 
 /**
  *
@@ -33,9 +42,34 @@ public abstract class Session {
         return em;
     }
 
-    protected List<String> getAllCarRentalCompanies() {
+    protected List<CarRentalCompany> getAllCarRentalCompanies() {
         System.out.println("inside session for getAllCarRentalCompanies");
-        return em.createNamedQuery("getAllCarRentalCompanies", String.class).getResultList();
+        return em.createNamedQuery("getAllCarRentalCompanies")
+                .getResultList();
+
+    }
+
+    protected List<String> getAllCarRentalCompanyNames() {
+        List<String> crcnames = new ArrayList();
+        List<CarRentalCompany> crcs = getAllCarRentalCompanies();
+        for (CarRentalCompany crc : crcs) {
+            crcnames.add(crc.getName());
+        }
+        return crcnames;
+
+    }
+
+    protected List<String> getAllCarRentalCompaniesByRegion(String region) {
+        System.out.println("inside session for getAllCarRentalCompaniesByRegion");
+        return em.createNamedQuery("getAllCarRentalCompaniesByRegion", String.class)
+                .setParameter("region", region)
+                .getResultList();
+
+    }
+
+    protected List<CarType> getAllCars() {
+        return em.createNamedQuery("getAllCars")
+                .getResultList();
 
     }
 
@@ -53,11 +87,24 @@ public abstract class Session {
                 .getResultList();
     }
 
+    protected List<Integer> getAllReservations() {
+        System.out.println("Making query --");
+        return em.createNamedQuery("getAllReservations")
+                .getResultList();
+    }
+
+    protected List<CarType> getAvailableCarTypes(Date start, Date end) {
+        return em.createNamedQuery("getAvailableCarTypes")
+                .setParameter("startDate", start)
+                .setParameter("endDate", end)
+                .getResultList();
+    }
+
     protected List<Reservation> getReservationsByClient(String client) {
         System.out.println("Making query --");
         return em.createNamedQuery("getReservationsByClient")
-            .setParameter("name", client)
-            .getResultList();
+                .setParameter("name", client)
+                .getResultList();
     }
 
     protected Integer getNumberOfReservationsByClient(String client) {
@@ -66,33 +113,62 @@ public abstract class Session {
                 .getFirstResult();
     }
 
-    protected String getBestClient() {
-        return em.createQuery("getBestClient", String.class)
-                .getSingleResult();
+    protected Set<String> getBestClient() {
+        Map<String, Double> val = new HashMap<String, Double>();
+        List<Object[]> client = em.createNamedQuery("getBestClient").getResultList();
+        Double max = (Double) client.get(0)[1];
+        Set<String> bestclients = new HashSet<String>();
+        for (Object[] a : client) {
+            if (a[1].equals(max)) {
+                bestclients.add((String) a[0]);
+            }
+        }
+        return bestclients;
     }
 
-    protected Integer getNumberOfReservations(String company, String type, Integer id) {        
-//                Number answer = (Number) em.createQuery("SELECT count(res) FROM CarRentalCompany crc JOIN crc.cars car Join car.reservations res WHERE car.type.name = :tname AND crc.name = :cname AND car.id = :id").setParameter("tname", type).setParameter("cname", company).setParameter("id",new Integer(id)).getSingleResult();
-//                return answer.intValue();
-            return em.createNamedQuery("getNumberOfReservationsByCRCByCarId", Long.class)
-            .setParameter("type", type)
-            .setParameter("company", company)
-            .setParameter("id", id)
-            .getSingleResult()
-            .intValue();
-             //return ans.intValue();
+    protected CarType getMostPopularCarTypeInCompanyInYear(String company, Integer year) {
+        List<Object[]> popularcartype = em.createNamedQuery("getMostPopularCarTypeInCompanyInYear")
+                .setParameter("company", company)
+                .setParameter("year", year) //3919
+                .getResultList();
+        String type = (String) popularcartype.get(0)[0];
+
+        return getCarType(type);
     }
-    
-    protected Integer getNumberOfReservations(String company, String type) {        
-//        System.out.println("Making query -d-" +em.createNamedQuery("getNumberOfReservationsByCRCByType")
-//            .setParameter("type", type)
-//            .setParameter("company", company).getFirstResult());
-//        return 0;
-        return em.createNamedQuery("getNumberOfReservationsByCRCByType", Long.class)
-            .setParameter("type", type)
-            .setParameter("company", company)
+
+    protected Integer getNumberOfReservations(String company, String type, Integer id) {
+        return em.createNamedQuery("getNumberOfReservationsByCRCByCarId", Long.class)
+                .setParameter("type", type)
+                .setParameter("company", company)
+                .setParameter("id", id)
                 .getSingleResult()
                 .intValue();
+    }
+
+    protected Integer getNumberOfReservations(String company, String type) {
+        return em.createNamedQuery("getNumberOfReservationsByCRCByType", Long.class)
+                .setParameter("type", type)
+                .setParameter("company", company)
+                .getSingleResult()
+                .intValue();
+    }
+
+    protected CarType getCarType(String type) {
+        return em.createNamedQuery("getCarType", CarType.class)
+                .setParameter("type", type)
+                .setMaxResults(1)
+                .getSingleResult();
+
+    }
+
+    protected String getCheapestCarTypeInRegionInDates(Date start, Date end, String region) {
+        return em.createNamedQuery("getCheapestCarTypeInRegionInDates", String.class)
+                .setParameter("startDate", start)
+                .setParameter("endDate", end)
+                .setParameter("region", region)
+                .setMaxResults(1)
+                .getSingleResult();
+
     }
 
 }

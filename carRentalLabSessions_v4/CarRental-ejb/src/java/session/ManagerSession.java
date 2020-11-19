@@ -3,6 +3,7 @@ package session;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
@@ -13,6 +14,8 @@ import java.util.StringTokenizer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.Resource;
+import javax.annotation.security.DeclareRoles;
+import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJBContext;
 import javax.ejb.EJBException;
 import javax.ejb.Stateless;
@@ -24,32 +27,30 @@ import rental.Car;
 import rental.CarRentalCompany;
 import rental.CarType;
 import rental.Reservation;
-    
+import rental.ReservationPrint;
 
 @Stateless
+//@RolesAllowed("Manager")
+//@DeclareRoles("Manager")
 public class ManagerSession extends Session implements ManagerSessionRemote {
 
-    private void addCar(String company, Car car) {
-        try {
-            CarRentalCompany comp = getEntityManager().find(CarRentalCompany.class, company);
-            this.addCar(comp, car);
-        } catch (Exception ex) {
-            throw new EJBException(ex);
-        }
-    }
-
+//    private void addCar(String company, Car car) {
+//        try {
+//            CarRentalCompany comp = getEntityManager().find(CarRentalCompany.class, company);
+//            this.addCar(comp, car);
+//        } catch (Exception ex) {
+//            throw new EJBException(ex);
+//        }
+//    }
     private void addCar(CarRentalCompany company, Car car) {
         try {
-            if (company == null) {
+            CarRentalCompany crc = getEntityManager().find(CarRentalCompany.class, company.getName());
+            if (crc == null || car == null) {
                 this.getEJBContext().setRollbackOnly();
                 throw new IllegalArgumentException("Not a supported company");
             }
-            if (car == null) {
-                this.getEJBContext().setRollbackOnly();
-                throw new IllegalArgumentException("Not a valid car");
-            }
-            if (company.getCarTypes().contains(car.getType())) {
-                company.addCar(car);
+            if (crc.getCarTypes().contains(car.getType())) {
+                crc.addCar(car);
             } else {
                 this.getEJBContext().setRollbackOnly();
                 throw new IllegalArgumentException("Not a valid car");
@@ -70,19 +71,30 @@ public class ManagerSession extends Session implements ManagerSessionRemote {
         }
     }
 
-    private void addCarType(CarRentalCompany company, CarType type) {
+    private void addRegions(CarRentalCompany company, List<String> regions) {
         try {
-            if (company == null) {
+            CarRentalCompany crc = getEntityManager().find(CarRentalCompany.class, company.getName());
+            if (crc == null || regions == null) {
                 this.getEJBContext().setRollbackOnly();
                 throw new IllegalArgumentException("Not a supported company");
             }
-            if (type == null) {
+            crc.setRegions(regions);
+
+        } catch (Exception ex) {
+            throw new EJBException(ex);
+        }
+    }
+
+    private void addCarType(CarRentalCompany company, CarType type) {
+        try {
+            CarRentalCompany crc = getEntityManager().find(CarRentalCompany.class, company.getName());
+            if (crc == null || type == null) {
                 this.getEJBContext().setRollbackOnly();
-                throw new IllegalArgumentException("Not a valid car type");
+                throw new IllegalArgumentException("Not a supported company");
             }
-            Collection<CarType> types = company.getCarTypes();
+            Collection<CarType> types = crc.getCarTypes();
             if (!types.contains(type)) {
-                company.addCarType(type);
+                crc.addCarType(type);
             } else {
                 this.getEJBContext().setRollbackOnly();
                 throw new IllegalArgumentException("Type name already in use");
@@ -105,7 +117,7 @@ public class ManagerSession extends Session implements ManagerSessionRemote {
 
     private CarRentalCompany createCRC(String name, List<String> regions) {
         try {
-            CarRentalCompany crc = new CarRentalCompany(name, regions);
+            CarRentalCompany crc = new CarRentalCompany(name);//, regions);
             getEntityManager().persist(crc);
             return crc;
 
@@ -116,12 +128,22 @@ public class ManagerSession extends Session implements ManagerSessionRemote {
 
     @Override
     public List<String> getAllRentalCompanies() {
-        return super.getAllCarRentalCompanies();
+        return super.getAllCarRentalCompanyNames();
     }
 
     @Override
     public List<CarType> getCarTypes(String company) {
         return super.getCarTypesAtCompany(company);
+    }
+
+    @Override
+    public List<CarType> getAllCars() {
+        return super.getAllCars();
+    }
+
+    @Override
+    public List<Integer> getAllReservations() {
+        return super.getAllReservations();
     }
 
     @Override
@@ -140,24 +162,36 @@ public class ManagerSession extends Session implements ManagerSessionRemote {
     }
 
     @Override
+    public Integer getNumberOfReservationsByClient(String client) {
+        return super.getNumberOfReservationsByClient(client);
+    }
+
+    @Override
+    public Set<String> getBestClients() {
+        return super.getBestClient();
+    }
+
+    @Override
+    public CarType getMostPopularCarTypeInCompanyInYear(String company, Integer year) {
+        return super.getMostPopularCarTypeInCompanyInYear(company, year);
+    }
+
+    @Override
     public void loadRental(String dataFile) {
         try {
-            System.out.println("***************in load rental********");
+            System.out.println("Loading companies-----");
             CrcData data = this.loadData(dataFile);
 
             CarRentalCompany crc = this.createCRC(data.name, data.regions);
-
-            System.out.println("company name " + crc.getName());
-            System.out.println("company regions " + crc.getRegions());
-            System.out.println("company name " + data.carTypes);
+            this.addRegions(crc, data.regions);
 
             for (CarType type : data.carTypes) {
                 this.addCarType(crc, type);
             }
             for (Car car : data.cars) {
-                System.out.println("cars " + car.getType());
                 this.addCar(crc, car);
             }
+
         } catch (NumberFormatException ex) {
             throw new EJBException(ex);
         } catch (IOException ex) {
@@ -211,7 +245,7 @@ public class ManagerSession extends Session implements ManagerSessionRemote {
                 } else {
                     csvReader = new StringTokenizer(line, ",");
                     //create new car type from first 5 fields
-                    CarType type = this.createCarType(csvReader.nextToken(),
+                    CarType type = new CarType(csvReader.nextToken(),
                             Integer.parseInt(csvReader.nextToken()),
                             Float.parseFloat(csvReader.nextToken()),
                             Double.parseDouble(csvReader.nextToken()),
@@ -219,7 +253,7 @@ public class ManagerSession extends Session implements ManagerSessionRemote {
                     out.carTypes.add(type);
                     //create N new cars with given type, where N is the 5th field
                     for (int i = Integer.parseInt(csvReader.nextToken()); i > 0; i--) {
-                        out.cars.add(this.createCar(type));
+                        out.cars.add(new Car(type));
                     }
                 }
             }

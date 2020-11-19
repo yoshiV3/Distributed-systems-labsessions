@@ -24,61 +24,34 @@ public class ReservationSession extends Session implements ReservationSessionRem
     private String renter;
     private List<Quote> quotes = new LinkedList<Quote>();
 
-//    @Override
-//    @TransactionAttribute(SUPPORTS)
-//    public Set<String> getAllRentalCompanies() {
-//        System.out.println("inside reservation session");
-//        Set<String> companies = new HashSet();
-//        for (String company : this.getAllCarRentalCompanies())
-//        {
-//            companies.add(company);
-//        }
-//        System.out.println("inside reservation session" + companies);
-//        return companies;
-//    }
-    
     @Override
     public List<String> getAllRentalCompanies() {
-        return super.getAllCarRentalCompanies();
+        return super.getAllCarRentalCompanyNames();
     }
 
-    
     @Override
-    @TransactionAttribute(SUPPORTS)
     public List<CarType> getAvailableCarTypes(Date start, Date end) {
-        List<CarType> availableCarTypes = new LinkedList(); 
-        for (String company : super.getAllCarRentalCompanies())
-        {
-            EntityManager e = this.getEntityManager();
-            CarRentalCompany crc = e.find(CarRentalCompany.class, company);
-            for (CarType type : crc.getAvailableCarTypes(start, end))
-            {
-                availableCarTypes.add(type);
-            }
-        }
-        return availableCarTypes;
+        return super.getAvailableCarTypes(start, end);
     }
-    
-    
 
     @Override
-    public Quote createQuote(String company, ReservationConstraints constraints) throws ReservationException {
-        try
-        {  
-            if(! this.getAllCarRentalCompanies().contains(company))
-            {
-                this.getEJBContext().setRollbackOnly();
-                throw new IllegalArgumentException("Not a valid  company name");
+    public Quote createQuote(ReservationConstraints constraints) throws ReservationException {
+        double price = 100000;
+        CarRentalCompany selectedCRC = null;
+        for (CarRentalCompany crc : super.getAllCarRentalCompanies()) {
+            if (crc.canReserve(constraints)) {
+                double newprice = crc.calculateRentalPrice(crc.getType(constraints.getCarType()).getRentalPricePerDay(), constraints.getStartDate(), constraints.getEndDate());
+                if (price > newprice) {
+                    price = newprice;
+                    selectedCRC = crc;
+                }
+                System.out.println("total price----" + price);
+
             }
-            CarRentalCompany crc = this.getEntityManager().find(CarRentalCompany.class, company);
-            Quote createdQuote = crc.createQuote(constraints, this.getRenterName());
-            this.quotes.add(createdQuote);
-            return createdQuote;
         }
-        catch(Exception ex)
-        {
-            throw new EJBException(ex);
-        }
+        Quote createdQuote = new Quote(renter, constraints.getStartDate(), constraints.getEndDate(), selectedCRC.getName(), constraints.getCarType(), price);
+        this.quotes.add(createdQuote);
+        return createdQuote;
     }
 
     @Override
@@ -89,24 +62,19 @@ public class ReservationSession extends Session implements ReservationSessionRem
 
     @Override
     public List<ReservationPrint> confirmQuotes() throws ReservationException {
-        try
-        {
+        try {
             List<ReservationPrint> reservations = new LinkedList();
-            for(Quote quote : this.quotes)
-            {
-                CarRentalCompany crc = this.getEntityManager().find(CarRentalCompany.class,quote.getRentalCompany());
+            for (Quote quote : this.quotes) {
+                CarRentalCompany crc = this.getEntityManager().find(CarRentalCompany.class, quote.getRentalCompany());
                 Reservation res = crc.confirmQuote(quote);
                 this.getEntityManager().persist(res);
                 reservations.add(res.toReservationPrint());
             }
             return reservations;
-        }
-        catch(Exception ex)
-        {
+        } catch (Exception ex) {
             throw new EJBException(ex);
         }
-        
-    
+
     }
 
     @Override
@@ -125,10 +93,15 @@ public class ReservationSession extends Session implements ReservationSessionRem
     @Override
     public List<ReservationPrint> getMyReservations() {
         List<ReservationPrint> reservations = new LinkedList();
-        for (Reservation res : super.getReservationsByClient(this.getRenterName()))
-        {
+        for (Reservation res : super.getReservationsByClient(this.getRenterName())) {
             reservations.add(res.toReservationPrint());
         }
         return reservations;
     }
+
+    @Override
+    public String getCheapestCarType(Date start, Date end, String region) {
+        return getCheapestCarTypeInRegionInDates(start, end, region);
+    }
+
 }

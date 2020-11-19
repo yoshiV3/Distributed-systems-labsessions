@@ -12,6 +12,8 @@ import java.util.logging.Logger;
 import javax.ejb.TransactionAttribute;
 import static javax.ejb.TransactionAttributeType.MANDATORY;
 import static javax.ejb.TransactionAttributeType.SUPPORTS;
+import javax.persistence.CascadeType;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.JoinTable;
@@ -25,40 +27,64 @@ import javax.persistence.Transient;
 @NamedQueries({
     @NamedQuery(
             name = "getAllCarRentalCompanies",
-            query = "SELECT crc.name FROM CarRentalCompany crc") //works
-    ,@NamedQuery(
-            name = "getAllCarTypesAtCompany",
-            query = "SELECT crc.carTypes FROM CarRentalCompany crc WHERE crc.name = :company") //works 
-    ,@NamedQuery(
-            name = "getCarIds",
-            query = "SELECT car.id FROM CarRentalCompany crc JOIN crc.cars car WHERE  crc.name = :company and car.type.name = :type") //works 
-    ,@NamedQuery(
-            name = "getReservationsByClient",
-            query = "SELECT res FROM Reservation res WHERE res.carRenter = :name") //works 
-,@NamedQuery(
-            name = "getNumberOfReservationsByClient",
-            query = "SELECT count(res) FROM Reservation res WHERE res.carRenter = :name") 
-,@NamedQuery(
-            name = "getBestClient",
-            query = "SELECT max((count(res))) FROM Reservation res GROUP BY res.carRenter") 
-,@NamedQuery(
-            name = "getNumberOfReservationsByCRCByCarId",
-            query = "SELECT count(res) FROM CarRentalCompany crc JOIN crc.cars car Join car.reservations res WHERE car.type.name = :type AND crc.name = :company AND car.id = :id") 
-,@NamedQuery(
-            name = "getNumberOfReservationsByCRCByType",
-            query = "SELECT count(res) FROM CarRentalCompany crc JOIN crc.cars car Join car.reservations res WHERE car.type.name = :type AND crc.name = :company") 
+            query = "SELECT crc FROM CarRentalCompany crc"),
 
+    @NamedQuery(
+            name = "getAllCarRentalCompaniesByRegion",
+            query = "SELECT crc.name FROM CarRentalCompany crc WHERE crc.regions=:region"),
+
+    @NamedQuery(
+            name = "getAllCarTypesAtCompany",
+            query = "SELECT crc.carTypes FROM CarRentalCompany crc WHERE crc.name = :company"),
+    @NamedQuery(
+            name = "getCarType",
+            query = "SELECT cartype FROM CarType cartype WHERE cartype.name = :type"),
+
+    
+    @NamedQuery(
+            name = "getCarIds",
+            query = "SELECT car.id FROM CarRentalCompany crc JOIN crc.cars car WHERE  crc.name = :company and car.type.name = :type"),
+
+    @NamedQuery(
+            name = "getReservationsByClient",
+            query = "SELECT res FROM Reservation res WHERE res.carRenter = :name"),
+
+    @NamedQuery(
+            name = "getNumberOfReservationsByClient",
+            query = "SELECT count(res) FROM Reservation res WHERE res.carRenter = :name"),
+    @NamedQuery(
+            name = "getNumberOfReservationsByCRCByCarId",
+            query = "SELECT count(res) FROM CarRentalCompany crc JOIN crc.cars car JOIN car.reservations res WHERE car.type.name = :type AND crc.name = :company AND car.id = :id"),
+    @NamedQuery(
+            name = "getNumberOfReservationsByCRCByType",
+            query = "SELECT count(res) FROM CarRentalCompany crc JOIN crc.cars car JOIN car.reservations res WHERE car.type.name = :type AND crc.name = :company"),
+    @NamedQuery(
+            name = "getBestClient",
+            query = "SELECT res.carRenter, SUM(res.rentalPrice) as price FROM Reservation res GROUP BY res.carRenter ORDER BY price desc"),
+            
+    @NamedQuery(
+            name = "getAllCars",
+            query = "SELECT car.type from Car car"),
+    @NamedQuery(
+            name = "getAllReservations",
+            query = "SELECT res.car.id FROM Reservation res"),
+    @NamedQuery(
+            name = "getAvailableCarTypes",
+            query = "SELECT DISTINCT car.type from Car car WHERE car.id NOT IN (SELECT res.car.id FROM Reservation res WHERE res.endDate BETWEEN :startDate AND :endDate)"),
+
+    @NamedQuery(
+            name = "getCheapestCarTypeInRegionInDates",
+            query = "SELECT DISTINCT car.type.name from CarRentalCompany crc JOIN Car car WHERE :region MEMBER OF crc.regions AND car IN (crc.cars) AND car.id NOT IN (SELECT res.car.id FROM Reservation res WHERE res.endDate BETWEEN :startDate AND :endDate) ORDER BY car.type.rentalPricePerDay asc"),
+    @NamedQuery(
+            name = "getMostPopularCarTypeInCompanyInYear",
+            query = "SELECT res.carType, COUNT(DISTINCT res.id) as reservations FROM Reservation res WHERE res.rentalCompany=:company AND  (EXTRACT(YEAR from res.startDate)=:year OR  EXTRACT(YEAR from res.endDate)=:year) GROUP BY res.carType ORDER BY reservations DESC")
 //,@NamedQuery(
 //            name = "",
 //            query = "") 
 //,@NamedQuery(
 //            name = "",
 //            query = "") 
-        
-        
-        
-        
-        ,})
+})
 //
 //     @NamedQuery(name = "getAllCarRentalCompanies", query
 //            = "SELECT crc FROM CarRentalCompany crc")
@@ -82,23 +108,22 @@ public class CarRentalCompany {
 
     @Id
     private String name;
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL)
     private List<Car> cars = new ArrayList<Car>();
+    @ElementCollection
     private List<String> regions;
-    @ManyToMany
+    @ManyToMany(cascade = CascadeType.ALL)
     private Set<CarType> carTypes = new HashSet<CarType>();
 
     /**
      * *************
-     * CONSTRUCTORS *
-     **************
+     * CONSTRUCTORS * *************
      */
     public CarRentalCompany() {
     }
 
-    public CarRentalCompany(String name, List<String> regions) {
+    public CarRentalCompany(String name) {//, List<String> regions) {
         setName(name);
-        setRegions(regions);
     }
 
     public CarRentalCompany(String name, List<String> regions, List<Car> cars) {
@@ -110,8 +135,7 @@ public class CarRentalCompany {
 
     /**
      * ******
-     * NAME *
-     *******
+     * NAME * ******
      */
     public String getName() {
         return name;
@@ -123,34 +147,32 @@ public class CarRentalCompany {
 
     /**
      * *********
-     * Regions *
-     *********
+     * Regions * ********
      */
-    private void setRegions(List<String> regions) {
+    public void setRegions(List<String> regions) {
         this.regions = regions;
     }
 
-    public Collection<String> getRegions() {
+    public List<String> getRegions() {
         return this.regions;
     }
 
     /**
      * *******
-     * CARS *
-     ********
+     * CARS * *******
      */
-    public Collection<Car> getCars() {
-        return this.cars;
+    public List<Car> getCars() {
+        return cars;
     }
 
     @TransactionAttribute(MANDATORY)
     public void addCar(Car car) {
-        this.cars.add(car);
+        cars.add(car);
     }
 
     @TransactionAttribute(MANDATORY)
     public void removeCar(Car car) {
-        this.cars.remove(car);
+        cars.remove(car);
     }
 
     @TransactionAttribute(SUPPORTS)
@@ -169,24 +191,26 @@ public class CarRentalCompany {
      *
      * CARTYPES
      */
-    public Collection<CarType> getCarTypes() {
-        return this.carTypes;
+    public Set<CarType> getCarTypes() {
+        return carTypes;
     }
 
     @TransactionAttribute(SUPPORTS)
     public CarType getType(String carTypeName) {
-        for (CarType type : carTypes) {
+        for (CarType type : getCarTypes()) {
             if (type.getName().equals(carTypeName)) {
                 return type;
             }
         }
-        throw new IllegalArgumentException("<" + carTypeName + "> No cartype of name " + carTypeName);
+        return null;
     }
 
     @TransactionAttribute(SUPPORTS)
-    public boolean isAvailable(String carTypeName, Date start, Date end) {
-        logger.log(Level.INFO, "<{0}> Checking availability for car type {1}", new Object[]{name, carTypeName});
-        return getAvailableCarTypes(start, end).contains(getType(carTypeName));
+    public boolean isAvailable(CarType type, Date start, Date end) {
+        if (type != null) {
+            return getAvailableCarTypes(start, end).contains(type);
+        }
+        return false;
     }
 
     @TransactionAttribute(SUPPORTS)
@@ -200,14 +224,26 @@ public class CarRentalCompany {
         return availableCarTypes;
     }
 
+    public boolean operatesInRegion(String region) {
+        return this.regions.contains(region);
+    }
+
+    public boolean canReserve(ReservationConstraints constraints) {
+
+        boolean result = operatesInRegion(constraints.getRegion());
+        result = result && isAvailable(getType(constraints.getCarType()), constraints.getStartDate(), constraints.getEndDate());
+        return result;
+    }
+
     @TransactionAttribute(MANDATORY)
     public void addCarType(CarType type) {
-        this.carTypes.add(type);
+
+        carTypes.add(type);
     }
 
     @TransactionAttribute(MANDATORY)
     public void removeCarType(CarType type) {
-        this.carTypes.remove(type);
+        carTypes.remove(type);
     }
 
     @TransactionAttribute(MANDATORY)
@@ -215,14 +251,12 @@ public class CarRentalCompany {
             throws ReservationException {
         logger.log(Level.INFO, "<{0}> Creating tentative reservation for {1} with constraints {2}",
                 new Object[]{name, guest, constraints.toString()});
-
-        if (!this.regions.contains(constraints.getRegion()) || !isAvailable(constraints.getCarType(), constraints.getStartDate(), constraints.getEndDate())) {
+        CarType type = getType(constraints.getCarType());
+        if (!this.regions.contains(constraints.getRegion()) || !isAvailable(type, constraints.getStartDate(), constraints.getEndDate())) {
 
             throw new ReservationException("<" + name
                     + "> No cars available to satisfy the given constraints.");
         }
-
-        CarType type = getType(constraints.getCarType());
 
         double price = calculateRentalPrice(type.getRentalPricePerDay(), constraints.getStartDate(), constraints.getEndDate());
 
@@ -230,7 +264,7 @@ public class CarRentalCompany {
     }
 
     // Implementation can be subject to different pricing strategies
-    private double calculateRentalPrice(double rentalPricePerDay, Date start, Date end) {
+    public double calculateRentalPrice(double rentalPricePerDay, Date start, Date end) {
         return rentalPricePerDay * Math.ceil((end.getTime() - start.getTime())
                 / (1000 * 60 * 60 * 24D));
     }
