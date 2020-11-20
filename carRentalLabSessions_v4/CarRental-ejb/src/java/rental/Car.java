@@ -16,9 +16,9 @@ public class Car {
     @Id
     @GeneratedValue
     private int id;
-    @ManyToOne
+    @ManyToOne(cascade = ALL, fetch = FetchType.EAGER)
     private CarType type;
-    @OneToMany(cascade = ALL, mappedBy = "Car")
+    @OneToMany(cascade = ALL, mappedBy = "Car", fetch = FetchType.LAZY)
     private Set<Reservation> reservations = new HashSet<Reservation>();
 
     /**

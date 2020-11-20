@@ -87,11 +87,11 @@ public class CarRentalCompany {
 
     @Id
     private String name;
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Car> cars = new ArrayList<Car>();
     @ElementCollection
     private List<String> regions;
-    @ManyToMany(cascade = CascadeType.ALL)
+    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<CarType> carTypes = new HashSet<CarType>();
 
     /**
