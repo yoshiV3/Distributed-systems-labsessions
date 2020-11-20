@@ -228,6 +228,8 @@ public class CarRentalCompany {
         return this.regions.contains(region);
     }
 
+    
+    
     public boolean canReserve(ReservationConstraints constraints) {
 
         boolean result = operatesInRegion(constraints.getRegion());

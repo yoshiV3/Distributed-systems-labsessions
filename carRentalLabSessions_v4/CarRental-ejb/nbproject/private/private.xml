@@ -6,6 +6,7 @@
             <file>file:/home/yoshi/Documents/distributed/Distributed-systems-labsessions/carRentalLabSessions_v4/CarRental-ejb/src/java/rental/Car.java</file>
             <file>file:/home/yoshi/Documents/distributed/Distributed-systems-labsessions/carRentalLabSessions_v4/CarRental-ejb/src/java/session/ManagerSession.java</file>
             <file>file:/home/yoshi/Documents/distributed/Distributed-systems-labsessions/carRentalLabSessions_v4/CarRental-ejb/src/java/session/Session.java</file>
+            <file>file:/home/yoshi/Documents/distributed/Distributed-systems-labsessions/carRentalLabSessions_v4/CarRental-ejb/src/java/session/ReservationSession.java</file>
             <file>file:/home/yoshi/Documents/distributed/Distributed-systems-labsessions/carRentalLabSessions_v4/CarRental-ejb/src/java/rental/CarRentalCompany.java</file>
         </group>
     </open-files>

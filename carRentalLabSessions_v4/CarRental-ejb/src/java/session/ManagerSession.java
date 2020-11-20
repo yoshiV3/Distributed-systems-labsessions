@@ -21,6 +21,7 @@ import javax.ejb.EJBException;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import static javax.ejb.TransactionAttributeType.MANDATORY;
+import static javax.ejb.TransactionAttributeType.NEVER;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import rental.Car;
@@ -127,51 +128,61 @@ public class ManagerSession extends Session implements ManagerSessionRemote {
     }
 
     @Override
+    @TransactionAttribute(NEVER)
     public List<String> getAllRentalCompanies() {
         return super.getAllCarRentalCompanyNames();
     }
 
     @Override
+    @TransactionAttribute(NEVER)
     public List<CarType> getCarTypes(String company) {
         return super.getCarTypesAtCompany(company);
     }
 
     @Override
+    @TransactionAttribute(NEVER)
     public List<CarType> getAllCars() {
         return super.getAllCars();
     }
 
     @Override
+    @TransactionAttribute(NEVER)
     public List<Integer> getAllReservations() {
         return super.getAllReservations();
     }
 
     @Override
+    @TransactionAttribute(NEVER)
     public List<Integer> getCarIds(String company, String type) {
         return super.getCarIds(company, type);
     }
 
     @Override
+    @TransactionAttribute(NEVER)
     public Integer getNumberOfReservations(String company, String type, int id) {
         return super.getNumberOfReservations(company, type, id);
     }
 
     @Override
+    @TransactionAttribute(NEVER)
     public Integer getNumberOfReservations(String company, String type) {
         return super.getNumberOfReservations(company, type);
     }
 
     @Override
+    @TransactionAttribute(NEVER)
     public Integer getNumberOfReservationsByClient(String client) {
         return super.getNumberOfReservationsByClient(client);
     }
 
     @Override
+    @TransactionAttribute(NEVER)
     public Set<String> getBestClients() {
         return super.getBestClient();
     }
 
     @Override
+    @TransactionAttribute(NEVER)
     public CarType getMostPopularCarTypeInCompanyInYear(String company, Integer year) {
         return super.getMostPopularCarTypeInCompanyInYear(company, year);
     }

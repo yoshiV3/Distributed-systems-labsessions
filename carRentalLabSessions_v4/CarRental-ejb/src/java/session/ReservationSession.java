@@ -8,6 +8,7 @@ import java.util.Set;
 import javax.ejb.EJBException;
 import javax.ejb.Stateful;
 import javax.ejb.TransactionAttribute;
+import static javax.ejb.TransactionAttributeType.NEVER;
 import static javax.ejb.TransactionAttributeType.SUPPORTS;
 import javax.persistence.EntityManager;
 import rental.CarRentalCompany;
@@ -25,11 +26,13 @@ public class ReservationSession extends Session implements ReservationSessionRem
     private List<Quote> quotes = new LinkedList<Quote>();
 
     @Override
+    @TransactionAttribute(NEVER)
     public List<String> getAllRentalCompanies() {
         return super.getAllCarRentalCompanyNames();
     }
 
     @Override
+    @TransactionAttribute(NEVER)
     public List<CarType> getAvailableCarTypes(Date start, Date end) {
         return super.getAvailableCarTypes(start, end);
     }
@@ -45,7 +48,7 @@ public class ReservationSession extends Session implements ReservationSessionRem
                     price = newprice;
                     selectedCRC = crc;
                 }
-                System.out.println("total price----" + price);
+                //System.out.println("total price----" + price);
 
             }
         }
@@ -55,7 +58,7 @@ public class ReservationSession extends Session implements ReservationSessionRem
     }
 
     @Override
-    @TransactionAttribute(SUPPORTS)
+    @TransactionAttribute(NEVER)
     public List<Quote> getCurrentQuotes() {
         return quotes;
     }
@@ -86,11 +89,13 @@ public class ReservationSession extends Session implements ReservationSessionRem
     }
 
     @Override
+    @TransactionAttribute(NEVER)
     public String getRenterName() {
         return renter;
     }
 
     @Override
+    @TransactionAttribute(NEVER)
     public List<ReservationPrint> getMyReservations() {
         List<ReservationPrint> reservations = new LinkedList();
         for (Reservation res : super.getReservationsByClient(this.getRenterName())) {
@@ -100,8 +105,9 @@ public class ReservationSession extends Session implements ReservationSessionRem
     }
 
     @Override
+    @TransactionAttribute(NEVER)
     public String getCheapestCarType(Date start, Date end, String region) {
-        return getCheapestCarTypeInRegionInDates(start, end, region);
+        return super.getCheapestCarTypeInRegionInDates(start, end, region);
     }
 
 }
