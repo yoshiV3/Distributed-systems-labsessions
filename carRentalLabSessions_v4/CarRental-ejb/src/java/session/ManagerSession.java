@@ -30,8 +30,8 @@ import rental.Reservation;
 import rental.ReservationPrint;
 
 @Stateless
-//@RolesAllowed("Manager")
-//@DeclareRoles("Manager")
+@RolesAllowed({"Manager","NewRole"})
+@DeclareRoles({"Manager","NewRole"})
 public class ManagerSession extends Session implements ManagerSessionRemote {
 
 //    private void addCar(String company, Car car) {

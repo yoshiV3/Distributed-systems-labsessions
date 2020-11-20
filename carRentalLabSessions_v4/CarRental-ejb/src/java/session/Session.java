@@ -108,22 +108,21 @@ public abstract class Session {
     }
 
     protected Integer getNumberOfReservationsByClient(String client) {
-        return em.createNamedQuery("getNumberOfReservationsByClient")
+        return  new Integer(((Number) em.createNamedQuery("getNumberOfReservationsByClient")
                 .setParameter("name", client)
-                .getFirstResult();
+                .getSingleResult()).intValue());
     }
 
     protected Set<String> getBestClient() {
-        Map<String, Double> val = new HashMap<String, Double>();
+        Set<String>  bestClients = new HashSet(); 
         List<Object[]> client = em.createNamedQuery("getBestClient").getResultList();
-        Double max = (Double) client.get(0)[1];
-        Set<String> bestclients = new HashSet<String>();
+        Integer max = new Integer(((Number) client.get(0)[1]).intValue());
         for (Object[] a : client) {
-            if (a[1].equals(max)) {
-                bestclients.add((String) a[0]);
+            if ((new Integer(((Number) a[1]).intValue())).equals(max)) {
+                bestClients.add((String) a[0]);
             }
         }
-        return bestclients;
+        return bestClients;
     }
 
     protected CarType getMostPopularCarTypeInCompanyInYear(String company, Integer year) {

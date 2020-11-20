@@ -60,7 +60,7 @@ import javax.persistence.Transient;
             query = "SELECT count(res) FROM CarRentalCompany crc JOIN crc.cars car JOIN car.reservations res WHERE car.type.name = :type AND crc.name = :company"),
     @NamedQuery(
             name = "getBestClient",
-            query = "SELECT res.carRenter, SUM(res.rentalPrice) as price FROM Reservation res GROUP BY res.carRenter ORDER BY price desc"),
+            query = "SELECT re.carRenter, count(re) as cnt FROM Reservation re GROUP BY re.carRenter ORDER BY cnt DESC"),
             
     @NamedQuery(
             name = "getAllCars",
