@@ -1,16 +1,12 @@
 package session;
 
 import java.util.Date;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 import javax.ejb.EJBException;
 import javax.ejb.Stateful;
 import javax.ejb.TransactionAttribute;
 import static javax.ejb.TransactionAttributeType.NEVER;
-import static javax.ejb.TransactionAttributeType.SUPPORTS;
-import javax.persistence.EntityManager;
 import rental.CarRentalCompany;
 import rental.CarType;
 import rental.Quote;
@@ -48,7 +44,6 @@ public class ReservationSession extends Session implements ReservationSessionRem
                     price = newprice;
                     selectedCRC = crc;
                 }
-                //System.out.println("total price----" + price);
 
             }
         }

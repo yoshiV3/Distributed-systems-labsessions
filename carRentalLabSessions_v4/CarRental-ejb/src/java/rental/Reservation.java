@@ -7,7 +7,6 @@ import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.Temporal;
 import static javax.persistence.TemporalType.DATE;
-import rental.Quote;
 
 @Entity
 public class Reservation {
@@ -86,7 +85,8 @@ public class Reservation {
 
     /**
      * ***********
-     * TO STRING * ***********
+     * TO STRING 
+     * ***********
      */
     @Override
     public String toString() {

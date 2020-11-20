@@ -3,46 +3,28 @@ package session;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.StringTokenizer;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.annotation.Resource;
 import javax.annotation.security.DeclareRoles;
 import javax.annotation.security.RolesAllowed;
-import javax.ejb.EJBContext;
 import javax.ejb.EJBException;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
-import static javax.ejb.TransactionAttributeType.MANDATORY;
 import static javax.ejb.TransactionAttributeType.NEVER;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import rental.Car;
 import rental.CarRentalCompany;
 import rental.CarType;
-import rental.Reservation;
-import rental.ReservationPrint;
 
 @Stateless
-@RolesAllowed({"Manager","NewRole"})
-@DeclareRoles({"Manager","NewRole"})
+@RolesAllowed("Manager")
+@DeclareRoles("Manager")
 public class ManagerSession extends Session implements ManagerSessionRemote {
 
-//    private void addCar(String company, Car car) {
-//        try {
-//            CarRentalCompany comp = getEntityManager().find(CarRentalCompany.class, company);
-//            this.addCar(comp, car);
-//        } catch (Exception ex) {
-//            throw new EJBException(ex);
-//        }
-//    }
+
     private void addCar(CarRentalCompany company, Car car) {
         try {
             CarRentalCompany crc = getEntityManager().find(CarRentalCompany.class, company.getName());

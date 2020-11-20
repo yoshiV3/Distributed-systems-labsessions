@@ -20,46 +20,9 @@ public class Main extends AbstractTestManagement<ReservationSessionRemote, Manag
         // TODO: use updated manager interface to load cars into companies
 
         ManagerSessionRemote sessionM = (ManagerSessionRemote) (new InitialContext()).lookup(ManagerSessionRemote.class.getName());
-//        ReservationSessionRemote session = (ReservationSessionRemote) (new InitialContext()).lookup(ReservationSessionRemote.class.getName());
-//        ReservationSessionRemote session2 = (ReservationSessionRemote) (new InitialContext()).lookup(ReservationSessionRemote.class.getName());
-//        ReservationSessionRemote session3 = (ReservationSessionRemote) (new InitialContext()).lookup(ReservationSessionRemote.class.getName());
         sessionM.loadRental("dockx.csv");
         sessionM.loadRental("hertz.csv");
         new Main("trips").run();
-//        sessionM.addCarTypeToRental("yoshi", 0, 0, 0, true, "Dockx");
-//        System.out.println(sessionM.getAllRentalCompanies());
-//        System.out.println("changed this - " + sessionM.getCarTypes("Dockx"));
-//        session.setRenterName("Te");
-//        session2.setRenterName("Tejas");
-//        session3.setRenterName("Tej");
-
-//        //System.out.println("getting all cars "+sessionM.getCarTypesAtCompany
-//        System.out.println("getting all cars " + sessionM.getAllCars() + "\n number = " + sessionM.getAllCars().size());
-//          System.out.println("getting cehapest : " + session.getCheapestCarType(new Date(2019, 11, 31), new Date(2020, 1, 4), "Brussels")); 
-//        System.out.println("available cars" + session.getAvailableCarTypes(new Date(2019, 11, 31), new Date(2020, 1, 4)) + "\n size =" + session.getAvailableCarTypes(new Date(2019, 11, 31), new Date(2020, 1, 4)).size());
-//        ReservationConstraints constr = new ReservationConstraints(new Date(2019, 11, 31), new Date(2020, 1, 4), "Compact", "Brussels");
-//        session.createQuote(constr);
-//        ReservationConstraints constr2 = new ReservationConstraints(new Date(2019, 11, 31), new Date(2020, 1, 4), "Compact", "Brussels");
-//        session2.createQuote(constr2);
-//        ReservationConstraints const3 = new ReservationConstraints(new Date(2019, 11, 31), new Date(2020, 1, 4), "Compact", "Brussels");
-//        session3.createQuote(const3);
-//        System.out.println(session.getCurrentQuotes());
-//        System.out.println(session3.confirmQuotes());
-//        System.out.println(session2.confirmQuotes());
-//        System.out.println(session.confirmQuotes());
-//        System.out.println("checking available cars again " + session.getAvailableCarTypes(new Date(2019, 11, 31), new Date(2020, 1, 4)) + "\n size= " + session.getAvailableCarTypes(new Date(2019, 11, 31), new Date(2020, 1, 4)).size());
-//        System.out.println("my reservation: " + session.getMyReservations());
-//        System.out.println("all reservations " + sessionM.getAllReservations());
-
-
-//            System.out.println("best client"+sessionM.getBestClients());
-//            System.out.println("best client"+sessionM.getMostPopularCarTypeInCompanyInYear("Test",2020));
-//        System.out.println(sessionM.getCarIds("Dockx", "Eco"));
-//        System.out.println(sessionM.getCarIds("Test", "Mini"));
-//
-//        System.out.println(sessionM.getNumberOfReservations("Test", "Mini", 50));
-//        System.out.println("test " + sessionM.getNumberOfReservations("Test", "Mini"));
-
     }
 
     @Override

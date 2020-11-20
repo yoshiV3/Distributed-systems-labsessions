@@ -1,15 +1,11 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package rental;
 
 import java.io.Serializable;
 
 /**
  *
- * @author yoshi
+ * @author Yoshi and Tejas
  */
 public class ReservationPrint extends Quote implements Serializable{
     

@@ -16,14 +16,12 @@ import javax.persistence.CascadeType;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.Id;
-import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Transient;
 
-//return em.createQuery("SELECT crc.name FROM CarRentalCompany crc", String.class).getResultList();
 @NamedQueries({
     @NamedQuery(
             name = "getAllCarRentalCompanies",
@@ -78,27 +76,8 @@ import javax.persistence.Transient;
     @NamedQuery(
             name = "getMostPopularCarTypeInCompanyInYear",
             query = "SELECT res.carType, COUNT(DISTINCT res.id) as reservations FROM Reservation res WHERE res.rentalCompany=:company AND  (EXTRACT(YEAR from res.startDate)=:year OR  EXTRACT(YEAR from res.endDate)=:year) GROUP BY res.carType ORDER BY reservations DESC")
-//,@NamedQuery(
-//            name = "",
-//            query = "") 
-//,@NamedQuery(
-//            name = "",
-//            query = "") 
 })
-//
-//     @NamedQuery(name = "getAllCarRentalCompanies", query
-//            = "SELECT crc FROM CarRentalCompany crc")
-//    ,
-//
-//    @NamedQuery(name = "getAvailableCarTypes", query
-//            = "SELECT DISTINCT car.type FROM Car car "
-//            + "WHERE car.id NOT IN "
-//            + "("
-//            + "SELECT res.carId FROM Reservation res "
-//            + "WHERE res.startDate <= :endDate AND res.endDate >= :startDate"
-//            + ")")
-//    ,
-//})
+
 
 @Entity
 public class CarRentalCompany {

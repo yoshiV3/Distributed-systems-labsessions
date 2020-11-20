@@ -1,33 +1,23 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package session;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import javax.annotation.Resource;
 import javax.ejb.EJBContext;
 import javax.ejb.TransactionAttribute;
-import static javax.ejb.TransactionAttributeType.NEVER;
 import static javax.ejb.TransactionAttributeType.SUPPORTS;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.persistence.TemporalType;
 import rental.CarRentalCompany;
 import rental.CarType;
 import rental.Reservation;
-import rental.ReservationPrint;
 
 /**
  *
- * @author yoshi
+ * @author Yoshi and Tejas
  */
 public abstract class Session {
 

@@ -2,7 +2,6 @@ package session;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
 import javax.ejb.Remote;
 import rental.CarType;
 import rental.Quote;
