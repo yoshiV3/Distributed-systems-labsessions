@@ -6,7 +6,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
-import rental.Reservation;
+import rental.ReservationPrint;
+import session.ManagerSessionRemote;
 
 /**
  * 
@@ -34,8 +35,8 @@ import rental.Reservation;
  * c 
  * Modifier to indicate that the according command will fail
  */
-public abstract class AbstractTestAgency<ReservationSession, ManagerSession> extends AbstractTesting {
-    protected Map<String, ReservationSession> sessions = new HashMap<String, ReservationSession>();
+public abstract class AbstractTestAgency<ReservationSessionRemote, ManagerSessionRemote> extends AbstractTesting {
+    protected Map<String, ReservationSessionRemote> sessions = new HashMap<String, ReservationSessionRemote>();
 
     /**
      * Create a new reservation session for the user with the given name.
@@ -45,7 +46,7 @@ public abstract class AbstractTestAgency<ReservationSession, ManagerSession> ext
      *
      * @throws Exception if things go wrong, throw exception
      */
-    protected abstract ReservationSession getNewReservationSession(String name) throws Exception;
+    protected abstract ReservationSessionRemote getNewReservationSession(String name) throws Exception;
 
     /**
      * Create a new manager session for the user with the given name.
@@ -55,7 +56,7 @@ public abstract class AbstractTestAgency<ReservationSession, ManagerSession> ext
      *
      * @throws Exception if things go wrong, throw exception
      */
-    protected abstract ManagerSession getNewManagerSession(String name) throws Exception;
+    protected abstract ManagerSessionRemote getNewManagerSession(String name) throws Exception;
 
     /**
      * Check which car types are available in the given period and print them.
@@ -66,7 +67,7 @@ public abstract class AbstractTestAgency<ReservationSession, ManagerSession> ext
      *
      * @throws Exception if things go wrong, throw exception
      */
-    protected abstract void getAvailableCarTypes(ReservationSession session, Date start, Date end) throws Exception;
+    protected abstract void getAvailableCarTypes(ReservationSessionRemote session, Date start, Date end) throws Exception;
 
     /**
      * Add a quote for a given car type to the session.
@@ -81,7 +82,7 @@ public abstract class AbstractTestAgency<ReservationSession, ManagerSession> ext
      *
      * @throws Exception if things go wrong, throw exception
      */
-    protected abstract void createQuote(ReservationSession session, String name,
+    protected abstract void createQuote(ReservationSessionRemote session, String name,
             Date start, Date end, String carType, String region) throws Exception;
 
     /**
@@ -92,7 +93,7 @@ public abstract class AbstractTestAgency<ReservationSession, ManagerSession> ext
      *
      * @throws Exception if things go wrong, throw exception
      */
-    protected abstract List<Reservation> confirmQuotes(ReservationSession session, String name) throws Exception;
+    protected abstract List<ReservationPrint> confirmQuotes(ReservationSessionRemote session, String name) throws Exception;
 
     /**
      * Get the number of reservations made by the given renter (across all 
@@ -105,7 +106,7 @@ public abstract class AbstractTestAgency<ReservationSession, ManagerSession> ext
      *
      * @throws Exception if things go wrong, throw exception
      */
-    protected abstract int getNumberOfReservationsBy(ManagerSession ms, String clientName) throws Exception;
+    protected abstract int getNumberOfReservationsBy(ManagerSessionRemote ms, String clientName) throws Exception;
 
     /**
      * Get the number of reservations for a particular car type
@@ -118,7 +119,7 @@ public abstract class AbstractTestAgency<ReservationSession, ManagerSession> ext
      *
      * @throws Exception if things go wrong, throw exception
      */
-    protected abstract int getNumberOfReservationsByCarType(ManagerSession ms, String carRentalName, String carType) throws Exception;    
+    protected abstract int getNumberOfReservationsByCarType(ManagerSessionRemote ms, String carRentalName, String carType) throws Exception;    
 
     public AbstractTestAgency(String scriptFile) {
         super(scriptFile);
@@ -128,6 +129,10 @@ public abstract class AbstractTestAgency<ReservationSession, ManagerSession> ext
 		//
 		// Pre processing command 
 		//
+                if (flags.contains('c')) {
+                        return;
+                }
+                
 		Date startDate = null, endDate = null;		
 		if (cmd.equals("BA") || cmd.equals("BB")) {
 			try {
@@ -138,7 +143,7 @@ public abstract class AbstractTestAgency<ReservationSession, ManagerSession> ext
 			}
 		}
 		
-        ReservationSession session = null;
+        ReservationSessionRemote session = null;
         if (cmd.equals("BA") || cmd.equals("BB") || cmd.equals("BF")) {
         	session = sessions.get(name);
 	        if (session == null) {
@@ -181,7 +186,7 @@ public abstract class AbstractTestAgency<ReservationSession, ManagerSession> ext
 	}
 
     private void assessTotalReservationsRenter(String name, StringTokenizer scriptReader) throws Exception {
-		ManagerSession rental = getNewManagerSession(name);
+		ManagerSessionRemote rental = getNewManagerSession(name);
 		
 		while(scriptReader.hasMoreTokens()){
 			String pars = scriptReader.nextToken();
@@ -198,7 +203,7 @@ public abstract class AbstractTestAgency<ReservationSession, ManagerSession> ext
     
 
     private void assessTotalReservations(String name, StringTokenizer scriptReader) throws Exception {
-        ManagerSession rental = getNewManagerSession(name);
+        ManagerSessionRemote rental = getNewManagerSession(name);
         while (scriptReader.hasMoreTokens()) {
             String pars = scriptReader.nextToken();
             String[] pair = pars.split(":");

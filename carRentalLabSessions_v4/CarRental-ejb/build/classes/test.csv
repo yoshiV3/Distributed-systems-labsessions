@@ -1,0 +1,12 @@
+# Car rental company,,,,,
+#name,regions,,,,
+-Test,Brussels:Antwerp,,,,
+# Car types and cars,,,,,
+#type name,nb of seats,trunk space in liters,price per day,smoking,number of cars of this type
+Compact,4,200,44,TRUE,1
+Economy,4,150,30,TRUE,1
+Mini,2,100,25,TRUE,3
+Standard,5,400,60,FALSE,1
+Premium,5,600,100,FALSE,1
+Special,5,750,1200,FALSE,1
+MPV,7,2000,200,TRUE,1

@@ -1,5 +1,6 @@
 package rental;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
@@ -8,41 +9,114 @@ import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.ejb.TransactionAttribute;
+import static javax.ejb.TransactionAttributeType.MANDATORY;
+import static javax.ejb.TransactionAttributeType.SUPPORTS;
+import javax.persistence.CascadeType;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
+import javax.persistence.ManyToMany;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
+import javax.persistence.Transient;
+
+@NamedQueries({
+    @NamedQuery(
+            name = "getAllCarRentalCompanies",
+            query = "SELECT crc FROM CarRentalCompany crc"),
+
+    @NamedQuery(
+            name = "getAllCarRentalCompaniesByRegion",
+            query = "SELECT crc.name FROM CarRentalCompany crc WHERE crc.regions=:region"),
+
+    @NamedQuery(
+            name = "getAllCarTypesAtCompany",
+            query = "SELECT crc.carTypes FROM CarRentalCompany crc WHERE crc.name = :company"),
+    @NamedQuery(
+            name = "getCarType",
+            query = "SELECT cartype FROM CarType cartype WHERE cartype.name = :type"),
+
+    
+    @NamedQuery(
+            name = "getCarIds",
+            query = "SELECT car.id FROM CarRentalCompany crc JOIN crc.cars car WHERE  crc.name = :company and car.type.name = :type"),
+
+    @NamedQuery(
+            name = "getReservationsByClient",
+            query = "SELECT res FROM Reservation res WHERE res.carRenter = :name"),
+
+    @NamedQuery(
+            name = "getNumberOfReservationsByClient",
+            query = "SELECT count(res) FROM Reservation res WHERE res.carRenter = :name"),
+    @NamedQuery(
+            name = "getNumberOfReservationsByCRCByCarId",
+            query = "SELECT count(res) FROM CarRentalCompany crc JOIN crc.cars car JOIN car.reservations res WHERE car.type.name = :type AND crc.name = :company AND car.id = :id"),
+    @NamedQuery(
+            name = "getNumberOfReservationsByCRCByType",
+            query = "SELECT count(res) FROM CarRentalCompany crc JOIN crc.cars car JOIN car.reservations res WHERE car.type.name = :type AND crc.name = :company"),
+    @NamedQuery(
+            name = "getBestClient",
+            query = "SELECT re.carRenter, count(re) as cnt FROM Reservation re GROUP BY re.carRenter ORDER BY cnt DESC"),
+            
+    @NamedQuery(
+            name = "getAllCars",
+            query = "SELECT car.type from Car car"),
+    @NamedQuery(
+            name = "getAllReservations",
+            query = "SELECT res.car.id FROM Reservation res"),
+    @NamedQuery(
+            name = "getAvailableCarTypes",
+            query = "SELECT DISTINCT car.type from Car car WHERE car.id NOT IN (SELECT res.car.id FROM Reservation res WHERE res.endDate BETWEEN :startDate AND :endDate)"),
+
+    @NamedQuery(
+            name = "getCheapestCarTypeInRegionInDates",
+            query = "SELECT DISTINCT car.type.name from CarRentalCompany crc JOIN Car car WHERE :region MEMBER OF crc.regions AND car IN (crc.cars) AND car.id NOT IN (SELECT res.car.id FROM Reservation res WHERE res.endDate BETWEEN :startDate AND :endDate) ORDER BY car.type.rentalPricePerDay asc"),
+    @NamedQuery(
+            name = "getMostPopularCarTypeInCompanyInYear",
+            query = "SELECT res.carType, COUNT(DISTINCT res.id) as reservations FROM Reservation res WHERE res.rentalCompany=:company AND  (EXTRACT(YEAR from res.startDate)=:year OR  EXTRACT(YEAR from res.endDate)=:year) GROUP BY res.carType ORDER BY reservations DESC")
+})
 
 
-@Entity 
+@Entity
 public class CarRentalCompany {
 
+    @Transient
     private static Logger logger = Logger.getLogger(CarRentalCompany.class.getName());
+
     @Id
     private String name;
-    private List<Car> cars;
-    private Set<CarType> carTypes = new HashSet<CarType>();
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Car> cars = new ArrayList<Car>();
+    @ElementCollection
     private List<String> regions;
+    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Set<CarType> carTypes = new HashSet<CarType>();
 
-	
-    /***************
-     * CONSTRUCTOR *
-     ***************/
-    public CarRentalCompany(){}
-    
-    
+    /**
+     * *************
+     * CONSTRUCTORS * *************
+     */
+    public CarRentalCompany() {
+    }
+
+    public CarRentalCompany(String name) {//, List<String> regions) {
+        setName(name);
+    }
+
     public CarRentalCompany(String name, List<String> regions, List<Car> cars) {
         logger.log(Level.INFO, "<{0}> Starting up CRC {0} ...", name);
         setName(name);
         this.cars = cars;
         setRegions(regions);
-        for (Car car : cars) {
-            carTypes.add(car.getType());
-        }
     }
 
-    /********
-     * NAME *
-     ********/
-    
+    /**
+     * ******
+     * NAME * ******
+     */
     public String getName() {
         return name;
     }
@@ -51,81 +125,37 @@ public class CarRentalCompany {
         this.name = name;
     }
 
-    /***********
-     * Regions *
-     **********/
-    private void setRegions(List<String> regions) {
+    /**
+     * *********
+     * Regions * ********
+     */
+    public void setRegions(List<String> regions) {
         this.regions = regions;
     }
-    
+
     public List<String> getRegions() {
         return this.regions;
     }
 
-    /*************
-     * CAR TYPES *
-     *************/
-    
-    public Collection<CarType> getAllTypes() {
-        return carTypes;
+    /**
+     * *******
+     * CARS * *******
+     */
+    public List<Car> getCars() {
+        return cars;
     }
 
-    public CarType getType(String carTypeName) {
-        for(CarType type:carTypes){
-            if(type.getName().equals(carTypeName))
-                return type;
-        }
-        throw new IllegalArgumentException("<" + carTypeName + "> No cartype of name " + carTypeName);
+    @TransactionAttribute(MANDATORY)
+    public void addCar(Car car) {
+        cars.add(car);
     }
 
-    public boolean isAvailable(String carTypeName, Date start, Date end) {
-        logger.log(Level.INFO, "<{0}> Checking availability for car type {1}", new Object[]{name, carTypeName});
-        return getAvailableCarTypes(start, end).contains(getType(carTypeName));
+    @TransactionAttribute(MANDATORY)
+    public void removeCar(Car car) {
+        cars.remove(car);
     }
 
-    public Set<CarType> getAvailableCarTypes(Date start, Date end) {
-        Set<CarType> availableCarTypes = new HashSet<CarType>();
-        for (Car car : cars) {
-            if (car.isAvailable(start, end)) {
-                availableCarTypes.add(car.getType());
-            }
-        }
-        return availableCarTypes;
-    }
-
-    /*********
-     * CARS *
-     *********/
-    
-    public Car getCar(int uid) {
-        for (Car car : cars) {
-            if (car.getId() == uid) {
-                return car;
-            }
-        }
-        throw new IllegalArgumentException("<" + name + "> No car with uid " + uid);
-    }
-
-    public Set<Car> getCars(CarType type) {
-        Set<Car> out = new HashSet<Car>();
-        for (Car car : cars) {
-            if (car.getType().equals(type)) {
-                out.add(car);
-            }
-        }
-        return out;
-    }
-    
-     public Set<Car> getCars(String type) {
-        Set<Car> out = new HashSet<Car>();
-        for (Car car : cars) {
-            if (type.equals(car.getType().getName())) {
-                out.add(car);
-            }
-        }
-        return out;
-    }
-
+    @TransactionAttribute(SUPPORTS)
     private List<Car> getAvailableCars(String carType, Date start, Date end) {
         List<Car> availableCars = new LinkedList<Car>();
         for (Car car : cars) {
@@ -136,22 +166,79 @@ public class CarRentalCompany {
         return availableCars;
     }
 
-    /****************
-     * RESERVATIONS *
-     ****************/
+    /**
+     * ************************
+     *
+     * CARTYPES
+     */
+    public Set<CarType> getCarTypes() {
+        return carTypes;
+    }
+
+    @TransactionAttribute(SUPPORTS)
+    public CarType getType(String carTypeName) {
+        for (CarType type : getCarTypes()) {
+            if (type.getName().equals(carTypeName)) {
+                return type;
+            }
+        }
+        return null;
+    }
+
+    @TransactionAttribute(SUPPORTS)
+    public boolean isAvailable(CarType type, Date start, Date end) {
+        if (type != null) {
+            return getAvailableCarTypes(start, end).contains(type);
+        }
+        return false;
+    }
+
+    @TransactionAttribute(SUPPORTS)
+    public Set<CarType> getAvailableCarTypes(Date start, Date end) {
+        Set<CarType> availableCarTypes = new HashSet<CarType>();
+        for (Car car : cars) {
+            if (car.isAvailable(start, end)) {
+                availableCarTypes.add(car.getType());
+            }
+        }
+        return availableCarTypes;
+    }
+
+    public boolean operatesInRegion(String region) {
+        return this.regions.contains(region);
+    }
+
     
+    
+    public boolean canReserve(ReservationConstraints constraints) {
+
+        boolean result = operatesInRegion(constraints.getRegion());
+        result = result && isAvailable(getType(constraints.getCarType()), constraints.getStartDate(), constraints.getEndDate());
+        return result;
+    }
+
+    @TransactionAttribute(MANDATORY)
+    public void addCarType(CarType type) {
+
+        carTypes.add(type);
+    }
+
+    @TransactionAttribute(MANDATORY)
+    public void removeCarType(CarType type) {
+        carTypes.remove(type);
+    }
+
+    @TransactionAttribute(MANDATORY)
     public Quote createQuote(ReservationConstraints constraints, String guest)
             throws ReservationException {
         logger.log(Level.INFO, "<{0}> Creating tentative reservation for {1} with constraints {2}",
                 new Object[]{name, guest, constraints.toString()});
+        CarType type = getType(constraints.getCarType());
+        if (!this.regions.contains(constraints.getRegion()) || !isAvailable(type, constraints.getStartDate(), constraints.getEndDate())) {
 
-
-        if (!this.regions.contains(constraints.getRegion()) || !isAvailable(constraints.getCarType(), constraints.getStartDate(), constraints.getEndDate())) {
             throw new ReservationException("<" + name
                     + "> No cars available to satisfy the given constraints.");
         }
-		
-        CarType type = getType(constraints.getCarType());
 
         double price = calculateRentalPrice(type.getRentalPricePerDay(), constraints.getStartDate(), constraints.getEndDate());
 
@@ -159,11 +246,12 @@ public class CarRentalCompany {
     }
 
     // Implementation can be subject to different pricing strategies
-    private double calculateRentalPrice(double rentalPricePerDay, Date start, Date end) {
+    public double calculateRentalPrice(double rentalPricePerDay, Date start, Date end) {
         return rentalPricePerDay * Math.ceil((end.getTime() - start.getTime())
                 / (1000 * 60 * 60 * 24D));
     }
 
+    @TransactionAttribute(MANDATORY)
     public Reservation confirmQuote(Quote quote) throws ReservationException {
         logger.log(Level.INFO, "<{0}> Reservation of {1}", new Object[]{name, quote.toString()});
         List<Car> availableCars = getAvailableCars(quote.getCarType(), quote.getStartDate(), quote.getEndDate());
@@ -173,25 +261,8 @@ public class CarRentalCompany {
         }
         Car car = availableCars.get((int) (Math.random() * availableCars.size()));
 
-        Reservation res = new Reservation(quote, car.getId());
+        Reservation res = new Reservation(quote, car);
         car.addReservation(res);
         return res;
-    }
-
-    public void cancelReservation(Reservation res) {
-        logger.log(Level.INFO, "<{0}> Cancelling reservation {1}", new Object[]{name, res.toString()});
-        getCar(res.getCarId()).removeReservation(res);
-    }
-    
-    public Set<Reservation> getReservationsBy(String renter) {
-        logger.log(Level.INFO, "<{0}> Retrieving reservations by {1}", new Object[]{name, renter});
-        Set<Reservation> out = new HashSet<Reservation>();
-        for(Car c : cars) {
-            for(Reservation r : c.getReservations()) {
-                if(r.getCarRenter().equals(renter))
-                    out.add(r);
-            }
-        }
-        return out;
     }
 }
