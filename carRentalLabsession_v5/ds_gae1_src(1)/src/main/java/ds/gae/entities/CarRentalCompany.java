@@ -11,6 +11,10 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.google.cloud.datastore.*;
+import com.google.cloud.datastore.StructuredQuery.PropertyFilter;
+import com.google.cloud.datastore.StructuredQuery.CompositeFilter;
+
 import ds.gae.ReservationException;
 
 public class CarRentalCompany {
@@ -18,19 +22,23 @@ public class CarRentalCompany {
     private static final Logger logger = Logger.getLogger(CarRentalCompany.class.getName());
 
     private String name;
-    private Set<Car> cars;
-    private Map<String, CarType> carTypes = new HashMap<>();
 
     /***************
      * CONSTRUCTOR *
      ***************/
 
-    public CarRentalCompany(String name, Set<Car> cars) {
+    public CarRentalCompany(String name) {
         setName(name);
-        this.cars = cars;
-        for(Car car : cars) {
-            carTypes.put(car.getType().getName(), car.getType());
-        }
+    }
+    
+    public Entity persist(Datastore ds)
+    {
+    	KeyFactory kf = ds.newKeyFactory().setKind("CarRentalCompany");
+    	Key k         =  kf.newKey(getName());
+    	Entity crc     = Entity.newBuilder(k)
+    			        .build();
+    	ds.put(crc);
+    	return crc;    	
     }
 
     /********
@@ -49,24 +57,53 @@ public class CarRentalCompany {
      * CAR TYPES *
      *************/
 
-    public Collection<CarType> getAllCarTypes() {
-        return carTypes.values();
+    public Collection<CarType> getAllCarTypes(Datastore ds) {
+    	HashSet<CarType> carTypes = new HashSet<CarType>();
+    	KeyFactory kf = ds.newKeyFactory().setKind("CarRentalCompany");
+    	Key k         =  kf.newKey(getName());
+        Query<Entity> query = Query.newEntityQueryBuilder()
+        		                   .setKind("CarType")
+        		                   .setFilter(PropertyFilter.hasAncestor(k))
+        		                   .build();
+        QueryResults<Entity> results = ds.run(query); 
+        while(results.hasNext())
+        {
+        	Entity result = results.next(); 
+        	carTypes.add(CarType.fromEntityToCarType(result));
+        }
+        return carTypes;
+    }
+    
+
+    public CarType getCarType(String carTypeName, Datastore ds) {
+    	KeyFactory kf = ds.newKeyFactory().setKind("CarRentalCompany");
+    	Key k         =  kf.newKey(getName());
+        Query<Entity> query = Query.newEntityQueryBuilder()
+        		                   .setKind("CarType")
+        		                   .setFilter(CompositeFilter
+        		                		   .and(PropertyFilter.eq("name", carTypeName),
+        		                				   PropertyFilter.hasAncestor(k)))
+        		                   .build();
+        QueryResults<Entity> results = ds.run(query); 
+        Entity result                = results.next(); 
+        if (result == null)
+        {
+        	throw new IllegalArgumentException("Type does not exist at this company");
+        }
+        return CarType.fromEntityToCarType(result); 
     }
 
-    public CarType getCarType(String carTypeName) {
-        return carTypes.get(carTypeName);
-    }
-
-    public boolean isAvailable(String carTypeName, Date start, Date end) {
+    public boolean isAvailable(Datastore ds, String carTypeName, Date start, Date end) {
         logger.log(Level.INFO, "<{0}> Checking availability for car type {1}", new Object[] { name, carTypeName });
-        return getAvailableCarTypes(start, end).contains(getCarType(carTypeName));
+        return this.getAllCarTypes(ds).contains(this.getCarType(carTypeName, ds));
+    	
     }
 
-    public Set<CarType> getAvailableCarTypes(Date start, Date end) {
+    public Set<CarType> getAvailableCarTypes(Datastore ds, Date start, Date end) {
         Set<CarType> availableCarTypes = new HashSet<>();
-        for (Car car : getCars()) {
-            if (car.isAvailable(start, end)) {
-                availableCarTypes.add(car.getType());
+        for (Car car : getCars(ds)) {
+            if (car.isAvailable(ds,start, end)) {
+                availableCarTypes.add(this.getCarType(car.getType(), ds));
             }
         }
         return availableCarTypes;
@@ -76,25 +113,43 @@ public class CarRentalCompany {
      * CARS *
      *********/
 
-    private Car getCar(int uid) {
-        for (Car car : cars) {
-            if (car.getId() == uid) {
-                return car;
-            }
-        }
-        throw new IllegalArgumentException("<" + name + "> No car with uid " + uid);
+    private Car getCar(Datastore ds, long uid) {
+    	KeyFactory kf = ds.newKeyFactory().setKind("Car");
+    	Key k         =  kf.newKey(uid);
+    	Entity result = ds.get(k) ; 
+    	if (result == null)
+    	{
+            throw new IllegalArgumentException("<" + name + "> No car with uid " + uid);
+    	}
+    	return Car.fromEntityToCar(result);
+
     }
 
-    public Set<Car> getCars() {
-        return cars;
+    public Set<Car> getCars(Datastore ds) {
+        HashSet<Car> cars = new HashSet(); 
+    	KeyFactory kf = ds.newKeyFactory().setKind("CarRentalCompany");
+    	Key k         =  kf.newKey(getName());
+        Query<Entity> query = Query.newEntityQueryBuilder()
+        		                   .setKind("Car")
+        		                   .setFilter(PropertyFilter.hasAncestor(k))
+        		                   .build();
+        QueryResults<Entity> results = ds.run(query); 
+        while(results.hasNext())
+        {
+        	Entity result = results.next(); 
+        	cars.add(Car.fromEntityToCar(result));
+        }      
+        return cars; 
     }
 
-    private List<Car> getAvailableCars(String carType, Date start, Date end) {
+    private List<Car> getAvailableCars(Datastore ds, String carType, Date start, Date end) {
         List<Car> availableCars = new LinkedList<>();
-        for (Car car : cars) {
-            if (car.getType().getName().equals(carType) && car.isAvailable(start, end)) {
-                availableCars.add(car);
-            }
+        for (Car car : this.getCars(ds))
+        {
+        	if (car.isAvailable(ds, start, end) && car.getType().equals(carType))
+        	{
+        		availableCars.add(car);
+        	}
         }
         return availableCars;
     }
@@ -103,13 +158,13 @@ public class CarRentalCompany {
      * RESERVATIONS *
      ****************/
 
-    public Quote createQuote(ReservationConstraints constraints, String client) throws ReservationException {
+    public Quote createQuote(Datastore ds, ReservationConstraints constraints, String client) throws ReservationException {
         logger.log(Level.INFO, "<{0}> Creating tentative reservation for {1} with constraints {2}",
                 new Object[] { name, client, constraints.toString() });
 
-        CarType type = getCarType(constraints.getCarType());
+        CarType type = getCarType(constraints.getCarType(), ds);
 
-        if (!isAvailable(constraints.getCarType(), constraints.getStartDate(), constraints.getEndDate())) {
+        if (!isAvailable(ds, constraints.getCarType(), constraints.getStartDate(), constraints.getEndDate())) {
             throw new ReservationException("<" + name + "> No cars available to satisfy the given constraints.");
         }
 
@@ -119,7 +174,7 @@ public class CarRentalCompany {
                 constraints.getEndDate()
         );
 
-        return new Quote(
+        Quote quote = new Quote(
                 client,
                 constraints.getStartDate(),
                 constraints.getEndDate(),
@@ -127,6 +182,8 @@ public class CarRentalCompany {
                 constraints.getCarType(),
                 price
         );
+        quote.persist(ds);
+        return quote;
     }
 
     // Implementation can be subject to different pricing strategies
@@ -134,9 +191,9 @@ public class CarRentalCompany {
         return rentalPricePerDay * Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24D));
     }
 
-    public Reservation confirmQuote(Quote quote) throws ReservationException {
+    public Reservation confirmQuote(Datastore ds, Quote quote) throws ReservationException {
         logger.log(Level.INFO, "<{0}> Reservation of {1}", new Object[] { name, quote.toString() });
-        List<Car> availableCars = getAvailableCars(quote.getCarType(), quote.getStartDate(), quote.getEndDate());
+        List<Car> availableCars = getAvailableCars(ds, quote.getCarType(), quote.getStartDate(), quote.getEndDate());
         if (availableCars.isEmpty()) {
             throw new ReservationException("Reservation failed, all cars of type " + quote.getCarType()
                     + " are unavailable from " + quote.getStartDate() + " to " + quote.getEndDate());
@@ -144,12 +201,18 @@ public class CarRentalCompany {
         Car car = availableCars.get((int) (Math.random() * availableCars.size()));
 
         Reservation res = new Reservation(quote, car.getId());
-        car.addReservation(res);
+        res.persist(ds);
         return res;
     }
 
-    public void cancelReservation(Reservation res) {
+    public void cancelReservation(Entity res) {
         logger.log(Level.INFO, "<{0}> Cancelling reservation {1}", new Object[] { name, res.toString() });
-        getCar(res.getCarId()).removeReservation(res);
+        //TO DO
+        
+    }
+    
+    static public CarRentalCompany fromEntityToCarRentalCompany(Entity comp)
+    {
+    	return new CarRentalCompany(comp.getKey().getName());
     }
 }

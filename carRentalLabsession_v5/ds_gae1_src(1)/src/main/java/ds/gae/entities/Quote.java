@@ -1,7 +1,11 @@
 package ds.gae.entities;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Objects;
+
+import com.google.cloud.Timestamp;
+import com.google.cloud.datastore.*;
 
 public class Quote {
 
@@ -47,6 +51,22 @@ public class Quote {
 
     public String getCarType() {
         return carType;
+    }
+    
+    public Entity persist(Datastore ds)
+    {
+    	KeyFactory kf = ds.newKeyFactory().setKind("Quote")
+    			          .addAncestors(PathElement.of("CarRentalCompany", this.rentalCompany));
+    	Key k         = ds.allocateId(kf.newKey());
+    	Entity q    = Entity.newBuilder(k)
+    			        .set("renter", this.renter)
+    			        .set("startDate", Timestamp.of(this.startDate))
+    			        .set("endDate", Timestamp.of(this.endDate))
+    			        .set("carType", this.carType)
+    			        .set("rentalPrice", this.rentalPrice)
+    			        .build();
+    	ds.put(q);
+    	return q;    	
     }
 
     /*************
