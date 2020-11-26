@@ -33,6 +33,7 @@ public class CarType {
     {
     	KeyFactory kf = ds.newKeyFactory().setKind("CarRentalCompany");
     	Key comp         =  kf.newKey(company);
+//    	System.out.println("this is the key for company:  " +company+" key: " +comp);
         Query<Entity> query = Query.newEntityQueryBuilder()
                 .setKind("CarType")
                 .setFilter(CompositeFilter.and(PropertyFilter.hasAncestor(comp), PropertyFilter.eq("name", type)))
@@ -84,7 +85,8 @@ public class CarType {
     	{
     		throw new IllegalStateException("ALready persisted");
     	}
-    	KeyFactory kf = ds.newKeyFactory().addAncestors(PathElement.of("CarRentalCompany", company)).setKind("CarType");
+    	KeyFactory kf = ds.newKeyFactory().addAncestors(PathElement.of("CarRentalCompany", company)).setKind("CarType");    	
+
     	Key k         =  ds.allocateId(kf.newKey());
     	Entity ct     = Entity.newBuilder(k)
     			        .set("name", this.name)
@@ -94,6 +96,7 @@ public class CarType {
     			        .set("trunkSpace", this.trunkSpace)
     			        .build();
     	ds.put(ct);
+
     	return ct;    	
     }
     

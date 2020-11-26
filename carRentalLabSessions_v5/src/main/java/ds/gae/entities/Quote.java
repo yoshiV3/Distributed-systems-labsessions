@@ -55,6 +55,8 @@ public class Quote {
     
     public Entity persist(Datastore ds)
     {
+    	Transaction tx = ds.newTransaction();
+    	try {
     	KeyFactory kf = ds.newKeyFactory().setKind("Quote")
     			          .addAncestors(PathElement.of("CarRentalCompany", this.rentalCompany));
     	Key k         = ds.allocateId(kf.newKey());
@@ -65,8 +67,15 @@ public class Quote {
     			        .set("carType", this.carType)
     			        .set("rentalPrice", this.rentalPrice)
     			        .build();
-    	ds.put(q);
+    	tx.put(q);
+    	tx.commit();
     	return q;    	
+        } finally {
+            if (tx.isActive()) {
+              tx.rollback();        
+            }
+          }
+
     }
 
     /*************

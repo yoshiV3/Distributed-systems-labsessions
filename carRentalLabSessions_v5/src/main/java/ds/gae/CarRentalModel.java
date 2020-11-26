@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Set;
 
 import com.google.cloud.datastore.Datastore;
+import com.google.cloud.datastore.Transaction;
 import com.google.cloud.datastore.DatastoreOptions;
 import com.google.cloud.datastore.Entity;
 import com.google.cloud.datastore.Key;

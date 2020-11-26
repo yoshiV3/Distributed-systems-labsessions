@@ -22,7 +22,8 @@ public class CarRentalCompany {
     private static final Logger logger = Logger.getLogger(CarRentalCompany.class.getName());
 
     private String name;
-
+    private Key key;
+    
     /***************
      * CONSTRUCTOR *
      ***************/
@@ -38,6 +39,7 @@ public class CarRentalCompany {
     	Entity crc     = Entity.newBuilder(k)
     			        .build();
     	ds.put(crc);
+    	setKey(k);
     	return crc;    	
     }
 
@@ -49,10 +51,19 @@ public class CarRentalCompany {
         return name;
     }
 
+    public Key getKey() {
+        return key;
+    }
+
     private void setName(String name) {
         this.name = name;
     }
 
+    private void setKey(Key key) {
+        this.key = key;
+    }
+
+    
     /*************
      * CAR TYPES *
      *************/

@@ -51,6 +51,8 @@ public class CarRentalServletContextListener implements ServletContextListener {
         	 CrcData data = loadData(name, datafile);
             CarRentalCompany company = new CarRentalCompany(name);
             company.persist(CarRentalModel.getDatastore());
+        	//System.out.println("this is in loadrental for company:  " +company.getName()+" key: " +company.getKey()+company.getKey().getParent());
+
             for (CarType type : data.carTypes)
             {
             	type.persist(CarRentalModel.getDatastore(), company.getName());
