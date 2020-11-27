@@ -40,8 +40,6 @@ public class Reservation extends Quote {
     @Override
     public Entity persist(Datastore ds)
     {
-    	Transaction tx = ds.newTransaction();
-    	try {
     	KeyFactory kf = ds.newKeyFactory().setKind("Reservation")
     			          .addAncestors(PathElement.of("Car", this.carId));
     	Key k         = ds.allocateId(kf.newKey());
@@ -53,14 +51,8 @@ public class Reservation extends Quote {
     			        .set("carType", this.getCarType())
     			        .set("rentalPrice", this.getRentalPrice())
     			        .build();
-    	tx.put(r);
-    	tx.commit();
+    	ds.put(r);
     	return r;
-    } finally {
-      if (tx.isActive()) {
-        tx.rollback();        
-      }
-    }
     	    	
     }
 
