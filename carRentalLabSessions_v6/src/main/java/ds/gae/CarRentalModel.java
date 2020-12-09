@@ -26,8 +26,13 @@ import ds.gae.entities.Quote;
 import ds.gae.entities.Reservation;
 import ds.gae.entities.ReservationConstraints;
 
+import com.google.appengine.api.taskqueue.Queue;
+import com.google.appengine.api.taskqueue.QueueFactory;
+import com.google.appengine.api.taskqueue.TaskOptions;
+
 public class CarRentalModel {
 
+    private Queue queue = QueueFactory.getQueue("yt-queue");
     // FIXME use persistence instead
 
     private static CarRentalModel instance;
@@ -43,6 +48,10 @@ public class CarRentalModel {
     public static Datastore getDatastore()
     {
     	return datastore;
+    }
+
+    public Queue getQueue() {
+       return queue;
     }
 
     /**
