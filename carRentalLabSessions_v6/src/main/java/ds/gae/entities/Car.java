@@ -44,8 +44,28 @@ public class Car {
     /****************
      * PERSITANCE*
      ****************/
+    public boolean isAvailabletx(Datastore ds,Transaction tx, Date start, Date end )
+    {
+
+    	if (this.uid < 0)
+    	{
+    		throw new IllegalStateException("Uid was not set");
+    	}
+    	KeyFactory kf = ds.newKeyFactory().setKind("Car");
+    	Key k         =  kf.newKey(uid); 
+        Query<Entity> query = Query.newEntityQueryBuilder()
+                .setKind("Reservation")
+                .setFilter(CompositeFilter.and(PropertyFilter.hasAncestor(k),  
+                		                   PropertyFilter.ge("startDate", Timestamp.of(start)), 
+                		                		   PropertyFilter.le("startDate", Timestamp.of(end))))
+                .build();
+        QueryResults<Entity> results = tx.run(query); 
+        System.out.println("\n\n############################# tej "+ results.hasNext());
+        return ! results.hasNext();	
+    }
     public boolean isAvailable(Datastore ds, Date start, Date end )
     {
+
     	if (this.uid < 0)
     	{
     		throw new IllegalStateException("Uid was not set");
@@ -61,6 +81,7 @@ public class Car {
         QueryResults<Entity> results = ds.run(query); 
         return ! results.hasNext();
     }
+
     
     public Entity persist(Datastore ds, String company)
     {

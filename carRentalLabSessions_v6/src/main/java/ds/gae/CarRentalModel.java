@@ -122,11 +122,12 @@ public class CarRentalModel {
 	 * @throws ReservationException Confirmation of given quote failed.
 	 */
 	public void confirmQuote(Quote quote) throws ReservationException {
+		Transaction tx = getDatastore().newTransaction();
 		KeyFactory kf = getDatastore().newKeyFactory().setKind("CarRentalCompany");
 		Key k = kf.newKey(quote.getRentalCompany());
 		Entity comp = getDatastore().get(k);
 		CarRentalCompany c = CarRentalCompany.fromEntityToCarRentalCompany(comp);
-		c.confirmQuote(getDatastore(), null, quote);
+		c.confirmQuote(getDatastore(), tx, quote);
 	}
 
 	/**
@@ -161,14 +162,12 @@ public class CarRentalModel {
 			Query<Entity> query = Query.newEntityQueryBuilder().setKind("Reservation")
 					.setFilter(PropertyFilter.eq("renter", renter)).build();
 			QueryResults<Entity> results = getDatastore().run(query);
-			System.out.println("Instance");
 			while (results.hasNext()) {
 				Entity result = results.next();
 				out.add(Reservation.fromEntityToReservation(result));
 			}
 		} finally {
-			return out;
-
+			return out;	
 		}
 	}
 
@@ -231,7 +230,7 @@ public class CarRentalModel {
 		QueryResults<Entity> results = getDatastore().run(query);
 		while (results.hasNext()) {
 			Entity result = results.next();
-			System.out.println(result.getKey().getId());
+			//System.out.println(result.getKey().getId());
 			out.add(Car.fromEntityToCar(result));
 		}
 		return out;

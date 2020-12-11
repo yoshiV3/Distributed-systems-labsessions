@@ -7,6 +7,8 @@ import java.util.Objects;
 import com.google.cloud.Timestamp;
 import com.google.cloud.datastore.*;
 import com.google.cloud.datastore.Transaction;
+
+import ds.gae.ReservationException;
 public class Reservation extends Quote {
 
     private long carId;
@@ -37,7 +39,7 @@ public class Reservation extends Quote {
         super(renter, start, end, rentalCompany, carType, rentalPrice);
     }
     
-    public Entity persist(Datastore ds, Transaction tx)
+    public Entity persist(Datastore ds, Transaction tx) throws ReservationException
     {
     	KeyFactory kf = ds.newKeyFactory().setKind("Reservation")
     			          .addAncestors(PathElement.of("Car", this.carId));
@@ -50,9 +52,9 @@ public class Reservation extends Quote {
     			        .set("carType", this.getCarType())
     			        .set("rentalPrice", this.getRentalPrice())
     			        .build();
-    	if (tx!=null) tx.put(r);
-    	else ds.put(r);
-    	return r;
+    	 tx.put(r);
+    	 
+     	return r;
     	    	
     }
 
