@@ -111,7 +111,6 @@ public class CarRentalModel {
 		Key k = kf.newKey(companyName);
 		Entity comp = getDatastore().get(k);
 		CarRentalCompany c = CarRentalCompany.fromEntityToCarRentalCompany(comp);
-		System.out.println("****************Inside create queeue " + constraints);
 		return c.createQuote(getDatastore(), constraints, renterName);
 	}
 
