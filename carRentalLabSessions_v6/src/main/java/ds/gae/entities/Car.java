@@ -60,7 +60,6 @@ public class Car {
                 		                		   PropertyFilter.le("startDate", Timestamp.of(end))))
                 .build();
         QueryResults<Entity> results = tx.run(query); 
-        System.out.println("\n\n############################# tej "+ results.hasNext());
         return ! results.hasNext();	
     }
     public boolean isAvailable(Datastore ds, Date start, Date end )
