@@ -111,7 +111,6 @@ public class Worker extends HttpServlet {
 			msg.setSubject(subject);
 			msg.setText(content);
 			Transport.send(msg);
-			System.out.println("Sending email to : <" + renter + "> subject: <" + msg.getSubject() + ">");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
