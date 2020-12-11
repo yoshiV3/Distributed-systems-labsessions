@@ -43,6 +43,7 @@ public class CreateQuoteServlet extends HttpServlet {
             if (quotes == null) {
                 quotes = new HashMap<String, ArrayList<Quote>>();
                 req.setAttribute("quotes", quotes);
+                System.out.println("################Tejas quotes were empty");
             }
 
             ArrayList<Quote> quotesOfCurrentCrc;
@@ -52,10 +53,13 @@ public class CreateQuoteServlet extends HttpServlet {
                 quotesOfCurrentCrc = new ArrayList<Quote>();
                 quotes.put(crc, quotesOfCurrentCrc);
             }
-
+            
+            System.out.println("****************Tejas added a quote "+q );
             quotesOfCurrentCrc.add(q);
             req.getSession().setAttribute("quotes", quotes);
-
+            
+            System.out.println("****************Tejas quotes quote "+quotes.get(crc) +" size " + quotes.get(crc).size());
+            
             resp.sendRedirect(JSPSite.CREATE_QUOTES.url());
         } catch (ParseException e) {
             logger.log(Level.SEVERE, e.getMessage(), e);

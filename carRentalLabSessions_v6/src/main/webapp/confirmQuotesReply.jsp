@@ -4,15 +4,23 @@
 
 <% session.setAttribute("currentPage", JSPSite.CONFIRM_QUOTES_RESPONSE); %>
 <% String renter = (String) session.getAttribute("renter"); %>
+<% String email = (String) session.getAttribute("email"); %>
+<% String resid = (String) session.getAttribute("resid"); %>
+
 
 <%@include file="_header.jsp"%>
 
 <div class="frameDiv" style="margin: 150px 150px;">
-    <h2>Reply</h2>
+    <h2>Thank You</h2>
     <div class="group">
         <p>
-            TODO: Here you can give some information to client who is currently 
-            logged in as user <%=renter%>.
+        	Dear <%=renter%>, 
+            Thanks for using TEYO Car Rental Application Service. 
+            Booking status will be sent to your email address "<%=email%>" shortly.
+            Please use this Reservation ID <%=renter%> for your reference. 
+            
+            Thanks, 
+            TEYO Team.  
         </p>
     </div>
 </div>
