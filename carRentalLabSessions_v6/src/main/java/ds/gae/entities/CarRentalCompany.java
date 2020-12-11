@@ -156,13 +156,11 @@ public class CarRentalCompany {
 		List<Car> availableCars = new LinkedList<>();
 		for (Car car : this.getCars(ds)) {
 			if (car.getType().equals(carType)) {
-			System.out.println("\nChecking avialable of ---------\n" + car.getType() );
 			if (car.isAvailabletx(ds,tx, start, end) ) {
 				System.out.println("\n---------avialable cars ---------\n" + carType);
 				availableCars.add(car);
 			}}
 		}
-		System.out.println("\n---------avialable cars ---------\n" + availableCars);
 		return availableCars;
 	}
 
