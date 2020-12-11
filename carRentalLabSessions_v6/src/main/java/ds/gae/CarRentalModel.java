@@ -1,5 +1,8 @@
 package ds.gae;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -108,7 +111,7 @@ public class CarRentalModel {
 		Key k = kf.newKey(companyName);
 		Entity comp = getDatastore().get(k);
 		CarRentalCompany c = CarRentalCompany.fromEntityToCarRentalCompany(comp);
-		System.out.println("****************Inside create queeue " + constraints );
+		System.out.println("****************Inside create queeue " + constraints);
 		return c.createQuote(getDatastore(), constraints, renterName);
 	}
 
@@ -123,7 +126,7 @@ public class CarRentalModel {
 		Key k = kf.newKey(quote.getRentalCompany());
 		Entity comp = getDatastore().get(k);
 		CarRentalCompany c = CarRentalCompany.fromEntityToCarRentalCompany(comp);
-		c.confirmQuote(getDatastore(), quote);
+		c.confirmQuote(getDatastore(), null, quote);
 	}
 
 	/**
@@ -133,9 +136,16 @@ public class CarRentalModel {
 	 * @return The list of reservations, resulting from confirming all given quotes.
 	 * @throws ReservationException One of the quotes cannot be confirmed. Therefore
 	 *                              none of the given quotes is confirmed.
+	 * @throws IOException
 	 */
-	public List<Reservation> confirmQuotes(List<Quote> quotes) throws ReservationException {
+	public List<Reservation> confirmQuotes(List<Quote> quotes) throws ReservationException, IOException {
+
 		// TODO: add implementation when time left, required for GAE2
+		ByteArrayOutputStream payload = new ByteArrayOutputStream();
+		ObjectOutputStream objectOut = new ObjectOutputStream(payload);
+		objectOut.writeObject(quotes);
+		getQueue().add(TaskOptions.Builder.withUrl("/worker").payload(payload.toByteArray()));
+
 		return null;
 	}
 

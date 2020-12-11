@@ -1,5 +1,6 @@
 package ds.gae.entities;
 
+import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Objects;
@@ -7,7 +8,7 @@ import java.util.Objects;
 import com.google.cloud.Timestamp;
 import com.google.cloud.datastore.*;
 
-public class Quote {
+public class Quote implements Serializable{
 
     private Date startDate;
     private Date endDate;

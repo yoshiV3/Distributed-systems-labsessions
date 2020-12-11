@@ -177,10 +177,9 @@ public class CarRentalCompany {
 		return rentalPricePerDay * Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24D));
 	}
 
-	public Reservation confirmQuote(Datastore ds, Quote quote) throws ReservationException {
+	public Reservation confirmQuote(Datastore ds, Transaction tx, Quote quote) throws ReservationException {
 		logger.log(Level.INFO, "<{0}> Reservation of {1}", new Object[] { name, quote.toString() });
-		Transaction tx = ds.newTransaction();
-		try {
+		//Transaction tx = ds.newTransaction();
 			List<Car> availableCars = getAvailableCars(ds, quote.getCarType(), quote.getStartDate(),
 					quote.getEndDate());
 			if (availableCars.isEmpty()) {
@@ -190,13 +189,8 @@ public class CarRentalCompany {
 			Car car = availableCars.get((int) (Math.random() * availableCars.size()));
 
 			Reservation res = new Reservation(quote, car.getId());
-			res.persist(ds);
+			res.persist(ds, tx);
 			return res;
-		} finally {
-			if (tx.isActive()) {
-				tx.rollback();
-			}
-		}
 
 	}
 

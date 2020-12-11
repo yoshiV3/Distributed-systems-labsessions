@@ -4,7 +4,6 @@
 
 <% session.setAttribute("currentPage", JSPSite.CONFIRM_QUOTES_RESPONSE); %>
 <% String renter = (String) session.getAttribute("renter"); %>
-<% String email = (String) session.getAttribute("email"); %>
 <% String resid = (String) session.getAttribute("resid"); %>
 
 
@@ -14,13 +13,14 @@
     <h2>Thank You</h2>
     <div class="group">
         <p>
-        	Dear <%=renter%>, 
-            Thanks for using TEYO Car Rental Application Service. 
-            Booking status will be sent to your email address "<%=email%>" shortly.
-            Please use this Reservation ID <%=renter%> for your reference. 
-            
+        	Dear customer, 
+           <p>
+            Thanks for using our Car Rental Application Service. <br>
+            Booking status will be sent to your email address <i>"<%=renter%>"</i> shortly.<br>
+            Please use this Reservation ID <%=resid%> for your reference. 
+            </p>
             Thanks, 
-            TEYO Team.  
+            Team.  
         </p>
     </div>
 </div>

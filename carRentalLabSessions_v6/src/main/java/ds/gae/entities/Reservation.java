@@ -37,8 +37,7 @@ public class Reservation extends Quote {
         super(renter, start, end, rentalCompany, carType, rentalPrice);
     }
     
-    @Override
-    public Entity persist(Datastore ds)
+    public Entity persist(Datastore ds, Transaction tx)
     {
     	KeyFactory kf = ds.newKeyFactory().setKind("Reservation")
     			          .addAncestors(PathElement.of("Car", this.carId));
@@ -51,7 +50,8 @@ public class Reservation extends Quote {
     			        .set("carType", this.getCarType())
     			        .set("rentalPrice", this.getRentalPrice())
     			        .build();
-    	ds.put(r);
+    	if (tx!=null) tx.put(r);
+    	else ds.put(r);
     	return r;
     	    	
     }

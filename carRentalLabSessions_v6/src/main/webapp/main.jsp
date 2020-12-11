@@ -42,14 +42,6 @@
         </form>
         
         <% HashMap<String, List<Quote>> quotes = (HashMap<String, List<Quote>>) session.getAttribute("quotes"); %>
-        <% if (quotes == null) { %>
-        <h3>QUote empty</h3>>
-        <% } %>
-        <% if (quotes != null) { %>
-        <h3>QUote not empty</h3>>
-        <% } %>
-        
-         
         <% if (quotes != null && quotes.containsKey(crc) && quotes.get(crc).size() > 0) { %>
             <% hasQuotes = true; %>
             <% List<Quote> quotesForCrc = quotes.get(crc); %>
