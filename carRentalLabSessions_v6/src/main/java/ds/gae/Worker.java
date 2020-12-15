@@ -53,42 +53,29 @@ public class Worker extends HttpServlet {
 	}
 
 	private void confirmQuotes(List<Quote> quotes) throws ReservationException {
-//		Transaction tx = ds.newTransaction();
 		List<Entity> reslist = new ArrayList<Entity>();
-//		try {
-			for (Quote quote : quotes) {
-//                        confirmQuoteTx(quote, tx);    
-				Transaction tx1 = ds.newTransaction();
-				try {
+		for (Quote quote : quotes) {
+			Transaction tx = ds.newTransaction();
+			try {
 				Key crcKey = ds.newKeyFactory().setKind("CarRentalCompany").newKey(quote.getRentalCompany());
 				Entity comp = ds.get(crcKey);
 				CarRentalCompany c = CarRentalCompany.fromEntityToCarRentalCompany(comp);
-				
-				Entity e = c.confirmQuotetx(ds, tx1, quote);
-				
-				reslist.add(e);
-				tx1.commit();
-				} finally {
-					if (tx1.isActive()) {
-						tx1.rollback();
-						for (Entity e:reslist) {
-							ds.delete(e.getKey());
-						}
-						throw new ReservationException("Quote unavailable. Booking failed, rollback all reservations. ");
-					}
 
-			}}
-//			tx.commit();
-//		} finally {
-//			if (tx.isActive()) {
-//				tx.rollback();
-//				for (Entity e:reslist) {
-//					ds.delete(e.getKey());
-//				}
-//				throw new ReservationException("Outer transaction unavailable. Booking failed, rollback all reservations. ");
-//			}
-//
-//		}
+				Entity e = c.confirmQuotetx(ds, tx, quote);
+
+				reslist.add(e);
+				tx.commit();
+			} finally {
+				if (tx.isActive()) {
+					tx.rollback();
+					for (Entity e : reslist) {
+						ds.delete(e.getKey());
+					}
+					throw new ReservationException("Quote unavailable. Booking failed, rollback all reservations. ");
+				}
+
+			}
+		}
 
 	}
 
