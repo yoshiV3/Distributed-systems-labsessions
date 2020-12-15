@@ -52,8 +52,8 @@ public class Reservation extends Quote {
     			        .set("carType", this.getCarType())
     			        .set("rentalPrice", this.getRentalPrice())
     			        .build();
-    	 tx.put(r);
-    	 
+    	 if (tx!=null)tx.put(r);
+    	 else ds.put(r);
      	return r;
     	    	
     }
