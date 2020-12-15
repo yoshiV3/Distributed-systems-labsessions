@@ -53,9 +53,9 @@ public class Worker extends HttpServlet {
 	}
 
 	private void confirmQuotes(List<Quote> quotes) throws ReservationException {
-		Transaction tx = ds.newTransaction();
+//		Transaction tx = ds.newTransaction();
 		List<Entity> reslist = new ArrayList<Entity>();
-		try {
+//		try {
 			for (Quote quote : quotes) {
 //                        confirmQuoteTx(quote, tx);    
 				Transaction tx1 = ds.newTransaction();
@@ -71,24 +71,24 @@ public class Worker extends HttpServlet {
 				} finally {
 					if (tx1.isActive()) {
 						tx1.rollback();
-						//for (Entity e:reslist) {
-							//ds.delete(e.getKey());
-						//}
+						for (Entity e:reslist) {
+							ds.delete(e.getKey());
+						}
 						throw new ReservationException("Quote unavailable. Booking failed, rollback all reservations. ");
 					}
 
 			}}
-			tx.commit();
-		} finally {
-			if (tx.isActive()) {
-				tx.rollback();
-				for (Entity e:reslist) {
-					ds.delete(e.getKey());
-				}
-				throw new ReservationException("Outer transaction unavailable. Booking failed, rollback all reservations. ");
-			}
-
-		}
+//			tx.commit();
+//		} finally {
+//			if (tx.isActive()) {
+//				tx.rollback();
+//				for (Entity e:reslist) {
+//					ds.delete(e.getKey());
+//				}
+//				throw new ReservationException("Outer transaction unavailable. Booking failed, rollback all reservations. ");
+//			}
+//
+//		}
 
 	}
 
